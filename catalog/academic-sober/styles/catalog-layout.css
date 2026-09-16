@@ -1,0 +1,241 @@
+.catalog-page {
+    max-width: 1680px;
+    margin: 0 auto;
+    padding: 72px 48px 96px;
+}
+
+.catalog-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 48px;
+    align-items: end;
+    padding-bottom: 72px;
+    border-bottom: 1px solid var(--catalog-line);
+}
+
+.eyebrow,
+.catalog-entry-heading,
+.catalog-end {
+    color: var(--catalog-muted);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+}
+
+.catalog-hero h1 {
+    max-width: 760px;
+    margin: 18px 0 20px;
+    font-size: clamp(44px, 7vw, 92px);
+    line-height: 0.98;
+    letter-spacing: -0.06em;
+}
+
+.catalog-hero p {
+    max-width: 700px;
+    margin: 0;
+    color: var(--catalog-muted);
+    font-size: 20px;
+    line-height: 1.55;
+}
+
+.hero-facts {
+    display: grid;
+    grid-template-columns: repeat(3, auto);
+    gap: 28px;
+    margin: 0;
+}
+
+.hero-facts div {
+    min-width: 120px;
+    padding-left: 16px;
+    border-left: 2px solid var(--catalog-frame);
+}
+
+.hero-facts dt {
+    color: var(--catalog-muted);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.hero-facts dd {
+    margin: 8px 0 0;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.catalog-section {
+    padding-top: 84px;
+}
+
+.section-intro {
+    display: grid;
+    grid-template-columns: minmax(180px, 0.28fr) minmax(0, 1fr);
+    column-gap: 40px;
+    align-items: baseline;
+    margin-bottom: 36px;
+}
+
+.section-intro .eyebrow {
+    grid-row: span 2;
+}
+
+.section-intro h2 {
+    max-width: 850px;
+    margin: 0;
+    font-size: clamp(28px, 4vw, 56px);
+    line-height: 1.02;
+    letter-spacing: -0.045em;
+}
+
+.section-intro p {
+    max-width: 760px;
+    margin: 18px 0 0;
+    color: var(--catalog-muted);
+    font-size: 16px;
+    line-height: 1.55;
+}
+
+.preview-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 48px;
+}
+
+.preview-grid-single {
+    grid-template-columns: minmax(0, 1fr);
+}
+
+.catalog-entry-heading {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    font-size: 10px;
+}
+
+.slide-viewport {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: var(--catalog-surface);
+    border: 1px solid var(--catalog-line);
+    box-shadow: 0 16px 40px rgba(31, 41, 55, 0.06);
+}
+
+.slide-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1920px;
+    height: 1080px;
+    overflow: hidden;
+    transform-origin: top left;
+    background: var(--catalog-surface);
+}
+
+.slide-canvas::before {
+    position: absolute;
+    inset: 28px;
+    border: 1px solid var(--catalog-frame);
+    opacity: 0.15;
+    pointer-events: none;
+    content: '';
+}
+
+.slide-header {
+    position: absolute;
+    top: 94px;
+    right: 96px;
+    left: 96px;
+    z-index: 1;
+}
+
+.slide-category {
+    display: block;
+    color: var(--catalog-muted);
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+}
+
+.slide-header h2 {
+    max-width: 1460px;
+    margin: 24px 0 0;
+    font-size: 66px;
+    line-height: 1.03;
+    letter-spacing: -0.045em;
+}
+
+.slide-footer {
+    position: absolute;
+    right: 96px;
+    bottom: 42px;
+    left: 96px;
+    display: flex;
+    justify-content: space-between;
+    color: var(--catalog-muted);
+    font-size: 16px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.catalog-end {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 80px;
+    padding-top: 18px;
+    border-top: 1px solid var(--catalog-line);
+}
+
+@media (max-width: 900px) {
+    .catalog-page {
+        padding: 40px 20px 64px;
+    }
+
+    .catalog-hero {
+        grid-template-columns: 1fr;
+        gap: 32px;
+        padding-bottom: 48px;
+    }
+
+    .hero-facts {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+    }
+
+    .section-intro {
+        display: block;
+    }
+
+    .section-intro .eyebrow {
+        display: block;
+        margin-bottom: 18px;
+    }
+
+    .preview-grid {
+        grid-template-columns: 1fr;
+        gap: 34px;
+    }
+
+    .catalog-section {
+        padding-top: 60px;
+    }
+}
+
+@media (max-width: 520px) {
+    .hero-facts {
+        grid-template-columns: 1fr;
+    }
+
+    .hero-facts div {
+        min-height: 26px;
+    }
+
+    .catalog-end {
+        display: block;
+        line-height: 2;
+    }
+}

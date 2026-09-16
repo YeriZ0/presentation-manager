@@ -1,0 +1,29 @@
+:root {
+    --catalog-bg: #eef1f4;
+    --catalog-surface: #ffffff;
+    --catalog-ink: #111827;
+    --catalog-muted: #596273;
+    --catalog-line: #dbe1e8;
+    --catalog-frame: #1f2937;
+    --catalog-accent: #35658c;
+    --catalog-accent-soft: #dce9f2;
+    --catalog-font: Arial, sans-serif;
+    --catalog-mono: Consolas, 'Liberation Mono', monospace;
+}
+
+body {
+    background: var(--catalog-bg);
+    color: var(--catalog-ink);
+    font-family: var(--catalog-font);
+}
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
