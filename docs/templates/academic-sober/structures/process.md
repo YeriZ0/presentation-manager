@@ -6,7 +6,7 @@ El contenido describe una secuencia, configuracion o ciclo con orden obligatorio
 
 ## Composicion
 
-- Distribuir de tres a seis pasos en orden de lectura
+- Distribuir de tres a cinco pasos en orden de lectura
 - Usar numero, titulo y descripcion breve
 - Incorporar iconos solo si cada paso tiene una accion concreta
 - Conectar pasos con una linea discreta
@@ -14,7 +14,7 @@ El contenido describe una secuencia, configuracion o ciclo con orden obligatorio
 
 ## Limites
 
-- Tres a seis pasos
+- Tres a cinco pasos
 - Hasta 24 palabras por paso
 - Una sola bifurcacion cuando sea imprescindible
 
@@ -23,3 +23,4 @@ El contenido describe una secuencia, configuracion o ciclo con orden obligatorio
 - Tarjetas desconectadas que oculten la secuencia
 - Flechas grandes como decoracion
 - Numeracion generada con CSS `content`
+- Agregar una explicacion lateral que compita con la secuencia

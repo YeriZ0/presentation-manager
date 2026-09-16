@@ -35,6 +35,8 @@ Use the selected manifest progressively:
 4. Load a `conditional` module only when its concern is present
 5. Do not scan or concatenate every Markdown file in the template directory
 
+Load a template's diagram module when a slide contains nodes, connectors, a directed flow or explicit relationships. Do not treat independent icon-and-description units as a relational diagram.
+
 ## Two-phase questionnaire
 
 Collect information in two phases and do not ask again for values already supplied.
@@ -78,6 +80,7 @@ For each logo or image URL, ask whether to download it into the deck or keep the
 - Let the user confirm or revise the outline
 - Load only the distinct structure files referenced by the approved outline
 - Load the density module when the content approaches a documented limit
+- Load the density module whenever the user selected a density mode
 - Collect only content that is still missing
 - Confirm icon choices before creating generated presentation artifacts
 - Collect speaker notes when requested
@@ -127,6 +130,47 @@ slides/001/script.js
 - Use complete semantic HTML documents
 - Use a 1920x1080 viewport unless the user requests another supported size
 - Respect `prefers-reduced-motion`
+- Render tables with semantic HTML, including `caption`, `thead`, `tbody` and scoped headers
+- Render simple charts and diagram connectors with inline SVG already present in the HTML
+- Chart.js and Apache ECharts are allowed only as local, vendored assets when the approved slide outline includes charts
+- Prefer Apache ECharts with its SVG renderer for complex charts; use Chart.js for simple bar, line, area or doughnut charts
+- Do not load Chart.js, ECharts, D3, Mermaid or any chart runtime from a CDN
+- Do not include chart runtimes in decks that do not contain charts
+- Keep chart data, labels, units, periods, sources and textual summaries in HTML
+- Keep an accessible semantic data table or equivalent textual data alternative in HTML when a runtime chart is used
+- Copy the selected chart runtime once into `assets/vendor/<library>/`, include its pinned version and license, and reuse it across slides
+- Treat displayed code as escaped, inert text; never evaluate or import it
+
+## Prohibited emoji content
+
+This is a global rule for every template and every generated deck:
+
+- Do not use emoji characters in visible slide text, titles, captions, notes, `alt`, `title` or ARIA labels
+- Do not replace an icon, diagram or status indicator with an emoji
+- Use an approved local icon or plain text instead
+- The package validator rejects emoji content before creating the ZIP
+
+## Contrast and resource status
+
+Every visible text element must remain legible against the surface behind it. Generated decks must satisfy these minimum ratios:
+
+- Normal text: 4.5:1
+- Large text: 3:1
+- Relevant icons, borders, chart marks and other non-text graphics: 3:1
+
+Use `data-contrast-role="icon"` or `data-contrast-role="graphic"` for meaningful non-text elements that need auditing. Use `data-contrast-exempt="decorative"` only for elements that do not convey information. Do not use exemptions to hide a contrast failure.
+
+The packager renders every slide at its declared viewport and blocks the ZIP when contrast is insufficient or when a visible surface cannot be verified. Keep text over opaque local surfaces; do not place essential text over unverified images or effects.
+
+## Template immutability
+
+- Treat the selected template and every file under `docs/templates/<template-id>/` as read-only during deck creation
+- Use only structure IDs listed by the selected template's `structureIndex`
+- Do not add new structure IDs, variants, components, tokens or rules to a selected template
+- Do not modify a template to fit content that does not match one of its documented structures
+- Adapt, split or simplify slide content to fit an existing structure
+- If no existing structure can represent the content, stop and ask the user how to adapt the content; do not extend the template
+- Changes to template files belong to a separate repository contributor task, not to deck generation
 
 ## Global animation lifecycle
 
@@ -170,21 +214,23 @@ if (window.parent === window) {
 
 ## Phosphor icons
 
-Use Phosphor Icons by default. The local source is `node_modules/@phosphor-icons/core/assets/`.
+Use Phosphor Icons by default. The local source is `node_modules/@phosphor-icons/core/assets/`, and `scripts/icon-catalog.json` provides a curated core of general-purpose icons for templates.
 
 Accept icon requests as an exact Phosphor name, a semantic description or an official Phosphor URL. The user never needs to place icon files manually.
 
 1. Identify concrete objects, actions, states or concepts in the approved outline
-2. Exclude categories, leads and introductory text that would use icons only as decoration
-3. Apply icons to every equivalent peer item or to none of them
-4. Infer suitable icon names for the remaining concepts
-5. Verify each candidate exists in the local Phosphor assets
-6. Present a compact mapping of concept, icon name, weight and semantic reason
-7. Ask the user to confirm or revise the mapping
-8. Copy only approved SVG files to `assets/icons/phosphor/`
-9. Reference the copied files with relative paths from slide HTML
+2. Map them to semantic roles from `scripts/icon-catalog.json` when possible
+3. Exclude categories, leads and introductory text that would use icons only as decoration
+4. Apply icons to every equivalent peer item or to none of them
+5. Infer suitable icon names for the remaining concepts
+6. Verify each candidate exists in the local Phosphor assets
+7. Present a compact mapping of concept, role, icon name, weight and semantic reason
+8. Ask the user to confirm or revise the mapping
+9. Record approved selections in `_working/icons.json`
+10. Run `npm run vendor:icons -- presentations/<slug>` to copy only approved SVG files
+11. Reference `assets/icons/icons.css` and use `data-icon` or semantic role classes from slide HTML
 
-Use `regular` as the default weight. Available weights are `thin`, `light`, `regular`, `bold`, `fill` and `duotone`. Regular files use `<name>.svg`; other weights use `<name>-<weight>.svg`.
+Use `regular` as the default weight. The asset generator accepts `regular`, `bold` and `duotone`. Regular files use `<name>.svg`; other weights use `<name>-<weight>.svg`.
 
 The selected template may override the visual weight for a documented structure. Do not use letters in boxes as icon substitutes, and do not force an icon when no candidate has a clear semantic relationship.
 
@@ -195,8 +241,34 @@ When Phosphor assets are used:
 - Copy its MIT license to `assets/licenses/phosphor-icons.txt`
 - Add the library, source URL, version and used asset paths to `assets/ATTRIBUTIONS.md`
 - Do not copy the complete icon library into a presentation
+- Configure defaults with `--icon-size` and `--icon-color` on the template or slide container
+- Override an individual icon with the same CSS variables when the composition requires it
+- Use `regular` for normal use, `bold` for prominent roles and `duotone` only when the secondary opacity remains legible
 
 When the user requests alternatives, offer Phosphor, Lucide, Tabler Icons, Heroicons, Fluent UI System Icons, Bootstrap Icons, a custom source or no icons. Other libraries may be used only after the user selects one and its license is verified.
+
+## Template structure markers
+
+When a selected template documents structure markers, place them directly in slide HTML so static and rendered validation can apply the template rules. For `academic-sober`, set these attributes on `body`:
+
+```html
+<body data-template="academic-sober" data-slide-structure="pillars">
+```
+
+For thematic units:
+
+- Mark each peer with `data-thematic-unit`
+- Mark its short heading with `data-unit-topic`
+- Mark its supporting text with `data-unit-description`
+- Keep DOM order as topic, optional icon and description
+
+For relational diagrams:
+
+- Use a `figure` with `data-diagram` and `data-reading-direction`
+- Mark each node with `data-diagram-node`
+- Mark the inline connector SVG with `data-diagram-connectors`
+- Associate a textual relationship description through `aria-describedby`
+- Keep the diagram as the only body composition; title, identity and a short source or caption may remain outside it
 
 ## Brand integrity
 
@@ -218,7 +290,9 @@ When a slide reserves space for an image, logo, screenshot, diagram or illustrat
 1. Copy `public/resources/image-broken.svg` without modification to `assets/placeholders/image-broken.svg`
 2. Reference that local copy explicitly from the slide HTML
 3. Add descriptive `alt` text and a visible caption naming the missing resource
-4. Keep the placeholder in the generated slide until the real asset is provided
+4. Mark the containing element with `data-resource-status="pending"`
+5. Use visible feedback beginning with `Recurso pendiente:` so the audience can identify the missing resource
+6. Keep the placeholder in the generated slide until the real asset is provided
 
 If the source placeholder does not exist, report the problem and do not invent a replacement. Do not modify Armadillo PP in Web to inject placeholders into embedded content.
 
@@ -226,7 +300,7 @@ If the source placeholder does not exist, report the problem and do not invent a
 
 Use `references/deck.schema.json` as the manifest contract. Keep `deck.json` at the package root and list slides in presentation order.
 
-- Use local CSS, JavaScript, images, icons and fonts whenever possible
+- Use local CSS, JavaScript, images, icons, fonts and approved chart runtimes whenever possible
 - Do not load external scripts
 - Do not call APIs, WebSocket servers or other network services
 - Do not create forms, popups or downloads
@@ -234,6 +308,9 @@ Use `references/deck.schema.json` as the manifest contract. Keep `deck.json` at 
 - Use HTTPS for every allowed external resource
 - Keep speaker notes in separate Markdown files
 - Use only relative package paths with forward slashes
+- When Chart.js or ECharts is used, record the exact version, source URL, license and copied asset path in `assets/ATTRIBUTIONS.md`
+
+For charts, diagrams, tables and code, also verify the selected template's limits. Do not trade away readable text, honest scales or semantic structure to fit more content.
 
 ## Delivery
 

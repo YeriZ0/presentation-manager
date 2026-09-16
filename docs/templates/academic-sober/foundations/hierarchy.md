@@ -17,6 +17,7 @@ La portada y el cierre pueden omitir la cabecera interna para usar una pila cent
 - Resaltar una conclusion, no cada elemento
 - Usar peso, escala y espacio antes que color adicional
 - Mantener el titulo en dos lineas como maximo
+- Cuando el cuerpo sea un diagrama, no agregar una segunda zona narrativa que compita con el
 
 ## Texto introductorio
 
@@ -34,3 +35,4 @@ El lead es opcional. Debe aportar contexto nuevo y no repetir el titulo ni resum
 - Evitar una superficie que encierre todo el cuerpo
 - No repetir la misma cuadricula de tarjetas en diapositivas consecutivas
 - Variar entre columnas, tablas, flujos, diagramas y composiciones mixtas
+- Mantener las unidades tematicas abiertas; usar contenedores solo cuando indiquen una frontera semantica real

@@ -4,6 +4,8 @@
 - [ ] Only the selected manifest, its `always` modules and required conditional modules were loaded
 - [ ] Every template module path is relative, safe and inside the selected template directory
 - [ ] Every slide has an approved structure ID and its referenced structure file was loaded
+- [ ] The selected template files were treated as read-only and no template structure, token or rule was added
+- [ ] Content that did not fit an existing structure was adapted, split or escalated instead of extending the template
 - [ ] The selected template's own acceptance criteria are satisfied
 - [ ] Source folder is `presentations/<slug>/`
 - [ ] ZIP output is `presentations/packages/<slug>.zip`
@@ -16,18 +18,41 @@
 - [ ] Raw ZIP entry names use forward slashes, including directory entries
 - [ ] Every new slide has `index.html`, `styles.css` and `script.js`
 - [ ] All visible editable text is in HTML
+- [ ] No emoji characters exist in slide text, notes, titles, `alt`, `title` or ARIA labels
+- [ ] Every visible text element passes the rendered contrast audit
+- [ ] Relevant non-text graphics pass 3:1 contrast or have a justified decorative exemption
+- [ ] Data tables use `caption`, `thead`, `tbody` and scoped headers
+- [ ] Simple charts use inline SVG or semantic HTML unless a runtime library is required for the approved chart
+- [ ] Any Chart.js or ECharts runtime is local, pinned, used only when charts exist and copied once under `assets/vendor/`
+- [ ] Decks without charts contain no Chart.js, ECharts or other chart runtime files
+- [ ] Charts show a conclusion, units, period, source and a textual summary
+- [ ] Runtime charts retain a semantic data table or equivalent textual data alternative in HTML
+- [ ] Bar and column scales are honest and start at zero when encoding magnitude
+- [ ] Color is not the only signal for categories, states or series
+- [ ] Diagrams have a declared reading direction and accessible relationship labels
+- [ ] Relational diagrams occupy the full slide body without a competing narrative column
+- [ ] Relational diagrams use three to six nodes and no unnecessary connector crossings
+- [ ] Academic-sober thematic units use two to four peers in topic, icon and description order
+- [ ] Academic-sober thematic descriptions contain no more than 24 words
+- [ ] Academic-sober slides declare `data-template` and `data-slide-structure`
+- [ ] Connector strokes and arrowheads pass 3:1 contrast against adjacent surfaces
+- [ ] Code snippets are escaped, inert and within the selected line and width limits
 - [ ] CSS and JavaScript use local relative paths
 - [ ] No external scripts, APIs, forms, popups or downloads exist
 - [ ] External image and font hosts are HTTPS and declared
 - [ ] Only approved icon SVGs were copied into the deck
+- [ ] Icon selections come from the curated catalog or were explicitly approved
+- [ ] `assets/icons/icons.css` exposes the selected icon sources with configurable size and color
 - [ ] Every icon represents a concrete object, action, state or concept
 - [ ] Equivalent peer items use icons consistently or omit them consistently
 - [ ] Categories, leads and introductory text do not use decorative icons
 - [ ] Letters in boxes are not used as icon substitutes
 - [ ] Phosphor license is included when Phosphor assets are used
 - [ ] `assets/ATTRIBUTIONS.md` records sources and licenses
+- [ ] Chart runtime versions, source URLs, licenses and asset paths are recorded when used
 - [ ] Logos are exact supplied or verified assets, never simulations
 - [ ] Pending resources use the copied `image-broken.svg` in slide HTML
+- [ ] Pending resources use `data-resource-status="pending"`, descriptive `alt` text and visible `Recurso pendiente:` feedback
 - [ ] Notes are separate Markdown files
 - [ ] Motion respects `prefers-reduced-motion`
 - [ ] Animated slides use one idempotent `web-deck:activate` lifecycle

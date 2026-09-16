@@ -1,6 +1,6 @@
 # Iconografia
 
-La biblioteca se selecciona mediante el flujo general. Este modulo define solamente el tratamiento visual de los iconos.
+La biblioteca global usa Phosphor y ofrece un nucleo curado en `scripts/icon-catalog.json`. Este modulo define solamente el tratamiento visual de los iconos y sus roles semanticos.
 
 ## Criterio semantico
 
@@ -18,6 +18,24 @@ La biblioteca se selecciona mediante el flujo general. Este modulo define solame
 - Usar el mismo tamano y caja optica para iconos pares
 - Preferir trazo `bold` en pilares abiertos y `regular` en diagramas densos
 - Mantener color monocromatico salvo estados que necesiten diferenciacion
+- Definir `--icon-color` y `--icon-size` en el contenedor de la estructura
+- Permitir sobreescrituras locales solamente cuando el icono conserve la jerarquia y el contraste
+- Usar `duotone` solo cuando la opacidad secundaria conserve una relacion visual legible
+- En unidades tematicas, mantener el orden tema, icono y descripcion
+
+## Roles recomendados
+
+Usar roles del catalogo en lugar de fijar rutas de SVG en la estructura:
+
+```text
+status-positive | check-circle | regular | confirmacion o resultado correcto
+status-warning | warning | regular | advertencia o condicion de riesgo
+data-trend | trend-up | regular | evolucion o mejora
+process-next | arrow-right | regular | continuidad o siguiente etapa
+concept | lightbulb | regular | idea o hallazgo
+```
+
+Las estructuras pueden recomendar roles; la skill confirma el nombre exacto y copia el activo seleccionado durante el empaquetado.
 
 ## Mapeo requerido
 
@@ -31,6 +49,7 @@ Verificar el archivo exacto antes de aprobarlo. Copiar solo los iconos utilizado
 
 ## Accesibilidad
 
-- Usar `alt=""` cuando el texto adyacente comunica exactamente el mismo concepto
-- Usar texto alternativo breve cuando el icono aporta informacion adicional
+- Usar `aria-hidden="true"` cuando un icono implementado con `span` repita el texto adyacente
+- Proporcionar un nombre accesible cuando el icono aporte informacion no expresada por el texto
+- Mantener al menos 3:1 de contraste para iconos necesarios para comprender el contenido
 - No comunicar una diferencia solamente mediante forma o color

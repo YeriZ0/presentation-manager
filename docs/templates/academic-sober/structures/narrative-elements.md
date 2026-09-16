@@ -10,7 +10,7 @@ Una idea requiere una explicación narrativa breve y una descomposición simult�
 - Mantener título y contexto en la zona izquierda
 - Usar una descripción de hasta 70 palabras en la zona izquierda
 - Introducir la zona derecha con una pregunta, criterio o encabezado breve
-- Distribuir los elementos en columnas abiertas con icono, título y texto
+- Distribuir los elementos en columnas abiertas con tema, icono y descripción
 - Separar ambos lados con espacio amplio, no con una tarjeta contenedora
 - Centrar verticalmente el conjunto cuando el contenido sea breve
 
@@ -24,7 +24,7 @@ Una idea requiere una explicación narrativa breve y una descomposición simult�
 ## Límites
 
 - Dos a cuatro elementos
-- Hasta 25 palabras por elemento
+- Hasta 24 palabras por elemento
 - Un párrafo principal de hasta 70 palabras
 - Un encabezado de hasta dos líneas por zona
 

@@ -8,6 +8,7 @@ La audiencia debe contrastar opciones, modelos o criterios equivalentes.
 
 - Usar dos columnas enfrentadas para comparaciones simples
 - Usar tabla para tres o mas opciones con criterios compartidos
+- Para valores exactos, seguir `table.md`; para tendencias o magnitudes, seguir `chart.md`
 - Mantener anchos y alineaciones equivalentes
 - Resaltar solo la conclusion o diferencia principal
 - Usar separadores finos en lugar de una tarjeta por celda

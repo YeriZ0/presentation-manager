@@ -25,9 +25,15 @@ No reducir contenido principal por debajo de 24px. Sintetizar o dividir antes de
 - Logo protagonista: maximo 520px de ancho y 180px de alto
 - Logo de cabecera: 80px a 112px de alto
 - Icono protagonista: 96px a 144px
-- Icono de unidad conceptual: 72px a 112px
+- Icono de unidad tematica: 96px a 128px
 - Icono auxiliar: 32px a 56px
+- Icono dentro de un nodo: 48px a 64px
+- Conector principal: 3px a 4px
 - Borde fino: 1px a 2px
 - Radio de superficie: 12px a 18px
+- Etiqueta de eje o grafica: 24px a 28px
+- Valor destacado en grafica: 28px a 40px
+- Celda de tabla: 24px a 30px con 16px a 24px de relleno vertical
+- Codigo: 22px a 28px con interlineado de 1.35 a 1.55
 
 Los elementos equivalentes deben compartir dimensiones y alineacion optica.

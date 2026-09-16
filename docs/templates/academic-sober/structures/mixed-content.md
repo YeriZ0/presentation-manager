@@ -2,7 +2,7 @@
 
 ## Usar cuando
 
-Una imagen, captura, grafico o diagrama necesita explicacion textual directa.
+Una imagen, captura, grafico o diagrama ilustrativo simple necesita explicacion textual directa. Los diagramas relacionales de componentes o flujos usan `system-diagram` y ocupan todo el cuerpo.
 
 ## Composicion
 
@@ -24,3 +24,4 @@ Una imagen, captura, grafico o diagrama necesita explicacion textual directa.
 - Encerrar ambas zonas dentro de una tarjeta adicional
 - Usar una imagen generica sin relacion con el argumento
 - Colocar parrafos extensos junto a un recurso pequeno
+- Reducir un diagrama relacional para agregar una columna narrativa

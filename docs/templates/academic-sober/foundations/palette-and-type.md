@@ -23,6 +23,8 @@ Los valores pueden adaptarse a una identidad institucional confirmada. Mantener 
 - Superficies grises unicamente cuando separen grupos reales
 - Bordes finos y sin sombras pesadas
 - Color de acento reservado para orientacion, estado o enfasis
+- No usar degradados en tarjetas, superficies, fondos, iconos ni elementos de datos
+- Preferir superficies de color solido para que el contraste pueda verificarse sin ambiguedad
 
 ## Tipografia
 

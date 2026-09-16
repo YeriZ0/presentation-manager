@@ -76,7 +76,7 @@ Una estructura debe indicar cuando usarla, cuando evitarla, limites propios, act
 - No duplicar reglas globales de manifiesto, seguridad, activos o empaquetado
 - No recomendar scripts externos, APIs, CDN o controles de navegacion internos
 - No definir marcadores para recursos pendientes
-- No imponer una biblioteca de iconos; solo definir su tratamiento visual
+- No imponer una biblioteca de iconos; usar la biblioteca global y definir solamente roles y tratamiento visual
 - Mantener `1920x1080` como viewport recomendado salvo necesidad confirmada
 - Indicar limites concretos para prevenir desbordamientos
 - Definir el comportamiento con movimiento reducido
@@ -84,4 +84,4 @@ Una estructura debe indicar cuando usarla, cuando evitarla, limites propios, act
 
 ## Descubrimiento
 
-Agregar una carpeta valida con `template.md` es suficiente para mostrar una plantilla en el selector. No se mantiene un catalogo separado.
+Agregar una carpeta valida con `template.md` es suficiente para mostrar una plantilla en el selector. La ruta `/catalog/academic-sober/` es solamente una referencia visual manual y no participa en el descubrimiento, generacion ni empaquetado de diapositivas.

@@ -41,6 +41,10 @@ presentations/
 9. Comprime el contenido de forma que `deck.json` quede en la raiz
 10. Guarda el ZIP en `presentations/packages/`
 
+Para empaquetar una carpeta ya creada, ejecuta `npm run package:deck -- presentations/<slug> presentations/packages/<slug>.zip`. El comando valida `deck.json`, incluye solamente `deck.json`, `assets/`, `slides/` y `notes/`, y rechaza runtimes de graficas no utilizados o faltantes.
+
+La skill no permite emojis en diapositivas, notas, titulos, textos alternativos ni etiquetas ARIA. El empaquetador tambien ejecuta una auditoria renderizada de contraste: 4.5:1 para texto normal, 3:1 para texto grande y elementos graficos relevantes. Un fallo bloquea la creacion del ZIP.
+
 El reproductor usa `1920x1080` como viewport logico recomendado y escala la diapositiva con `contain`, sin recortar ni deformar el contenido.
 
 ## HTML minimo
@@ -150,9 +154,93 @@ if (window.parent === window) {
 
 Dentro del reproductor, `web-deck:activate` es la unica fuente de activacion. El respaldo con `DOMContentLoaded` se utiliza solamente al abrir el HTML de forma independiente. Esta regla es global y no depende de la plantilla visual.
 
+## Runtimes locales de graficas
+
+Las diapositivas pueden usar Chart.js o Apache ECharts sin depender de React. El runtime debe copiarse dentro del paquete solo cuando el deck incluya graficas:
+
+```bash
+node scripts/vendor-chart-runtime.mjs echarts presentations/<slug>/assets/vendor
+```
+
+Usa `chartjs` en lugar de `echarts` cuando corresponda. El comando copia el archivo minificado y su licencia a `assets/vendor/<library>/`. Registra la version, URL de origen, licencia y ruta en `assets/ATTRIBUTIONS.md`. No uses CDN ni incluyas runtimes en decks sin graficas.
+
+Los datos, etiquetas, unidades, periodos, fuentes y alternativas textuales permanecen en el HTML. El runtime solo transforma esos datos en la representacion visual.
+
 ## Iconos
 
-Phosphor Icons es la fuente predeterminada de la skill. El catalogo local se instala mediante `@phosphor-icons/core`. Cada presentacion copia solamente los SVG que utiliza a `assets/icons/phosphor/`; las diapositivas nunca dependen de `node_modules` durante la reproduccion.
+Phosphor Icons es la fuente predeterminada de la skill. `scripts/icon-catalog.json` contiene un nucleo curado de iconos generales por roles semanticos. Registra las selecciones aprobadas en `_working/icons.json` y ejecuta:
+
+```powershell
+npm run vendor:icons -- presentations/<slug>
+```
+
+El comando genera `assets/icons/icons.css`, copia solamente los SVG usados, incluye la licencia MIT y actualiza `assets/ATTRIBUTIONS.md`. Las diapositivas nunca dependen de `node_modules` durante la reproduccion.
+
+Los iconos usan `currentColor` por defecto y permiten configurar el tamano y color en la plantilla o en cada elemento:
+
+```html
+<link rel="stylesheet" href="../../assets/icons/icons.css" />
+<span class="deck-icon deck-icon--check" data-contrast-role="icon" aria-hidden="true"></span>
+```
+
+```css
+.slide {
+    --icon-color: #1f2937;
+    --icon-size: 56px;
+}
+
+.slide .deck-icon--check {
+    --icon-color: #166534;
+}
+```
+
+## Estructuras semanticas de academic-sober
+
+Las diapositivas creadas con `academic-sober` declaran la plantilla y la estructura en `body`. Estos marcadores permiten aplicar limites de densidad y accesibilidad durante el empaquetado:
+
+```html
+<body data-template="academic-sober" data-slide-structure="pillars">
+```
+
+Una composicion tematica contiene de dos a cuatro unidades y mantiene el orden tema, icono y descripcion:
+
+```html
+<section class="thematic-units">
+    <article data-thematic-unit>
+        <h2 data-unit-topic>Trazabilidad</h2>
+        <span
+            class="deck-icon deck-icon--data-trend"
+            data-contrast-role="icon"
+            aria-hidden="true"
+        ></span>
+        <p data-unit-description>Registra el origen y el alcance de cada resultado.</p>
+    </article>
+</section>
+```
+
+Una diapositiva con relaciones reserva todo el cuerpo al diagrama. Mantiene los textos de los nodos en HTML y usa SVG solamente para conectores:
+
+```html
+<body data-template="academic-sober" data-slide-structure="system-diagram">
+    <h1 id="diagram-title">La validacion produce resultados trazables</h1>
+    <figure
+        data-diagram
+        data-reading-direction="left-to-right"
+        aria-labelledby="diagram-title"
+        aria-describedby="diagram-description"
+    >
+        <svg data-diagram-connectors aria-hidden="true"></svg>
+        <div data-diagram-node>Entrada</div>
+        <div data-diagram-node>Validacion</div>
+        <div data-diagram-node>Resultado</div>
+        <figcaption id="diagram-description" class="visually-hidden">
+            La entrada pasa por validacion antes de producir el resultado.
+        </figcaption>
+    </figure>
+</body>
+```
+
+Los diagramas de sistema admiten de tres a seis nodos. Los procesos admiten de tres a cinco pasos. Las explicaciones extensas permanecen en las notas del expositor o se dividen en otra diapositiva.
 
 ## Logos
 
@@ -161,6 +249,8 @@ No inventes ni simules logos. Usa un archivo proporcionado por el usuario o un r
 ## Recursos pendientes
 
 Cuando una diapositiva reserve un recurso visual que aun no exista, copia `public/resources/image-broken.svg` a `assets/placeholders/image-broken.svg` e incluye el marcador directamente en el HTML con texto alternativo y una etiqueta descriptiva. Armadillo PP in Web no inyecta este marcador durante la reproduccion.
+
+El contenedor debe incluir `data-resource-status="pending"` y un feedback visible que comience con `Recurso pendiente:`. No ocultes ni sustituyas el marcador hasta disponer del recurso final.
 
 ## Notas
 
