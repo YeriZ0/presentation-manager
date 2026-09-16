@@ -1,0 +1,19 @@
+{
+    "icons": [
+        {
+            "role": "status-positive",
+            "name": "check-circle",
+            "weight": "regular"
+        },
+        {
+            "role": "data-trend",
+            "name": "trend-up",
+            "weight": "duotone"
+        },
+        {
+            "role": "process-next",
+            "name": "arrow-right",
+            "weight": "bold"
+        }
+    ]
+}

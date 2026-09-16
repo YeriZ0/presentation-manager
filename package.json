@@ -7,6 +7,9 @@
         "dev": "vite",
         "build": "vite build",
         "lint": "eslint .",
+        "vendor:chart": "node scripts/vendor-chart-runtime.mjs",
+        "vendor:icons": "node scripts/vendor-icons.mjs",
+        "package:deck": "node scripts/package-deck.mjs",
         "format": "prettier --write .",
         "format:check": "prettier --check .",
         "test": "vitest run",
@@ -14,6 +17,8 @@
     },
     "dependencies": {
         "ajv": "^8.17.1",
+        "chart.js": "^4.5.0",
+        "echarts": "^6.0.0",
         "fflate": "^0.8.2",
         "react": "^19.1.1",
         "react-dom": "^19.1.1",
