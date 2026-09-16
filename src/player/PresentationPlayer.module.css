@@ -1,0 +1,581 @@
+.player {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    color: white;
+    background: #050505;
+}
+
+.playerLeaving {
+    opacity: 0;
+    transition: opacity 340ms var(--ease-spring);
+}
+
+::view-transition {
+    background: #050505;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+    animation-duration: 380ms;
+    animation-timing-function: var(--ease-spring);
+}
+
+.screenEnter {
+    position: fixed;
+    inset: 0;
+}
+
+.screenEnter .preflightHeader,
+.screenEnter .deckOverview,
+.screenEnter .slideSummary,
+.screenEnter .preflightFooter {
+    animation: content-enter 420ms var(--ease-spring) both;
+}
+
+.screenEnter .deckOverview {
+    animation-delay: 70ms;
+}
+.screenEnter .slideSummary {
+    animation-delay: 120ms;
+}
+.screenEnter .preflightFooter {
+    animation-delay: 170ms;
+}
+
+.preflight {
+    display: grid;
+    min-height: 100dvh;
+    grid-template-columns: minmax(0, 1fr) minmax(18rem, 25rem);
+    grid-template-rows: auto 1fr auto;
+    gap: 0 5rem;
+    padding: 1.25rem 2rem;
+    color: #09090b;
+    background: #fff;
+}
+
+.preflightHeader,
+.preflightFooter,
+.summaryHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.preflightHeader {
+    grid-column: 1 / -1;
+    min-height: 2.25rem;
+    border-bottom: 1px solid #e4e4e7;
+}
+
+.preflightBrand {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.preflightMark {
+    display: grid;
+    width: 1.5rem;
+    height: 1.5rem;
+    place-items: center;
+    border-radius: 0.35rem;
+    color: #fff;
+    background: #18181b;
+    font-size: 0.75rem;
+}
+
+.closePreflight {
+    padding: 0;
+    border: 0;
+    color: #71717a;
+    background: transparent;
+    cursor: pointer;
+    font: 0.75rem var(--font-body);
+}
+
+.closePreflight:hover {
+    color: #09090b;
+}
+
+.deckOverview {
+    align-self: center;
+    max-width: 30rem;
+    padding-bottom: 4rem;
+}
+
+.overviewLabel,
+.overviewMeta,
+.summaryHeader,
+.preflightFooter,
+.mobileFuture {
+    color: #71717a;
+    font-family: var(--font-body);
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+}
+
+.overviewLabel {
+    margin: 0 0 1.5rem;
+    color: #52525b;
+    text-transform: uppercase;
+}
+
+.deckOverview h1 {
+    max-width: 12ch;
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: clamp(2.5rem, 6vw, 5rem);
+    font-weight: 650;
+    letter-spacing: -0.07em;
+    line-height: 0.98;
+}
+
+.overviewMeta {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    margin: 1.5rem 0 2rem;
+}
+
+.overviewMeta span {
+    width: 0.2rem;
+    height: 0.2rem;
+    border-radius: 50%;
+    background: #a1a1aa;
+}
+
+.startButton {
+    display: inline-flex;
+    align-items: center;
+    gap: 1.5rem;
+    min-height: 2.75rem;
+    padding: 0 0.7rem 0 1rem;
+    border: 1px solid #18181b;
+    border-radius: 0.4rem;
+    color: #fff;
+    background: #18181b;
+    cursor: pointer;
+    font: 0.8rem var(--font-body);
+    transition:
+        background-color 200ms var(--ease-spring),
+        transform 200ms var(--ease-spring);
+}
+
+.startButton span {
+    display: grid;
+    width: 1.7rem;
+    height: 1.7rem;
+    place-items: center;
+    border-radius: 0.25rem;
+    background: #3f3f46;
+    font-size: 1rem;
+}
+
+.startButton:hover {
+    background: #27272a;
+}
+.startButton:active {
+    transform: scale(0.98);
+}
+
+.slideSummary {
+    align-self: center;
+    max-height: min(65vh, 35rem);
+    overflow: auto;
+    border-top: 1px solid #e4e4e7;
+    border-bottom: 1px solid #e4e4e7;
+}
+
+.summaryHeader {
+    padding: 0.85rem 0;
+    color: #71717a;
+    text-transform: uppercase;
+}
+
+.slideSummary ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.slideSummary li {
+    display: grid;
+    grid-template-columns: 2rem 1fr auto;
+    align-items: center;
+    gap: 0.75rem;
+    min-height: 3.5rem;
+    border-top: 1px solid #f4f4f5;
+    color: #18181b;
+    font-size: 0.8rem;
+}
+
+.slideSummary li > span,
+.slideSummary li small {
+    color: #a1a1aa;
+    font: 0.65rem var(--font-body);
+}
+
+.slideSummary li strong {
+    font-weight: 500;
+}
+.slideSummary li small {
+    padding: 0.25rem 0.35rem;
+    border: 1px solid #e4e4e7;
+    border-radius: 0.25rem;
+}
+.preflightFooter {
+    grid-column: 1 / -1;
+    padding-top: 1rem;
+}
+.mobileFuture {
+    display: flex;
+    gap: 0.55rem;
+}
+.mobileFuture b {
+    color: #a1a1aa;
+    font-weight: 400;
+}
+
+.stage {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    background: #050505;
+}
+
+.slideViewport {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: var(--slide-width);
+    height: var(--slide-height);
+    opacity: 0;
+    z-index: 2;
+    transform: translate(-50%, -50%) scale(calc(var(--slide-scale) * 0.992));
+    transform-origin: center;
+    transition:
+        opacity 320ms var(--ease-spring),
+        transform 420ms var(--ease-spring);
+}
+
+.slideReady {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(var(--slide-scale));
+}
+
+.slideWaiting {
+    z-index: 1;
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(var(--slide-scale));
+}
+
+.slideViewport[data-slide-state='loading'],
+.slideViewport[data-slide-state='waiting'] {
+    pointer-events: none;
+}
+
+.slideFrame {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    background: #050505;
+}
+
+.loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    color: #a1a1aa;
+    font: 0.65rem var(--font-body);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transform: translate(-50%, -50%);
+}
+
+.loadingMark {
+    width: 0.45rem;
+    height: 0.45rem;
+    border: 1px solid #d4d4d8;
+    border-radius: 50%;
+    animation: pulse 1000ms var(--ease-spring) infinite;
+}
+
+.controls {
+    position: absolute;
+    z-index: 10;
+    right: 1rem;
+    bottom: 1rem;
+    display: grid;
+    justify-items: end;
+    gap: 0.5rem;
+}
+
+.controlButton {
+    display: grid;
+    width: 2.25rem;
+    height: 2.25rem;
+    place-content: center;
+    gap: 0.25rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 0.45rem;
+    color: white;
+    background: rgba(9, 9, 11, 0.82);
+    backdrop-filter: blur(10px);
+    cursor: pointer;
+    transition:
+        transform 200ms var(--ease-spring),
+        background-color 200ms var(--ease-spring);
+}
+
+.controlButton:hover {
+    background: #27272a;
+}
+
+.controlButton:active {
+    transform: scale(0.96);
+}
+
+.controlButton span {
+    display: block;
+    width: 0.8rem;
+    height: 1px;
+    background: currentColor;
+}
+
+.menu {
+    position: relative;
+    display: grid;
+    min-width: 13.5rem;
+    padding: 0.3rem;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 0.5rem;
+    background: rgba(9, 9, 11, 0.92);
+    box-shadow: 0 0.75rem 2rem rgba(0, 0, 0, 0.24);
+    backdrop-filter: blur(12px);
+    animation: menu-in 180ms var(--ease-spring) both;
+}
+
+.menuItem {
+    display: grid;
+    grid-template-columns: 1rem minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.6rem;
+    width: 100%;
+    min-height: 2.35rem;
+    padding: 0.6rem 0.65rem;
+    border: 0;
+    border-radius: 0.3rem;
+    color: #e4e4e7;
+    background: transparent;
+    cursor: pointer;
+    font: 0.75rem var(--font-body);
+    text-align: left;
+}
+
+.menuItem:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.menuIcon {
+    width: 1rem;
+    height: 1rem;
+    fill: currentColor;
+}
+
+.menuCaret {
+    color: #a1a1aa;
+}
+
+.menuIndicator {
+    color: #d4d4d8;
+}
+
+.menu .destructiveAction {
+    color: #fca5a5;
+}
+
+.timerMenu {
+    position: absolute;
+    right: calc(100% + 0.5rem);
+    bottom: 0;
+    display: grid;
+    min-width: 12rem;
+    padding: 0.3rem;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 0.5rem;
+    color: #e4e4e7;
+    background: rgba(9, 9, 11, 0.94);
+    box-shadow: 0 0.75rem 2rem rgba(0, 0, 0, 0.24);
+    backdrop-filter: blur(12px);
+    animation: menu-in 180ms var(--ease-spring) both;
+}
+
+.timerPositionActive {
+    color: white;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.timer {
+    position: absolute;
+    z-index: 10;
+    padding: 0.45rem 0.55rem;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 0.35rem;
+    color: white;
+    background: rgba(9, 9, 11, 0.76);
+    font: 0.72rem var(--font-body);
+    letter-spacing: 0.06em;
+    pointer-events: none;
+}
+
+.top-left {
+    top: 1rem;
+    left: 1rem;
+}
+
+.top-right {
+    top: 1rem;
+    right: 1rem;
+}
+
+.bottom-left {
+    bottom: 1rem;
+    left: 1rem;
+}
+
+.bottom-right {
+    right: 1rem;
+    bottom: 4rem;
+}
+
+.progress {
+    position: absolute;
+    z-index: 10;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.progress span {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: white;
+    transform-origin: left;
+    transition: transform 300ms var(--ease-spring);
+}
+
+.playerError {
+    position: absolute;
+    top: 1rem;
+    left: 50%;
+    margin: 0;
+    padding: 0.55rem 0.7rem;
+    border: 1px solid #7f1d1d;
+    border-radius: 0.35rem;
+    color: #fecaca;
+    background: rgba(69, 10, 10, 0.9);
+    font-size: 0.75rem;
+    transform: translateX(-50%);
+}
+
+@keyframes pulse {
+    50% {
+        opacity: 0.3;
+        transform: scale(0.65);
+    }
+}
+
+@keyframes menu-in {
+    from {
+        opacity: 0;
+        transform: translateY(0.35rem) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes screen-enter {
+    from {
+        opacity: 0;
+        transform: translateY(0.5rem);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes content-enter {
+    from {
+        opacity: 0;
+        transform: translateY(0.5rem);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .slideViewport,
+    .screenEnter,
+    .playerLeaving,
+    .controlButton,
+    .menu,
+    .timerMenu,
+    .progress span,
+    .loadingMark {
+        transition: none;
+        animation: none;
+    }
+
+    .screenEnter .preflightHeader,
+    .screenEnter .deckOverview,
+    .screenEnter .slideSummary,
+    .screenEnter .preflightFooter {
+        animation: none;
+    }
+}
+
+@media (max-width: 700px) {
+    .preflight {
+        display: flex;
+        min-height: 100dvh;
+        flex-direction: column;
+        gap: 0;
+        padding: 1rem;
+    }
+
+    .deckOverview {
+        width: 100%;
+        margin: auto 0 2.5rem;
+        padding: 0;
+    }
+
+    .deckOverview h1 {
+        font-size: clamp(2.35rem, 11vw, 4rem);
+    }
+    .slideSummary {
+        width: 100%;
+        max-height: 35vh;
+    }
+    .preflightFooter {
+        width: 100%;
+        margin-top: auto;
+    }
+    .mobileFuture {
+        display: none;
+    }
+}

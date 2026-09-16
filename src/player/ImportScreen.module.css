@@ -1,0 +1,275 @@
+.screen {
+    display: flex;
+    height: 100dvh;
+    min-height: 0;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 1.25rem 2rem;
+    color: var(--ink-primary);
+    background: var(--surface-page);
+}
+.shell {
+    display: grid;
+    width: 100%;
+    min-height: 0;
+    flex: 1;
+    grid-template-rows: auto auto 1fr;
+    margin: 0 auto;
+}
+.header,
+.footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.header {
+    min-height: 2.25rem;
+    animation: content-enter 420ms var(--ease-spring) both;
+}
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    color: var(--ink-primary);
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+}
+.brandMark {
+    display: grid;
+    width: 1.5rem;
+    height: 1.5rem;
+    place-items: center;
+    border-radius: 0.35rem;
+    color: white;
+    background: #18181b;
+    font-size: 0.75rem;
+}
+.version,
+.footer,
+.eyebrow,
+.requirements {
+    color: var(--ink-muted);
+    font-family: var(--font-body);
+    font-size: 0.68rem;
+    letter-spacing: 0.03em;
+}
+.divider {
+    height: 1px;
+    margin: 1rem 0 0;
+    background: var(--line);
+}
+.content {
+    display: grid;
+    width: 100%;
+    min-height: 0;
+    gap: 2rem;
+    align-self: center;
+    margin: 0;
+    animation: content-enter 420ms var(--ease-spring) 70ms both;
+}
+.headingBlock {
+    display: grid;
+    max-width: 46rem;
+    gap: 0.75rem;
+}
+.eyebrow {
+    color: var(--ink-muted);
+    text-transform: uppercase;
+}
+h1 {
+    margin: 0;
+    color: var(--ink-primary);
+    font-family: var(--font-body);
+    font-size: clamp(2rem, 5vw, 3.25rem);
+    font-weight: 650;
+    letter-spacing: -0.055em;
+    line-height: 1.05;
+}
+.lede {
+    max-width: 32rem;
+    margin: 0;
+    color: var(--ink-secondary);
+    font-size: 0.95rem;
+    line-height: 1.55;
+}
+.importCard {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    border: 1px solid var(--line);
+    border-radius: 0.6rem;
+    background: var(--surface-card);
+    box-shadow: var(--shadow-card);
+}
+.cardIcon {
+    display: grid;
+    width: 2.5rem;
+    height: 2.5rem;
+    flex: 0 0 auto;
+    place-items: center;
+    border: 1px solid var(--line);
+    border-radius: 0.45rem;
+    color: var(--ink-primary);
+    background: var(--surface-subtle);
+}
+.cardIcon svg {
+    width: 1.15rem;
+    height: 1.15rem;
+}
+.cardCopy {
+    display: grid;
+    flex: 1;
+    gap: 0.3rem;
+}
+.cardCopy strong {
+    color: var(--ink-primary);
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+.cardCopy span {
+    color: var(--ink-muted);
+    font-size: 0.75rem;
+}
+.cardCopy code {
+    color: var(--ink-secondary);
+    font-family: var(--font-body);
+}
+.importButton {
+    min-height: 2.35rem;
+    padding: 0 0.9rem;
+    border: 1px solid #18181b;
+    border-radius: 0.4rem;
+    color: white;
+    background: #18181b;
+    cursor: pointer;
+    font-size: 0.78rem;
+    font-weight: 550;
+    white-space: nowrap;
+    transition:
+        background-color 250ms var(--ease-spring),
+        transform 250ms var(--ease-spring);
+}
+.importButton:hover {
+    background: #3f3f46;
+}
+.importButton:active {
+    transform: scale(0.98);
+}
+.importButton:disabled {
+    color: #a1a1aa;
+    border-color: #d4d4d8;
+    background: #e4e4e7;
+    cursor: wait;
+}
+.requirements {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+.requirements > span:first-child {
+    margin-right: 0.2rem;
+}
+.pill {
+    padding: 0.3rem 0.5rem;
+    border: 1px solid var(--line);
+    border-radius: 0.3rem;
+    color: var(--ink-secondary);
+    background: var(--surface-subtle);
+    font-size: 0.62rem;
+}
+.error {
+    margin: 0;
+    padding: 0.75rem;
+    border: 1px solid #fecaca;
+    border-radius: 0.4rem;
+    color: #b91c1c;
+    background: #fef2f2;
+    font-size: 0.78rem;
+    line-height: 1.4;
+}
+.footer {
+    width: 100%;
+    margin: auto auto 0;
+    padding-top: 1rem;
+    animation: content-enter 420ms var(--ease-spring) 140ms both;
+}
+.docsLink {
+    padding: 0;
+    border: 0;
+    color: var(--ink-muted);
+    background: transparent;
+    cursor: pointer;
+    font: inherit;
+    text-decoration: none;
+    transition: color 250ms var(--ease-spring);
+}
+.docsLink:hover {
+    color: var(--ink-primary);
+}
+
+.dragging {
+    background: #f4f4f5;
+}
+.dragging .importCard {
+    border-color: #18181b;
+    box-shadow: 0 0 0 3px rgba(24, 24, 27, 0.08);
+}
+.dragging .importButton {
+    background: #000;
+}
+
+.hint,
+.ambient,
+.signal,
+.shortcut,
+.buttonIcon {
+    display: none;
+}
+
+@media (max-width: 600px) {
+    .screen {
+        padding: 1rem;
+    }
+    .version {
+        display: none;
+    }
+    .content {
+        margin: 0 auto;
+    }
+    .importCard {
+        align-items: stretch;
+        flex-wrap: wrap;
+    }
+    .cardCopy {
+        min-width: calc(100% - 3.5rem);
+    }
+    .importButton {
+        width: 100%;
+    }
+    .footer {
+        padding-bottom: 0.5rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .shell,
+    .importButton,
+    .docsLink {
+        animation: none;
+        transition: none;
+    }
+}
+
+@keyframes content-enter {
+    from {
+        opacity: 0;
+        transform: translateY(0.5rem);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

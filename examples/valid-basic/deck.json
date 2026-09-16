@@ -1,0 +1,18 @@
+{
+    "format": "web-deck",
+    "version": 1,
+    "title": "Class notes",
+    "viewport": { "width": 1920, "height": 1080 },
+    "slides": [
+        {
+            "id": "intro",
+            "source": "slides/001/index.html",
+            "notes": "notes/001.md"
+        },
+        {
+            "id": "next",
+            "source": "slides/002/index.html",
+            "notes": "notes/002.md"
+        }
+    ]
+}

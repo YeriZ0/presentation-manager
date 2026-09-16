@@ -1,0 +1,36 @@
+{
+    "name": "armadillo-pp-in-web",
+    "private": true,
+    "version": "0.1.0",
+    "type": "module",
+    "scripts": {
+        "dev": "vite",
+        "build": "vite build",
+        "lint": "eslint .",
+        "format": "prettier --write .",
+        "format:check": "prettier --check .",
+        "test": "vitest run",
+        "test:e2e": "playwright test"
+    },
+    "dependencies": {
+        "ajv": "^8.17.1",
+        "fflate": "^0.8.2",
+        "react": "^19.1.1",
+        "react-dom": "^19.1.1",
+        "zustand": "^5.0.15"
+    },
+    "devDependencies": {
+        "@eslint/js": "^9.35.0",
+        "@phosphor-icons/core": "2.1.1",
+        "@playwright/test": "^1.55.0",
+        "@vitejs/plugin-react": "^5.0.2",
+        "eslint": "^9.35.0",
+        "eslint-plugin-react": "^7.37.5",
+        "eslint-plugin-react-hooks": "^6.1.1",
+        "eslint-plugin-react-refresh": "^0.4.20",
+        "globals": "^16.3.0",
+        "prettier": "^3.6.2",
+        "vite": "^7.1.5",
+        "vitest": "^5.0.1"
+    }
+}

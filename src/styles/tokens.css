@@ -1,0 +1,18 @@
+:root {
+    --surface-void: #09090b;
+    --surface-page: #ffffff;
+    --surface-card: #ffffff;
+    --surface-subtle: #fafafa;
+    --ink-primary: #09090b;
+    --ink-secondary: #52525b;
+    --ink-muted: #71717a;
+    --accent: #18181b;
+    --accent-soft: #e4e4e7;
+    --line: #e4e4e7;
+    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.04);
+    --font-display: 'Montserrat', sans-serif;
+    --font-editorial: 'Montserrat', sans-serif;
+    --font-body: 'Montserrat', sans-serif;
+    --font-mono: 'Montserrat', sans-serif;
+    --ease-spring: cubic-bezier(0.32, 0.72, 0, 1);
+}

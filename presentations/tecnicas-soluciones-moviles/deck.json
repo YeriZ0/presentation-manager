@@ -1,0 +1,18 @@
+{
+    "format": "web-deck",
+    "version": 1,
+    "title": "Técnicas y Configuraciones Comunes en Soluciones Móviles",
+    "viewport": { "width": 1920, "height": 1080 },
+    "slides": [
+        { "id": "portada", "title": "Portada", "source": "slides/001/index.html", "notes": "notes/001.md" },
+        { "id": "contexto-movilidad", "title": "Contexto y Desafío de la Movilidad", "source": "slides/002/index.html", "notes": "notes/002.md" },
+        { "id": "modelos-despliegue", "title": "Modelos de Despliegue", "source": "slides/003/index.html", "notes": "notes/003.md" },
+        { "id": "arquitectura-mdm", "title": "Arquitectura MDM", "source": "slides/004/index.html", "notes": "notes/004.md" },
+        { "id": "politicas-seguridad", "title": "Políticas de Seguridad y Cumplimiento", "source": "slides/005/index.html", "notes": "notes/005.md" },
+        { "id": "gestion-incidentes", "title": "Gestión de Incidentes y Borrado Remoto", "source": "slides/006/index.html", "notes": "notes/006.md" },
+        { "id": "conectividad-segura", "title": "Conectividad Segura", "source": "slides/007/index.html", "notes": "notes/007.md" },
+        { "id": "zero-trust", "title": "Enfoque Zero Trust", "source": "slides/008/index.html", "notes": "notes/008.md" },
+        { "id": "flujo-mdm", "title": "Flujo Práctico de Configuración en MDM", "source": "slides/009/index.html", "notes": "notes/009.md" },
+        { "id": "cierre", "title": "Cierre y Preguntas", "source": "slides/010/index.html", "notes": "notes/010.md" }
+    ]
+}

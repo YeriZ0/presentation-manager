@@ -1,0 +1,37 @@
+# Delivery checklist
+
+- [ ] The selected template came from `docs/templates/*/template.md` or the user requested a custom direction
+- [ ] Only the selected manifest, its `always` modules and required conditional modules were loaded
+- [ ] Every template module path is relative, safe and inside the selected template directory
+- [ ] Every slide has an approved structure ID and its referenced structure file was loaded
+- [ ] The selected template's own acceptance criteria are satisfied
+- [ ] Source folder is `presentations/<slug>/`
+- [ ] ZIP output is `presentations/packages/<slug>.zip`
+- [ ] `deck.json` is at the source and ZIP root
+- [ ] `format` is `web-deck`
+- [ ] `version` is `1`
+- [ ] Every slide ID is unique
+- [ ] Every declared source and notes file exists
+- [ ] No path contains `..`, backslashes or an absolute prefix
+- [ ] Raw ZIP entry names use forward slashes, including directory entries
+- [ ] Every new slide has `index.html`, `styles.css` and `script.js`
+- [ ] All visible editable text is in HTML
+- [ ] CSS and JavaScript use local relative paths
+- [ ] No external scripts, APIs, forms, popups or downloads exist
+- [ ] External image and font hosts are HTTPS and declared
+- [ ] Only approved icon SVGs were copied into the deck
+- [ ] Every icon represents a concrete object, action, state or concept
+- [ ] Equivalent peer items use icons consistently or omit them consistently
+- [ ] Categories, leads and introductory text do not use decorative icons
+- [ ] Letters in boxes are not used as icon substitutes
+- [ ] Phosphor license is included when Phosphor assets are used
+- [ ] `assets/ATTRIBUTIONS.md` records sources and licenses
+- [ ] Logos are exact supplied or verified assets, never simulations
+- [ ] Pending resources use the copied `image-broken.svg` in slide HTML
+- [ ] Notes are separate Markdown files
+- [ ] Motion respects `prefers-reduced-motion`
+- [ ] Animated slides use one idempotent `web-deck:activate` lifecycle
+- [ ] `DOMContentLoaded` activation is limited to standalone preview
+- [ ] The ZIP excludes `_working/` and all source documents
+- [ ] The ZIP does not contain an enclosing project folder
+- [ ] The package opens in Armadillo PP in Web
