@@ -1,8 +1,81 @@
+# Dependencies
 node_modules/
+.pnp
+.pnp.js
+
+# Build outputs
 dist/
+build/
+out/
+.next/
+.nuxt/
+
+# Testing & Reports
 coverage/
 playwright-report/
 test-results/
+.nyc_output
+
+# Env - NUNCA commitear secretos (security)
 .env
 .env.*
 !.env.example
+
+# Package managers - el repo usa npm (package-lock.json)
+# Si trabajas localmente con pnpm, estos quedan ignorados:
+pnpm-lock.yaml
+pnpm-workspace.yaml
+# Si migras definitivamente a pnpm, elimina package-lock.json y comenta las 2 líneas de arriba y descomenta:
+# package-lock.json
+
+# Presentations - artefactos generados localmente
+# Los ZIPs en packages/ son build artifacts y no deben versionarse durante el desarrollo
+presentations/packages/*.zip
+# Presentación WIP actual (aparece como untracked ahora)
+# -> Elimina esta línea cuando quieras trackearla en git
+presentations/self-healing-tests-fundamentos-mecanismos-y-taller-practico/
+# Patrón genérico para futuras presentaciones locales que no quieras commitear:
+# presentations/*-local/
+# presentations/draft-*/
+
+# Logs
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+logs/
+*.log
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# IDE / Editor - trabajo local
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swm
+*.swn
+
+# Vite / ESLint / Cache
+.vite/
+.cache/
+.parcel-cache/
+.eslintcache
+.stylelintcache
+
+# Misc local
+tmp/
+temp/
+*.tmp
+*.temp
