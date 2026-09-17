@@ -22,14 +22,21 @@ export async function auditDeckContrast(sourceRoot, deck) {
 
     try {
         for (const slide of deck.slides) {
-            const slidePath = new URL(slide.source, pathToFileURL(`${sourceRoot}/`));
+            const slidePath = new URL(
+                slide.source,
+                pathToFileURL(`${sourceRoot}/`),
+            );
             await page.goto(slidePath.href, { waitUntil: 'networkidle' });
             await page.evaluate(() => {
                 document.documentElement.classList.add('is-active');
                 window.dispatchEvent(new Event('web-deck:activate'));
             });
-            failures.push(...(await page.evaluate(auditVisibleContrast, slide.id)));
-            failures.push(...(await page.evaluate(auditAcademicSoberLayout, slide.id)));
+            failures.push(
+                ...(await page.evaluate(auditVisibleContrast, slide.id)),
+            );
+            failures.push(
+                ...(await page.evaluate(auditAcademicSoberLayout, slide.id)),
+            );
         }
     } finally {
         await page.close();
@@ -57,7 +64,8 @@ function auditVisibleContrast(slideId) {
         const style = getComputedStyle(element);
         const rect = element.getBoundingClientRect();
         const hasText = [...element.childNodes].some(
-            (node) => node.nodeType === Node.TEXT_NODE && node.textContent.trim(),
+            (node) =>
+                node.nodeType === Node.TEXT_NODE && node.textContent.trim(),
         );
         const isSvgText = element.matches('svg text');
         const isGraphic = element.matches(
@@ -153,7 +161,38 @@ function auditAcademicSoberLayout(slideId) {
     const failures = [];
     const structure = document.body.dataset.slideStructure;
     if (!structure) {
-        return [{ slide: slideId, selector: 'body', message: 'falta data-slide-structure' }];
+        return [
+            {
+                slide: slideId,
+                selector: 'body',
+                message: 'falta data-slide-structure',
+            },
+        ];
+    }
+
+    if (structure !== 'cover' && structure !== 'closing') {
+        const slideBody = document.querySelector('[data-slide-body]');
+        if (!slideBody || slideBody.dataset.verticalAlign !== 'center') {
+            failures.push({
+                slide: slideId,
+                selector: '[data-slide-body]',
+                message: 'el cuerpo debe declarar alineacion vertical centrada',
+            });
+        } else if (slideBody.firstElementChild) {
+            const bodyRect = slideBody.getBoundingClientRect();
+            const compositionRect =
+                slideBody.firstElementChild.getBoundingClientRect();
+            const bodyCenter = bodyRect.top + bodyRect.height / 2;
+            const compositionCenter =
+                compositionRect.top + compositionRect.height / 2;
+            if (Math.abs(bodyCenter - compositionCenter) > 12) {
+                failures.push({
+                    slide: slideId,
+                    selector: '[data-slide-body]',
+                    message: 'la composicion no esta centrada verticalmente',
+                });
+            }
+        }
     }
 
     for (const element of document.querySelectorAll('body *')) {
@@ -174,8 +213,17 @@ function auditAcademicSoberLayout(slideId) {
             continue;
         }
         const hasDirectText = [...element.childNodes].some(
-            (node) => node.nodeType === Node.TEXT_NODE && node.textContent.trim(),
+            (node) =>
+                node.nodeType === Node.TEXT_NODE && node.textContent.trim(),
         );
+        if (hasDirectText && style.textTransform === 'uppercase') {
+            failures.push({
+                slide: slideId,
+                selector: element.tagName.toLowerCase(),
+                message:
+                    'academic-sober no permite transformar texto a mayusculas',
+            });
+        }
         if (hasDirectText && Number.parseFloat(style.fontSize) < 20) {
             failures.push({
                 slide: slideId,
@@ -202,7 +250,9 @@ function auditAcademicSoberLayout(slideId) {
         for (let index = 0; index < units.length - 1; index += 1) {
             const left = units[index].getBoundingClientRect();
             const right = units[index + 1].getBoundingClientRect();
-            const sharesRow = Math.min(left.bottom, right.bottom) > Math.max(left.top, right.top);
+            const sharesRow =
+                Math.min(left.bottom, right.bottom) >
+                Math.max(left.top, right.top);
             const gap = right.left - left.right;
             if (sharesRow && gap < 64) {
                 failures.push({
@@ -214,11 +264,78 @@ function auditAcademicSoberLayout(slideId) {
         }
     }
 
+    if (structure === 'comparison' || structure === 'narrative-elements') {
+        const selector =
+            structure === 'comparison'
+                ? '[data-comparison-option]'
+                : '[data-narrative-element]';
+        for (const unit of document.querySelectorAll(selector)) {
+            const style = getComputedStyle(unit);
+            if (
+                Number.parseFloat(style.borderTopWidth) > 0 ||
+                Number.parseFloat(style.borderBottomWidth) > 0
+            ) {
+                failures.push({
+                    slide: slideId,
+                    selector,
+                    message:
+                        'las unidades abiertas no deben usar barras o separadores',
+                });
+            }
+        }
+    }
+
+    if (structure === 'process') {
+        const steps = [...document.querySelectorAll('[data-process-step]')];
+        const connectors = document.querySelector('[data-process-connectors]');
+        if (!connectors) {
+            failures.push({
+                slide: slideId,
+                selector: '[data-process-connectors]',
+                message: 'falta la continuidad visual entre pasos',
+            });
+        }
+        for (let index = 1; index < steps.length; index += 1) {
+            const previous = steps[index - 1].getBoundingClientRect();
+            const current = steps[index].getBoundingClientRect();
+            if (
+                current.left <= previous.left ||
+                Math.abs(current.top - previous.top) > 12
+            ) {
+                failures.push({
+                    slide: slideId,
+                    selector: '[data-process-step]',
+                    message:
+                        'los pasos deben formar una progresion horizontal uniforme',
+                });
+                break;
+            }
+        }
+        const arrows = [...document.querySelectorAll('[data-process-arrow]')];
+        const arrowRects = arrows.map((arrow) => arrow.getBoundingClientRect());
+        if (
+            arrowRects.some((rect) => rect.width > 48 || rect.height > 48) ||
+            arrowRects.some(
+                (rect) => Math.abs(rect.top - arrowRects[0].top) > 2,
+            )
+        ) {
+            failures.push({
+                slide: slideId,
+                selector: '[data-process-arrow]',
+                message:
+                    'las flechas deben ser conectores pequenos y alineados',
+            });
+        }
+    }
+
     if (structure === 'system-diagram') {
         const diagram = document.querySelector('[data-diagram]');
         if (diagram) {
             const rect = diagram.getBoundingClientRect();
-            if (rect.width < window.innerWidth * 0.7 || rect.height < window.innerHeight * 0.4) {
+            if (
+                rect.width < window.innerWidth * 0.7 ||
+                rect.height < window.innerHeight * 0.4
+            ) {
                 failures.push({
                     slide: slideId,
                     selector: '[data-diagram]',
@@ -229,7 +346,11 @@ function auditAcademicSoberLayout(slideId) {
         const nodes = [...document.querySelectorAll('[data-diagram-node]')];
         for (let leftIndex = 0; leftIndex < nodes.length; leftIndex += 1) {
             const left = nodes[leftIndex].getBoundingClientRect();
-            for (let rightIndex = leftIndex + 1; rightIndex < nodes.length; rightIndex += 1) {
+            for (
+                let rightIndex = leftIndex + 1;
+                rightIndex < nodes.length;
+                rightIndex += 1
+            ) {
                 const right = nodes[rightIndex].getBoundingClientRect();
                 if (
                     left.left < right.right &&
@@ -275,32 +396,47 @@ function composite(foreground, background) {
 function parseColor(value) {
     const match = value.match(/rgba?\(([^)]+)\)/i);
     if (match) {
-        const parts = match[1].split(',').map((part) => Number.parseFloat(part));
+        const parts = match[1]
+            .split(',')
+            .map((part) => Number.parseFloat(part));
         if (parts.length < 3 || parts.some(Number.isNaN)) return null;
         return { r: parts[0], g: parts[1], b: parts[2], a: parts[3] ?? 1 };
     }
     const hex = value.match(/^#([0-9a-f]{3,8})$/i);
     if (!hex) return null;
     const digits = hex[1].length;
-    const expanded = digits <= 4 ? [...hex[1]].map((digit) => digit + digit).join('') : hex[1];
+    const expanded =
+        digits <= 4
+            ? [...hex[1]].map((digit) => digit + digit).join('')
+            : hex[1];
     return {
         r: Number.parseInt(expanded.slice(0, 2), 16),
         g: Number.parseInt(expanded.slice(2, 4), 16),
         b: Number.parseInt(expanded.slice(4, 6), 16),
-        a: expanded.length === 8 ? Number.parseInt(expanded.slice(6), 16) / 255 : 1,
+        a:
+            expanded.length === 8
+                ? Number.parseInt(expanded.slice(6), 16) / 255
+                : 1,
     };
 }
 
 function contrastRatio(left, right) {
     const leftLum = luminance(left);
     const rightLum = luminance(right);
-    return (Math.max(leftLum, rightLum) + 0.05) / (Math.min(leftLum, rightLum) + 0.05);
+    return (
+        (Math.max(leftLum, rightLum) + 0.05) /
+        (Math.min(leftLum, rightLum) + 0.05)
+    );
 }
 
 function luminance(color) {
-    const channels = [color.r, color.g, color.b].map((channel) => channel / 255);
+    const channels = [color.r, color.g, color.b].map(
+        (channel) => channel / 255,
+    );
     const linear = channels.map((channel) =>
-        channel <= 0.03928 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4,
+        channel <= 0.03928
+            ? channel / 12.92
+            : ((channel + 0.055) / 1.055) ** 2.4,
     );
     return 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2];
 }
