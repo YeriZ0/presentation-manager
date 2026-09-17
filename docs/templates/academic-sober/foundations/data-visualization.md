@@ -7,7 +7,7 @@ Elegir la forma por la pregunta que debe responder la audiencia, no por novedad 
 ## Paleta
 
 - Usar grafito para ejes, texto, lineas base y datos principales
-- Usar grises para contexto y series secundarias
+- Usar tonos institucionales diferenciables para series secundarias; evitar grises sin contraste suficiente
 - Reservar `[ACENTO]` para una sola conclusion, serie o punto de atencion
 - Usar una escala de luminosidad para datos ordenados
 - No usar color como unica diferencia entre series; sumar etiquetas, formas, patrones o posicion
@@ -20,6 +20,8 @@ Elegir la forma por la pregunta que debe responder la audiencia, no por novedad 
 - Etiquetar directamente cuando haya hasta 4 series o categorias legibles
 - Usar leyenda solo cuando las etiquetas directas provoquen cruces o saturacion
 - Incluir fuente visible y una descripcion textual del hallazgo principal
+- En una dona, generar segmentos, porcentajes, colores y leyenda desde la misma fuente de datos
+- Mantener un único centro y radios constantes para todos los segmentos de una dona
 - Crear graficas con SVG inline en el HTML; no depender de Canvas o renderizado de datos en JavaScript
 
 ## Escalas y marcas

@@ -22,8 +22,11 @@ Mostrar solamente el codigo necesario para explicar una decision, un flujo o una
 
 ## Sintaxis
 
-- Usar color de sintaxis solo como apoyo, nunca como unica señal
-- Diferenciar comentarios, palabras clave, cadenas y numeros con peso, tono o agrupacion
+- Usar color de sintaxis solo como apoyo, nunca como única señal
+- Diferenciar variables, funciones, propiedades, palabras clave, cadenas, números, comentarios y puntuación
+- Combinar el tono con peso o cursiva para palabras clave, funciones y valores destacados
+- Mantener cada color de sintaxis en al menos 4.5:1 contra la superficie del código
+- Asociar la región enfocada con su anotación mediante `aria-describedby`
 - Escapar siempre `<`, `>`, `&` y comillas cuando el codigo se escriba en HTML
 - No ejecutar, importar ni evaluar el fragmento mostrado
 - Para diffs, marcar agregado, eliminado y contexto con texto o signos ademas del color

@@ -35,6 +35,18 @@
 - [ ] Academic-sober thematic units use two to four peers in topic, icon and description order
 - [ ] Academic-sober thematic descriptions contain no more than 24 words
 - [ ] Academic-sober slides declare `data-template` and `data-slide-structure`
+- [ ] Academic-sober bodies declare centered vertical alignment and do not stack from the top
+- [ ] Academic-sober slides use no frame unless a graphite or accent frame was explicitly selected
+- [ ] Context above an academic-sober title uses sentence case, normal weight and italics
+- [ ] No academic-sober text uses uppercase transformation
+- [ ] Comparisons use two open options and visible central comparison text without bars
+- [ ] Processes use three to five steps on one horizontal axis with small, equally aligned Phosphor `arrow-fat-right` icons
+- [ ] Narrative elements use two to four open units without separator lines
+- [ ] Donut segments total 100 and share identifiers, values and colors with their legend entries
+- [ ] Donut segments use constant inner and outer radii
+- [ ] Code differentiates syntax tokens with accessible colors and non-color cues
+- [ ] Code marks at least three semantic token types with `data-code-token`
+- [ ] Code focus regions are associated with one explanatory annotation
 - [ ] Connector strokes and arrowheads pass 3:1 contrast against adjacent surfaces
 - [ ] Code snippets are escaped, inert and within the selected line and width limits
 - [ ] CSS and JavaScript use local relative paths

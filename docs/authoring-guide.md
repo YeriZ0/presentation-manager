@@ -180,7 +180,11 @@ Los iconos usan `currentColor` por defecto y permiten configurar el tamano y col
 
 ```html
 <link rel="stylesheet" href="../../assets/icons/icons.css" />
-<span class="deck-icon deck-icon--check" data-contrast-role="icon" aria-hidden="true"></span>
+<span
+    class="deck-icon deck-icon--check"
+    data-contrast-role="icon"
+    aria-hidden="true"
+></span>
 ```
 
 ```css
@@ -199,7 +203,7 @@ Los iconos usan `currentColor` por defecto y permiten configurar el tamano y col
 Las diapositivas creadas con `academic-sober` declaran la plantilla y la estructura en `body`. Estos marcadores permiten aplicar limites de densidad y accesibilidad durante el empaquetado:
 
 ```html
-<body data-template="academic-sober" data-slide-structure="pillars">
+<body data-template="academic-sober" data-slide-structure="pillars"></body>
 ```
 
 Una composicion tematica contiene de dos a cuatro unidades y mantiene el orden tema, icono y descripcion:
@@ -213,10 +217,54 @@ Una composicion tematica contiene de dos a cuatro unidades y mantiene el orden t
             data-contrast-role="icon"
             aria-hidden="true"
         ></span>
-        <p data-unit-description>Registra el origen y el alcance de cada resultado.</p>
+        <p data-unit-description>
+            Registra el origen y el alcance de cada resultado.
+        </p>
     </article>
 </section>
 ```
+
+Toda composición interna se centra verticalmente y no usa marco salvo que se haya seleccionado de forma explícita:
+
+```html
+<body
+    data-template="academic-sober"
+    data-slide-structure="comparison"
+    data-frame="none"
+>
+    <main data-slide-body data-vertical-align="center">
+        <section data-comparison>
+            <article data-comparison-option>
+                <h2 data-unit-topic>Control local</h2>
+                <span
+                    class="deck-icon deck-icon--shield-check"
+                    aria-hidden="true"
+                ></span>
+                <p data-unit-description>
+                    Conserva la operación dentro del equipo.
+                </p>
+            </article>
+            <span data-comparison-connector>Frente a</span>
+            <article data-comparison-option>
+                <h2 data-unit-topic>Modelo híbrido</h2>
+                <span
+                    class="deck-icon deck-icon--share"
+                    aria-hidden="true"
+                ></span>
+                <p data-unit-description>
+                    Combina control interno con capacidad de escala.
+                </p>
+            </article>
+        </section>
+    </main>
+</body>
+```
+
+Los procesos usan un `ol` horizontal de tres a cinco pasos sobre el mismo eje, marcadores `data-process-step`, `data-step-number`, `data-step-title` y `data-step-description`, además de una capa `data-process-connectors` con iconos Phosphor pequeños `deck-icon--arrow-fat-right`, alineados y marcados mediante `data-process-arrow="arrow-fat-right"`. Las explicaciones narrativas usan `data-narrative-copy` y de dos a cuatro `article` con `data-narrative-element`.
+
+Las donas declaran `data-chart-type="donut"`; cada segmento usa `data-chart-segment` y `data-value`, y su entrada equivalente usa `data-chart-legend`. Los valores deben sumar 100 y la geometría se deriva de la misma fuente de datos que la leyenda.
+
+Los fragmentos de código marcan cada línea con `data-code-line`, una región contigua con `data-code-focus`, su explicación con `data-code-note` y cada token con `data-code-token`. Las palabras clave, funciones, propiedades, cadenas, números, comentarios y puntuación deben diferenciarse con contraste suficiente y señales adicionales al color.
 
 Una diapositiva con relaciones reserva todo el cuerpo al diagrama. Mantiene los textos de los nodos en HTML y usa SVG solamente para conectores:
 
@@ -224,6 +272,8 @@ Una diapositiva con relaciones reserva todo el cuerpo al diagrama. Mantiene los 
 <body data-template="academic-sober" data-slide-structure="system-diagram">
     <h1 id="diagram-title">La validacion produce resultados trazables</h1>
     <figure
+        data-slide-body
+        data-vertical-align="center"
         data-diagram
         data-reading-direction="left-to-right"
         aria-labelledby="diagram-title"

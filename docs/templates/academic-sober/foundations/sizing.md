@@ -4,7 +4,8 @@
 
 - Lienzo fijo: `1920x1080`
 - Proporcion: `16:9`
-- Marco opcional: 8px a 12px
+- Sin marco por defecto
+- Marco opcional: 8px a 12px, solo cuando se seleccione explícitamente
 
 ## Escala tipografica
 
@@ -16,7 +17,7 @@
 - Titulo de concepto: 30px a 40px
 - Texto principal: 28px a 34px
 - Metadatos: 22px a 26px
-- Categoria y pie: 20px a 26px
+- Contexto superior y pie: 20px a 26px
 
 No reducir contenido principal por debajo de 24px. Sintetizar o dividir antes de disminuir la escala. Ajustar los títulos de portada por cantidad de palabras antes de reducir otros bloques.
 
@@ -37,3 +38,5 @@ No reducir contenido principal por debajo de 24px. Sintetizar o dividir antes de
 - Codigo: 22px a 28px con interlineado de 1.35 a 1.55
 
 Los elementos equivalentes deben compartir dimensiones y alineacion optica.
+
+El borde fino corresponde a límites semánticos internos. No debe convertirse en un contorno predeterminado de la diapositiva.

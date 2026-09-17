@@ -15,7 +15,7 @@ Se permiten ajustes opticos de hasta 8px cuando una tipografia o un logo lo requ
 - Margen horizontal: 96px a 112px
 - Margen superior: 72px a 88px
 - Margen inferior: 40px a 72px segun el pie
-- Cabecera interna: 120px a 152px de alto
+- Cabecera interna: 120px a 152px de alto, incluido el contexto opcional
 
 ## Proximidad
 
@@ -38,9 +38,8 @@ Un grupo debe reconocerse por cercania antes de necesitar borde o fondo.
 
 ## Distribucion vertical
 
-- Contenido breve: centrar opticamente dentro del espacio entre cabecera y pie
-- Contenido medio: equilibrar espacio superior e inferior
-- Tablas y referencias: alinear arriba con separacion clara de la cabecera
-- Portada y cierre: usar una pila central que avance hacia abajo desde su ancla visual
+- Centrar ópticamente el cuerpo completo dentro del espacio entre cabecera y pie
+- Centrar como una unidad la tabla, gráfica, referencia, diagrama o fragmento de código; no apilarlo desde el borde superior
+- Portada y cierre: centrar la pila completa dentro del lienzo disponible
 - Evitar grandes franjas vacias sin intencion compositiva
 - En diapositivas de diagrama, usar el espacio negativo para separar rutas y grupos; no llenarlo con explicaciones auxiliares

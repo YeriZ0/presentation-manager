@@ -31,7 +31,7 @@ Usar roles del catalogo en lugar de fijar rutas de SVG en la estructura:
 status-positive | check-circle | regular | confirmacion o resultado correcto
 status-warning | warning | regular | advertencia o condicion de riesgo
 data-trend | trend-up | regular | evolucion o mejora
-process-next | arrow-right | regular | continuidad o siguiente etapa
+process-next | arrow-fat-right | bold | continuidad visible entre etapas
 concept | lightbulb | regular | idea o hallazgo
 ```
 

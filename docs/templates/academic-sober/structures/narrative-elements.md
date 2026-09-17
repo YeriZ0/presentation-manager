@@ -7,16 +7,23 @@ Una idea requiere una explicación narrativa breve y una descomposición simult�
 ## Composición
 
 - Dividir el cuerpo entre 40% de explicación y 60% de elementos visuales
-- Mantener título y contexto en la zona izquierda
-- Usar una descripción de hasta 70 palabras en la zona izquierda
-- Introducir la zona derecha con una pregunta, criterio o encabezado breve
-- Distribuir los elementos en columnas abiertas con tema, icono y descripción
-- Separar ambos lados con espacio amplio, no con una tarjeta contenedora
-- Centrar verticalmente el conjunto cuando el contenido sea breve
+- Mantener una descripción de hasta 70 palabras en la zona izquierda
+- Distribuir los elementos en columnas abiertas con título, icono y descripción
+- Mantener el mismo orden y alineación en todos los elementos
+- Separar ambas zonas con espacio negativo, no con barras, líneas o contenedores
+- Centrar verticalmente la composición completa
+
+## Marcadores
+
+- Marcar el contenedor con `data-narrative`
+- Marcar la explicación con `data-narrative-copy`
+- Marcar el grupo con `data-narrative-elements`
+- Marcar cada `article` con `data-narrative-element`
+- Usar `data-element-topic` y `data-element-description`
+- Usar `.deck-icon` en todos los elementos o no usar iconos
 
 ## Iconos
 
-- Usar iconos para todos los elementos de la zona derecha o para ninguno
 - Asignar un icono que represente cada acción, dato o estado
 - Mantener el mismo peso y tamaño entre elementos equivalentes
 - Preferir 72px a 104px con peso `bold`
@@ -24,12 +31,13 @@ Una idea requiere una explicación narrativa breve y una descomposición simult�
 ## Límites
 
 - Dos a cuatro elementos
+- Hasta cuatro palabras por título
 - Hasta 24 palabras por elemento
 - Un párrafo principal de hasta 70 palabras
-- Un encabezado de hasta dos líneas por zona
 
 ## Evitar
 
+- Barras o líneas entre elementos
 - Convertir cada elemento en una tarjeta cerrada
 - Repetir la explicación en los elementos de la derecha
-- Usar iconos decorativos en el encabezado o el texto introductorio
+- Usar iconos decorativos en el texto introductorio

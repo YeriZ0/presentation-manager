@@ -252,7 +252,7 @@ When the user requests alternatives, offer Phosphor, Lucide, Tabler Icons, Heroi
 When a selected template documents structure markers, place them directly in slide HTML so static and rendered validation can apply the template rules. For `academic-sober`, set these attributes on `body`:
 
 ```html
-<body data-template="academic-sober" data-slide-structure="pillars">
+<body data-template="academic-sober" data-slide-structure="pillars"></body>
 ```
 
 For thematic units:
@@ -261,6 +261,50 @@ For thematic units:
 - Mark its short heading with `data-unit-topic`
 - Mark its supporting text with `data-unit-description`
 - Keep DOM order as topic, optional icon and description
+
+For every internal `academic-sober` slide:
+
+- Mark the main composition with `data-slide-body` and `data-vertical-align="center"`
+- Center the composition as one unit between the header and footer
+- Use no slide frame by default; declare `data-frame="graphite"` or `data-frame="accent"` only when the user selected one
+- Style optional context above the title in sentence case, normal weight and italics; never force uppercase
+- Never apply uppercase text transformation to academic-sober titles, footers, metadata, labels or table headers
+
+For comparisons:
+
+- Use exactly two `article` elements marked with `data-comparison-option`
+- Keep each option in topic, icon and description order
+- Mark the short central comparison text with `data-comparison-connector`
+- Do not identify options with bars, separators or cards
+
+For processes:
+
+- Use an ordered list with three to five `data-process-step` items
+- Mark number, title and description with `data-step-number`, `data-step-title` and `data-step-description`
+- Mark the connector layer with `data-process-connectors`
+- Use the approved Phosphor `arrow-fat-right` icon between consecutive steps and mark each one with `data-process-arrow="arrow-fat-right"`
+- Arrange every step on one horizontal axis from left to right with constant spacing
+
+For narrative elements:
+
+- Mark the copy and peer group with `data-narrative-copy` and `data-narrative-elements`
+- Use two to four `article` elements marked with `data-narrative-element`
+- Keep each peer in topic, icon and description order without separator lines
+
+For donut charts:
+
+- Set `data-chart-type="donut"` and mark three to five SVG segments with `data-chart-segment` and numeric `data-value`
+- Mark matching legend entries with `data-chart-legend`
+- Generate paths and legend entries from one data source and require values to total 100
+- Use one center and constant inner and outer radii for every segment
+
+For code:
+
+- Mark every visible line with `data-code-line`
+- Mark one contiguous focus region with `data-code-focus` and associate it with one `data-code-note`
+- Mark syntax spans with `data-code-token` and the semantic token type
+- Differentiate keywords, functions, variables, properties, strings, numbers, comments and punctuation with accessible syntax tokens
+- Keep line numbers hidden from assistive technology
 
 For relational diagrams:
 

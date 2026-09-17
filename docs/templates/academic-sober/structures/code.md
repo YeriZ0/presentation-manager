@@ -9,6 +9,8 @@ Una decision tecnica, una transformacion o una diferencia de implementacion se e
 - Colocar el codigo despues del titulo y antes de la explicacion
 - Mostrar lenguaje, archivo y rango de lineas como metadatos
 - Resaltar una region y describirla con una anotacion breve
+- Diferenciar tipos de token con una paleta accesible adecuada a la plantilla
+- Asociar la región resaltada con la anotación mediante ARIA
 - Usar una segunda columna solo para un antes y despues corto
 
 ## Limites

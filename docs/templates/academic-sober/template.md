@@ -5,17 +5,17 @@ summary: Estilo institucional claro, monocromatico y modular para exposiciones a
 viewport: 1920x1080
 structureIndex: structures/index.md
 always:
-  - foundations/palette-and-type.md
-  - foundations/sizing.md
-  - foundations/spacing.md
-  - foundations/hierarchy.md
+    - foundations/palette-and-type.md
+    - foundations/sizing.md
+    - foundations/spacing.md
+    - foundations/hierarchy.md
 conditional:
-  icons: foundations/iconography.md
-  diagrams: foundations/diagrams.md
-  density: foundations/content-density.md
-  motion: foundations/motion.md
-  data: foundations/data-visualization.md
-  code: foundations/code.md
+    icons: foundations/iconography.md
+    diagrams: foundations/diagrams.md
+    density: foundations/content-density.md
+    motion: foundations/motion.md
+    data: foundations/data-visualization.md
+    code: foundations/code.md
 ---
 
 # Academica sobria
@@ -39,7 +39,7 @@ Solicitar solamente valores no proporcionados:
 - Densidad visual: aireada, equilibrada o compacta
 - Color institucional o color de acento
 - Fondo blanco puro o blanco tiza
-- Marco grafito, color institucional o sin marco
+- Marco grafito, color institucional o sin marco; usar sin marco por defecto
 - Presencia de co-branding en cabeceras internas
 - Preferencia entre imagenes, diagramas, tablas o composiciones tipograficas
 - Preferencia entre tablas semanticas, graficas simples, diagramas o fragmentos de codigo
@@ -58,6 +58,10 @@ La plantilla admite institucion, facultad o carrera, materia, docente, titulo, s
 - Iconos reservados para conceptos concretos
 - Tarjetas solo cuando una frontera semantica sea necesaria
 - Composiciones variadas dentro de una identidad consistente
+- Cuerpos centrados verticalmente entre cabecera y pie
+- Contexto superior en peso normal y cursiva, nunca en mayúsculas forzadas
+- Ningún texto usa transformación automática a mayúsculas
+- Jerarquía título, icono y descripción para unidades equivalentes
 
 ## Criterios de aceptacion
 
