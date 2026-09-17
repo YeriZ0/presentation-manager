@@ -9,7 +9,7 @@ export function ThematicSpecimen({ set }) {
                 <article data-thematic-unit key={heading}>
                     <h3 data-unit-topic>{heading}</h3>
                     <img
-                        className="thematic-icon"
+                        className="deck-icon"
                         src={icon}
                         alt=""
                         aria-hidden="true"

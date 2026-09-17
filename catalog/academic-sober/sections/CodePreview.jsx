@@ -8,13 +8,13 @@ export function CodePreview() {
             aria-labelledby="code-preview-title"
         >
             <div className="section-intro">
-                <span className="eyebrow">03 / Codigo y explicacion</span>
+                <span className="eyebrow">03 / Código y explicación</span>
                 <h2 id="code-preview-title">
-                    El codigo muestra una decision concreta
+                    El código muestra una decisión concreta
                 </h2>
                 <p>
-                    El bloque conserva metadatos, rango de lineas, foco y una
-                    explicacion adyacente.
+                    El bloque conserva metadatos, rango de líneas, foco,
+                    resaltado sintáctico y una explicación adyacente.
                 </p>
             </div>
             <div className="preview-grid preview-grid-single">

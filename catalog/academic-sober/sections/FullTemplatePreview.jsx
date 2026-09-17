@@ -52,7 +52,7 @@ export function FullTemplatePreview() {
                 </SlideFrame>
                 <SlideFrame
                     label="comparison"
-                    title="La alternativa hibrida mantiene el equilibrio"
+                    title="La alternativa híbrida mantiene el equilibrio"
                 >
                     <ComparisonSpecimen />
                 </SlideFrame>
@@ -76,13 +76,13 @@ export function FullTemplatePreview() {
                 </SlideFrame>
                 <SlideFrame
                     label="system-diagram"
-                    title="Las partes se entienden por su relacion"
+                    title="Las partes se entienden por su relación"
                 >
                     <SystemDiagram />
                 </SlideFrame>
                 <SlideFrame
                     label="references"
-                    title="La trazabilidad tambien es parte del argumento"
+                    title="La trazabilidad también es parte del argumento"
                 >
                     <ReferencesSpecimen />
                 </SlideFrame>

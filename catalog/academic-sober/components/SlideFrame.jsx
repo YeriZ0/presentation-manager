@@ -9,6 +9,8 @@ export function SlideFrame({
     children,
     variant = 'standard',
     structure = label,
+    context = 'Académica sobria',
+    frame = 'none',
 }) {
     const viewportRef = useRef(null);
     const scale = useViewportScale(viewportRef, VIEWPORT);
@@ -21,20 +23,29 @@ export function SlideFrame({
             </div>
             <div className="slide-viewport slide-frame" ref={viewportRef}>
                 <div
-                    className={`slide-canvas slide-canvas-${variant}`}
+                    className={`slide-canvas slide-canvas-${variant} slide-canvas-frame-${frame}`}
                     data-template="academic-sober"
                     data-slide-structure={structure}
+                    data-frame={frame}
                     style={{ transform: `scale(${scale})` }}
                 >
                     {variant === 'standard' && (
                         <header className="slide-header">
-                            <span className="slide-category">
-                                Academica sobria
-                            </span>
+                            <span className="slide-context">{context}</span>
                             <h2>{title}</h2>
                         </header>
                     )}
-                    {children}
+                    {variant === 'standard' ? (
+                        <div
+                            className="slide-body"
+                            data-slide-body
+                            data-vertical-align="center"
+                        >
+                            {children}
+                        </div>
+                    ) : (
+                        children
+                    )}
                     {variant === 'standard' && (
                         <footer className="slide-footer">
                             <span>Referencia visual</span>

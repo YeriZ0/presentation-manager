@@ -7,6 +7,19 @@
     --catalog-frame: #1f2937;
     --catalog-accent: #35658c;
     --catalog-accent-soft: #dce9f2;
+    --catalog-series-mid: #66788a;
+    --catalog-series-warm: #8b5e3c;
+    --code-foreground: #e5e7eb;
+    --code-keyword: #93c5fd;
+    --code-function: #f0abfc;
+    --code-variable: #f8fafc;
+    --code-type: #67e8f9;
+    --code-tag: #86efac;
+    --code-property: #86efac;
+    --code-string: #fcd34d;
+    --code-number: #fdba74;
+    --code-comment: #a8b4c5;
+    --code-punctuation: #cbd5e1;
     --catalog-font: Arial, sans-serif;
     --catalog-mono: Consolas, 'Liberation Mono', monospace;
 }

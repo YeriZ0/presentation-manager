@@ -8,7 +8,7 @@ export function ClosingSpecimen() {
                 <strong>Bruno Castillo</strong>
                 <strong>Camila Torres</strong>
             </div>
-            <p>Instituto de Investigacion Aplicada</p>
+            <p>Instituto de Investigación Aplicada</p>
         </div>
     );
 }

@@ -8,9 +8,9 @@ export function AcademicSoberCatalog() {
             <header className="catalog-hero">
                 <div>
                     <span className="eyebrow">
-                        Catalogo de referencia · React
+                        Catálogo de referencia · React
                     </span>
-                    <h1>Academica sobria</h1>
+                    <h1>Académica sobria</h1>
                     <p>
                         Una referencia visual para construir diapositivas
                         institucionales con las estructuras autorizadas de la
@@ -37,7 +37,7 @@ export function AcademicSoberCatalog() {
             <CodePreview />
             <footer className="catalog-end">
                 <span>academic-sober</span>
-                <span>Referencia interna de composicion</span>
+                <span>Referencia interna de composición</span>
             </footer>
         </main>
     );

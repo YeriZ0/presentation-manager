@@ -22,29 +22,29 @@ export const thematicSets = {
         [
             'Observar',
             magnifyingGlassIcon,
-            'Registra la evidencia antes de formular una conclusion.',
+            'Registra la evidencia antes de formular una conclusión.',
         ],
         [
             'Priorizar',
             targetIcon,
-            'Elige una senal principal y conserva el contexto.',
+            'Elige una señal principal y conserva el contexto.',
         ],
         [
             'Verificar',
             shieldCheckIcon,
-            'Hace trazable el resultado y sus limites.',
+            'Hace trazable el resultado y sus límites.',
         ],
     ],
     four: [
         [
-            'Direccion',
+            'Dirección',
             targetIcon,
             'Define un objetivo compartido y verificable.',
         ],
         [
             'Evidencia',
             trendUpIcon,
-            'Muestra solo el cambio que sostiene la conclusion.',
+            'Muestra solo el cambio que sostiene la conclusión.',
         ],
         [
             'Equipo',

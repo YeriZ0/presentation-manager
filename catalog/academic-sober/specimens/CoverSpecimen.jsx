@@ -2,10 +2,10 @@ export function CoverSpecimen() {
     return (
         <div className="cover-stack">
             <div className="pending-logo">Logo institucional pendiente</div>
-            <span className="cover-category">Informe tecnico</span>
+            <span className="cover-category">Informe técnico</span>
             <h2>Sistemas que aprenden</h2>
             <p className="cover-subtitle">
-                Evidencia, decisiones y trazabilidad para una implementacion
+                Evidencia, decisiones y trazabilidad para una implementación
                 responsable.
             </p>
             <div className="cover-record">
@@ -15,11 +15,11 @@ export function CoverSpecimen() {
                 </div>
                 <div>
                     <span>Docente</span>
-                    <strong>Equipo academico</strong>
+                    <strong>Equipo académico</strong>
                 </div>
                 <div>
                     <span>Equipo</span>
-                    <strong>Investigacion aplicada</strong>
+                    <strong>Investigación aplicada</strong>
                     <ul>
                         <li>Andrea Morales</li>
                         <li>Bruno Castillo</li>

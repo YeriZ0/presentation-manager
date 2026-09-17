@@ -13,35 +13,38 @@ export function DataPreview() {
             <div className="section-intro">
                 <span className="eyebrow">02 / Datos y evidencia</span>
                 <h2 id="data-preview-title">
-                    Las graficas son evidencia, no decoracion
+                    Las gráficas son evidencia, no decoración
                 </h2>
                 <p>
-                    Cada muestra conserva conclusion, unidad, periodo, fuente y
+                    Cada muestra conserva conclusión, unidad, período, fuente y
                     una alternativa textual.
                 </p>
             </div>
             <div className="preview-grid">
                 <SlideFrame
                     label="table"
-                    title="La alternativa hibrida equilibra las restricciones"
+                    title="La alternativa híbrida equilibra las restricciones"
                 >
                     <TableSpecimen />
                 </SlideFrame>
                 <SlideFrame
                     label="chart / bars"
-                    title="El analisis concentra la mayor carga"
+                    structure="chart"
+                    title="El análisis concentra la mayor carga"
                 >
                     <BarChart />
                 </SlideFrame>
                 <SlideFrame
                     label="chart / line"
-                    title="La adopcion aumenta durante el periodo"
+                    structure="chart"
+                    title="La adopción aumenta durante el período"
                 >
                     <LineChart />
                 </SlideFrame>
                 <SlideFrame
                     label="chart / pie"
-                    title="La mayoria prefiere el canal digital"
+                    structure="chart"
+                    title="La mayoría prefiere el canal digital"
                 >
                     <PieChart />
                 </SlideFrame>
