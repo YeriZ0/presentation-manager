@@ -2,7 +2,7 @@
 
 ## Usar cuando
 
-Una imagen, captura, grafico o diagrama ilustrativo simple necesita explicacion textual directa. Los diagramas relacionales de componentes o flujos usan `system-diagram` y ocupan todo el cuerpo.
+Una imagen, captura, grafico o diagrama ilustrativo simple necesita explicacion textual directa. Cualquier arquitectura, workflow, secuencia, flujo de datos, ciclo de vida, jerarquia o mapa relacional usa `system-diagram` y ocupa todo el cuerpo.
 
 ## Composicion
 

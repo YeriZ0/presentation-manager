@@ -15,6 +15,7 @@ presentations/
     deck.json
     assets/
       icons/
+        manifest.json
       logos/
       placeholders/
       licenses/
@@ -198,6 +199,31 @@ Los iconos usan `currentColor` por defecto y permiten configurar el tamano y col
 }
 ```
 
+Una biblioteca alternativa usa un ID ASCII en `assets/icons/<library>/`, conserva su licencia en `assets/licenses/<library>.txt` y registra cada activo en `assets/icons/manifest.json`. Los archivos aportados por el usuario se guardan en `assets/icons/user/`:
+
+```json
+{
+    "icons": [
+        {
+            "path": "assets/icons/lucide/check.svg",
+            "source": "library",
+            "library": "lucide",
+            "version": "0.468.0",
+            "license": "ISC",
+            "sourceUrl": "https://lucide.dev"
+        },
+        {
+            "path": "assets/icons/user/custom.svg",
+            "source": "user",
+            "providedByUser": true,
+            "sha256": "<64 caracteres hexadecimales>"
+        }
+    ]
+}
+```
+
+La procedencia declarada no sustituye los permisos o licencias aplicables. La skill no genera ni reconstruye iconos personalizados.
+
 ## Estructuras semanticas de academic-sober
 
 Las diapositivas creadas con `academic-sober` declaran la plantilla y la estructura en `body`. Estos marcadores permiten aplicar limites de densidad y accesibilidad durante el empaquetado:
@@ -260,37 +286,57 @@ Toda composición interna se centra verticalmente y no usa marco salvo que se ha
 </body>
 ```
 
-Los procesos usan un `ol` horizontal de tres a cinco pasos sobre el mismo eje, marcadores `data-process-step`, `data-step-number`, `data-step-title` y `data-step-description`, además de una capa `data-process-connectors` con iconos Phosphor pequeños `deck-icon--arrow-fat-right`, alineados y marcados mediante `data-process-arrow="arrow-fat-right"`. Las explicaciones narrativas usan `data-narrative-copy` y de dos a cuatro `article` con `data-narrative-element`.
+Los procesos usan un `ol` horizontal de tres a cinco pasos sobre el mismo eje, marcadores `data-process-step`, `data-step-number`, `data-step-title` y `data-step-description`, además de una capa `data-process-connectors` con copias pequeñas y alineadas de una misma flecha aprobada. Phosphor `arrow-fat-right` es el valor predeterminado; una biblioteca elegida por el usuario puede aportar un equivalente. Cada flecha declara el nombre exacto mediante `data-process-arrow`. Las explicaciones narrativas usan `data-narrative-copy` y de dos a cuatro `article` con `data-narrative-element`.
 
 Las donas declaran `data-chart-type="donut"`; cada segmento usa `data-chart-segment` y `data-value`, y su entrada equivalente usa `data-chart-legend`. Los valores deben sumar 100 y la geometría se deriva de la misma fuente de datos que la leyenda.
 
 Los fragmentos de código marcan cada línea con `data-code-line`, una región contigua con `data-code-focus`, su explicación con `data-code-note` y cada token con `data-code-token`. Las palabras clave, funciones, propiedades, cadenas, números, comentarios y puntuación deben diferenciarse con contraste suficiente y señales adicionales al color.
 
-Una diapositiva con relaciones reserva todo el cuerpo al diagrama. Mantiene los textos de los nodos en HTML y usa SVG solamente para conectores:
+Una diapositiva con relaciones reserva todo el cuerpo al diagrama. Mantiene nodos, etiquetas y descripciones en HTML, y usa SVG solamente para conectores y geometría funcional. Las variantes autorizadas son `architecture`, `workflow`, `sequence`, `data-flow`, `lifecycle`, `hierarchy` y `relationship-map`:
 
 ```html
 <body data-template="academic-sober" data-slide-structure="system-diagram">
-    <h1 id="diagram-title">La validacion produce resultados trazables</h1>
+    <h1 id="diagram-title">La validación produce resultados trazables</h1>
     <figure
         data-slide-body
         data-vertical-align="center"
         data-diagram
+        data-diagram-type="architecture"
         data-reading-direction="left-to-right"
         aria-labelledby="diagram-title"
         aria-describedby="diagram-description"
     >
-        <svg data-diagram-connectors aria-hidden="true"></svg>
-        <div data-diagram-node>Entrada</div>
-        <div data-diagram-node>Validacion</div>
-        <div data-diagram-node>Resultado</div>
+        <svg data-diagram-connectors aria-hidden="true">
+            <path
+                data-diagram-edge="prepare"
+                data-from="input"
+                data-to="validation"
+            ></path>
+            <path
+                data-diagram-edge="publish"
+                data-from="validation"
+                data-to="result"
+            ></path>
+        </svg>
+        <article data-diagram-node="input">Entrada</article>
+        <article data-diagram-node="validation">Validación</article>
+        <article data-diagram-node="result">Resultado</article>
+        <span data-diagram-label data-for-edge="prepare">Prepara</span>
+        <span data-diagram-label data-for-edge="publish">Publica</span>
         <figcaption id="diagram-description" class="visually-hidden">
-            La entrada pasa por validacion antes de producir el resultado.
+            La entrada pasa por validación antes de producir el resultado.
         </figcaption>
     </figure>
 </body>
 ```
 
-Los diagramas de sistema admiten de tres a seis nodos. Los procesos admiten de tres a cinco pasos. Las explicaciones extensas permanecen en las notas del expositor o se dividen en otra diapositiva.
+Usa `process` para tres a cinco pasos lineales sin decisiones. Usa `system-diagram` para ramas, participantes, datos, estados, jerarquías o relaciones radiales. Usa `chart` cuando la pregunta dependa de magnitudes y `mixed-content` cuando el recurso visual no tenga relaciones complejas.
+
+Los diagramas admiten de tres a siete nodos; `workflow` requiere al menos cuatro y `sequence` admite de dos a seis participantes y de tres a diez mensajes. Cada relación nueva declara un ID, origen y destino. Los diagramas heredados sin tipo conservan compatibilidad, pero todo contenido nuevo debe declarar `data-diagram-type`.
+
+Centra el conjunto cuando use pocos nodos y escalona los elementos cuando una fila produzca conectores extensos. Las relaciones equivalentes mantienen longitudes uniformes, puntas compactas y etiquetas del mismo color que el trazo, siempre separadas de la línea, la punta y los nodos. Una mención superior opcional usa texto color tinta en cursiva, sin subrayado ni barra decorativa.
+
+Phosphor es la fuente de iconos predeterminada. El usuario puede seleccionar otra biblioteca si sus activos se copian como SVG locales, su licencia es compatible y no necesita scripts, CDN, webfonts ni componentes durante la reproducción. Los iconos alternativos y los aportados por el usuario se registran en `assets/icons/manifest.json`; estos últimos incluyen su SHA-256. La skill nunca genera, redibuja ni aproxima iconos.
 
 ## Logos
 

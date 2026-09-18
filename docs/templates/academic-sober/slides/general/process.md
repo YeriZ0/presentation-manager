@@ -2,7 +2,7 @@
 
 ## Usar cuando
 
-El contenido describe una secuencia, configuración o ciclo con orden obligatorio.
+El contenido describe una secuencia lineal con orden obligatorio y sin decisiones, responsables diferenciados ni retorno. Usar `system-diagram` con `workflow`, `sequence` o `lifecycle` cuando existan ramas, intercambios o estados.
 
 ## Composición
 
@@ -11,7 +11,7 @@ El contenido describe una secuencia, configuración o ciclo con orden obligatori
 - Mantener todos los pasos sobre el mismo eje y con separaciones constantes
 - Mantener en cada paso el orden título, icono y descripción
 - Mostrar el número como metadato secundario, nunca como sustituto del título
-- Conectar pasos consecutivos con el icono Phosphor `arrow-fat-right` detrás del contenido
+- Conectar pasos consecutivos con el icono Phosphor `arrow-fat-right` por defecto o con una flecha equivalente de la biblioteca seleccionada por el usuario
 - Centrar verticalmente la secuencia completa
 - Animar en el mismo orden de la secuencia
 
@@ -22,7 +22,9 @@ El contenido describe una secuencia, configuración o ciclo con orden obligatori
 - Marcar cada paso con `data-process-step`
 - Usar `data-step-number`, `data-step-title` y `data-step-description`
 - Marcar la capa con `data-process-connectors`
-- Marcar cada flecha `deck-icon--arrow-fat-right` con `data-process-arrow="arrow-fat-right"`
+- Marcar cada flecha con `data-process-arrow` y el nombre exacto del activo aprobado
+- Cuando la clase use un rol semántico distinto del activo, declarar también `data-icon` con el nombre exacto que registra `icons.css`
+- Usar el mismo activo, biblioteca, peso y tamaño entre todos los pasos
 - Usar flechas de 32px a 48px, menores que los iconos de los pasos
 
 ## Límites
@@ -30,7 +32,7 @@ El contenido describe una secuencia, configuración o ciclo con orden obligatori
 - Tres a cinco pasos
 - Hasta cuatro palabras por título
 - Hasta 24 palabras por descripción
-- Una sola bifurcación cuando sea imprescindible
+- Sin bifurcaciones; cambiar a `workflow` cuando exista una decision real
 
 ## Evitar
 

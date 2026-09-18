@@ -15,7 +15,10 @@
 - Pastel: 5 segmentos como maximo
 - Codigo: 12 a 16 lineas visibles y 80 caracteres por linea aproximadamente
 - Proceso: 3 a 5 pasos
-- Diagrama de sistema: 3 a 6 nodos
+- Arquitectura, flujo de datos, ciclo de vida, jerarquía o mapa relacional: 3 a 7 nodos
+- Workflow: 4 a 7 nodos y 1 a 2 decisiones
+- Secuencia: 2 a 6 participantes y 3 a 10 mensajes
+- Diagrama por etapas: 3 a 5 etapas
 - Referencias: 8 entradas por diapositiva
 
 Si el contenido supera estos limites, dividirlo en mas diapositivas. No compensar el exceso con texto pequeno.

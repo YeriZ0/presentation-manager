@@ -17,12 +17,24 @@ docs/templates/<id>/
     iconography.md
     content-density.md
     motion.md
-  structures/
+  slides/
     index.md
-    cover.md
-    closing.md
-    <other-structures>.md
+    general/
+      cover.md
+      <other-slides>.md
+    graficas/
+      chart.md
+      table.md
+    diagramas/
+      system-diagram.md
+    codigo/
+      code.md
+  ATTRIBUTIONS.md
+  licenses/
+    <third-party-license>.txt
 ```
+
+`ATTRIBUTIONS.md` y `licenses/` son obligatorios solamente cuando la plantilla adapta o redistribuye material de terceros que exige conservar avisos.
 
 `template.md` debe incluir un bloque YAML con estos campos:
 
@@ -31,16 +43,16 @@ id: stable-kebab-case-id
 name: Visible name
 summary: Short selector description
 viewport: 1920x1080
-structureIndex: structures/index.md
+structureIndex: slides/index.md
 always:
-  - foundations/palette-and-type.md
-  - foundations/sizing.md
-  - foundations/spacing.md
-  - foundations/hierarchy.md
+    - foundations/palette-and-type.md
+    - foundations/sizing.md
+    - foundations/spacing.md
+    - foundations/hierarchy.md
 conditional:
-  icons: foundations/iconography.md
-  density: foundations/content-density.md
-  motion: foundations/motion.md
+    icons: foundations/iconography.md
+    density: foundations/content-density.md
+    motion: foundations/motion.md
 ```
 
 Las rutas son relativas a la carpeta de la plantilla y deben usar barras diagonales.
@@ -55,8 +67,13 @@ Las rutas son relativas a la carpeta de la plantilla y deben usar barras diagona
 - `iconography.md`: criterio semantico, consistencia y pesos recomendados
 - `content-density.md`: limites para texto, listas, tablas, pasos y referencias
 - `motion.md`: ritmo visual especifico de la plantilla
-- `structures/index.md`: catalogo corto para elegir una composicion
-- `structures/*.md`: reglas completas de una sola composicion
+- `slides/index.md`: catalogo corto para elegir una composicion
+- `slides/general/*.md`: reglas completas de diapositivas generales
+- `slides/graficas/*.md`: reglas completas de tablas y graficas
+- `slides/diagramas/*.md`: reglas completas de diagramas
+- `slides/codigo/*.md`: reglas completas de diapositivas de codigo
+- `ATTRIBUTIONS.md`: procedencia de referencias o material de terceros adaptado por la plantilla
+- `licenses/`: textos de licencia exigidos por esas fuentes
 
 ## Carga selectiva
 
@@ -67,6 +84,8 @@ Las rutas son relativas a la carpeta de la plantilla y deben usar barras diagona
 5. Leer un modulo `conditional` solo cuando la presentacion lo necesite.
 
 Una estructura debe indicar cuando usarla, cuando evitarla, limites propios, activos esperados y ajustes permitidos. No debe repetir los fundamentos compartidos.
+
+Una estructura puede declarar un conjunto cerrado de variantes cuando todas conservan la misma composicion exterior, los mismos marcadores base y la misma unidad de carga selectiva. Las variantes no son IDs de estructura y no se agregan por separado al indice. Por ejemplo, `system-diagram` puede seleccionar un tipo relacional mediante `data-diagram-type` sin multiplicar archivos de estructura.
 
 ## Reglas
 

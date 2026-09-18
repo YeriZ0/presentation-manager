@@ -303,32 +303,59 @@
     margin: 0;
 }
 
-.diagram-body svg {
+.diagram-body [data-diagram-connectors] {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
 }
 
-.diagram-body svg > path {
+.diagram-edge,
+.diagram-lifeline {
     fill: none;
-    stroke: var(--catalog-accent);
+    stroke: var(--catalog-frame);
     stroke-width: 4;
 }
 
+.diagram-edge-primary {
+    stroke: var(--catalog-accent);
+}
+
+.diagram-edge-secondary,
+.diagram-edge-return {
+    stroke-dasharray: 12 10;
+}
+
+.diagram-lifeline {
+    stroke: var(--catalog-muted);
+    stroke-width: 3;
+    stroke-dasharray: 8 10;
+}
+
 .diagram-body marker path {
-    fill: var(--catalog-accent);
+    fill: context-stroke;
     stroke: none;
 }
 
 .diagram-node {
     position: absolute;
+    z-index: 1;
+    box-sizing: border-box;
     display: flex;
     flex-direction: column;
     width: 300px;
+    min-height: 176px;
     padding: 28px;
     border: 2px solid var(--catalog-frame);
     background: var(--catalog-surface);
+}
+
+.diagram-node-emphasis {
+    border-width: 4px;
+}
+
+.diagram-decision {
+    border-color: var(--catalog-accent);
 }
 
 .diagram-node span {
@@ -348,26 +375,475 @@
     font-size: 22px;
 }
 
-.diagram-source {
-    top: 48px;
+.diagram-label,
+.diagram-stage {
+    position: absolute;
+    z-index: 2;
+    font-size: 24px;
+    line-height: 1;
+}
+
+.diagram-label {
+    padding: 5px 10px;
+    color: var(--catalog-frame);
+    background: var(--catalog-surface);
+}
+
+.diagram-label-primary {
+    color: var(--catalog-accent);
+}
+
+.diagram-stage {
+    width: 240px;
+    padding: 0;
+    color: var(--catalog-ink);
+    background: transparent;
+    font-size: 22px;
+    font-style: italic;
+    line-height: 1.2;
+}
+
+.architecture-input {
+    top: 80px;
+    left: 240px;
+}
+
+.architecture-process {
+    top: 80px;
+    left: 690px;
+}
+
+.architecture-result {
+    top: 80px;
+    left: 1140px;
+}
+
+.architecture-audit {
+    top: 406px;
+    left: 690px;
+}
+
+.architecture-label-validate {
+    top: 96px;
+    left: 574px;
+}
+
+.architecture-label-publish {
+    top: 96px;
+    left: 990px;
+}
+
+.architecture-label-audit {
+    top: 318px;
+    left: 856px;
+}
+
+.workflow-request,
+.workflow-review,
+.workflow-decision,
+.workflow-approved,
+.workflow-revision {
+    width: 240px;
+    height: 184px;
+    padding: 22px;
+}
+
+.workflow-request {
+    top: 60px;
+    left: 150px;
+}
+
+.workflow-review {
+    top: 200px;
+    left: 530px;
+}
+
+.workflow-decision {
+    top: 60px;
+    left: 910px;
+}
+
+.workflow-approved {
+    top: 200px;
+    left: 1290px;
+}
+
+.workflow-revision {
+    top: 428px;
+    left: 822px;
+}
+
+.workflow-label-submit {
+    top: 104px;
+    left: 398px;
+}
+
+.workflow-label-evaluate {
+    top: 306px;
+    left: 950px;
+}
+
+.workflow-label-approve {
+    top: 104px;
+    left: 1162px;
+}
+
+.workflow-label-return {
+    top: 314px;
+    left: 1052px;
+}
+
+.workflow-label-resubmit {
+    top: 474px;
+    left: 620px;
+}
+
+.diagram-sequence .diagram-node {
+    top: 0;
+    width: 260px;
+    min-height: 126px;
+    padding: 20px 24px;
+    text-align: center;
+}
+
+.diagram-sequence .diagram-node strong,
+.diagram-hierarchy .diagram-node strong,
+.diagram-relationship-map .diagram-node strong {
+    margin-top: 0;
+}
+
+.sequence-student {
     left: 0;
 }
 
-.diagram-core {
-    top: 48px;
-    left: 50%;
-    border-width: 4px;
-    transform: translateX(-50%);
+.sequence-portal {
+    left: 473px;
 }
 
-.diagram-output {
-    top: 48px;
-    right: 0;
+.sequence-api {
+    left: 947px;
 }
 
-.diagram-audit {
-    right: 0;
-    bottom: 0;
+.sequence-data {
+    left: 1420px;
+}
+
+.sequence-label-open {
+    top: 154px;
+    left: 310px;
+}
+
+.sequence-label-request {
+    top: 228px;
+    left: 778px;
+}
+
+.sequence-label-query {
+    top: 302px;
+    left: 1250px;
+}
+
+.sequence-label-records {
+    top: 376px;
+    left: 1286px;
+}
+
+.sequence-label-response {
+    top: 450px;
+    left: 824px;
+}
+
+.sequence-label-render {
+    top: 514px;
+    left: 346px;
+}
+
+.diagram-data-flow .diagram-node {
+    width: 240px;
+    padding-inline: 24px;
+}
+
+.diagram-lifecycle .diagram-node {
+    width: 250px;
+}
+
+.data-flow-source,
+.data-flow-capture,
+.data-flow-transform,
+.data-flow-store,
+.data-flow-report {
+    top: 230px;
+}
+
+.data-flow-source,
+.data-flow-stage-source {
+    left: 80px;
+}
+
+.data-flow-capture,
+.data-flow-stage-capture {
+    left: 400px;
+}
+
+.data-flow-transform,
+.data-flow-stage-process {
+    left: 720px;
+}
+
+.data-flow-store,
+.data-flow-stage-store {
+    left: 1040px;
+}
+
+.data-flow-report,
+.data-flow-stage-use {
+    left: 1360px;
+}
+
+.data-flow-stage-source,
+.data-flow-stage-capture,
+.data-flow-stage-process,
+.data-flow-stage-store,
+.data-flow-stage-use {
+    top: 140px;
+}
+
+.data-flow-label-forms,
+.data-flow-label-records,
+.data-flow-label-clean,
+.data-flow-label-summary {
+    top: 184px;
+}
+
+.data-flow-label-forms {
+    left: 292px;
+}
+
+.data-flow-label-records {
+    left: 628px;
+}
+
+.data-flow-label-clean {
+    left: 924px;
+}
+
+.data-flow-label-summary {
+    left: 1270px;
+}
+
+.lifecycle-draft {
+    left: 0;
+}
+
+.lifecycle-review {
+    left: 355px;
+}
+
+.lifecycle-approved,
+.lifecycle-revision {
+    left: 710px;
+}
+
+.lifecycle-published {
+    left: 1065px;
+}
+
+.lifecycle-archived {
+    left: 1420px;
+}
+
+.lifecycle-draft,
+.lifecycle-review,
+.lifecycle-approved,
+.lifecycle-published,
+.lifecycle-archived {
+    top: 92px;
+}
+
+.lifecycle-revision {
+    bottom: 58px;
+}
+
+.lifecycle-label-submit,
+.lifecycle-label-approve,
+.lifecycle-label-publish,
+.lifecycle-label-archive {
+    top: 42px;
+}
+
+.lifecycle-label-submit {
+    left: 265px;
+}
+
+.lifecycle-label-approve {
+    left: 615px;
+}
+
+.lifecycle-label-publish {
+    left: 965px;
+}
+
+.lifecycle-label-archive {
+    left: 1342px;
+}
+
+.lifecycle-label-correct {
+    top: 274px;
+    left: 634px;
+}
+
+.lifecycle-label-resubmit {
+    top: 300px;
+    left: 330px;
+}
+
+.diagram-hierarchy .diagram-node {
+    width: 260px;
+    min-height: 110px;
+    padding: 18px 22px;
+    text-align: center;
+}
+
+.diagram-hierarchy .diagram-node small,
+.diagram-relationship-map .diagram-node small {
+    margin-top: 6px;
+    font-size: 24px;
+}
+
+.hierarchy-program {
+    top: 10px;
+    left: 710px;
+}
+
+.hierarchy-methods {
+    top: 220px;
+    left: 330px;
+}
+
+.hierarchy-results {
+    top: 220px;
+    left: 1090px;
+}
+
+.hierarchy-qualitative,
+.hierarchy-quantitative,
+.hierarchy-evidence,
+.hierarchy-transfer {
+    top: 440px;
+}
+
+.hierarchy-qualitative {
+    left: 65px;
+}
+
+.hierarchy-quantitative {
+    left: 500px;
+}
+
+.hierarchy-evidence {
+    left: 920px;
+}
+
+.hierarchy-transfer {
+    left: 1355px;
+}
+
+.hierarchy-label-methods,
+.hierarchy-label-results {
+    top: 190px;
+}
+
+.hierarchy-label-methods {
+    left: 590px;
+}
+
+.hierarchy-label-results {
+    left: 960px;
+}
+
+.hierarchy-label-qualitative,
+.hierarchy-label-quantitative,
+.hierarchy-label-evidence,
+.hierarchy-label-transfer {
+    top: 402px;
+}
+
+.hierarchy-label-qualitative {
+    left: 264px;
+}
+
+.hierarchy-label-quantitative {
+    left: 480px;
+}
+
+.hierarchy-label-evidence {
+    left: 880px;
+}
+
+.hierarchy-label-transfer {
+    left: 1360px;
+}
+
+.diagram-relationship-map .diagram-node {
+    width: 280px;
+    min-height: 120px;
+    padding: 22px 24px;
+    text-align: center;
+}
+
+.relationship-center {
+    top: 230px;
+    left: 700px;
+}
+
+.relationship-support {
+    top: 58px;
+    left: 0;
+}
+
+.relationship-finance {
+    top: 450px;
+    left: 0;
+}
+
+.relationship-learning {
+    top: 0;
+    left: 700px;
+}
+
+.relationship-community {
+    top: 58px;
+    left: 1400px;
+}
+
+.relationship-wellbeing {
+    top: 450px;
+    left: 1400px;
+}
+
+.relationship-label-support {
+    top: 150px;
+    left: 476px;
+}
+
+.relationship-label-finance {
+    top: 458px;
+    left: 476px;
+}
+
+.relationship-label-learning {
+    top: 151px;
+    left: 872px;
+}
+
+.relationship-label-community {
+    top: 132px;
+    left: 1080px;
+}
+
+.relationship-label-wellbeing {
+    top: 500px;
+    left: 1138px;
 }
 
 .references-body {

@@ -5,7 +5,10 @@ import { usePresentationTimer } from '../hooks/usePresentationTimer.js';
 import { useSlideRuntime } from '../hooks/useSlideRuntime.js';
 import { formatTime } from '../lib/format-time.js';
 import { isInteractiveTarget } from '../lib/isInteractiveTarget.js';
-import { usePlayerStore, usePlayerStoreApi } from '../state/PlayerStoreProvider.jsx';
+import {
+    usePlayerStore,
+    usePlayerStoreApi,
+} from '../state/PlayerStoreProvider.jsx';
 import { PlayerControls } from './PlayerControls.jsx';
 import styles from '../../../player/PresentationPlayer.module.css';
 
@@ -54,7 +57,11 @@ export function PlayerStage({ leaving, onClose, presentation }) {
     const onWindowMessage = useEffectEvent((event) => {
         if (event.source !== frameRef.current?.contentWindow) return;
         if (event.data?.version !== 1) return;
-        if (event.data?.slideId !== store.getState().metadata.slides[store.getState().activeIndex].id) return;
+        if (
+            event.data?.slideId !==
+            store.getState().metadata.slides[store.getState().activeIndex].id
+        )
+            return;
 
         if (event.data.type === 'web-deck:ready') {
             const source = event.source;
@@ -63,18 +70,22 @@ export function PlayerStage({ leaving, onClose, presentation }) {
             activationFrameRef.current = window.requestAnimationFrame(() => {
                 if (source !== frameRef.current?.contentWindow) return;
                 store.getState().markSlideReady(slideId);
-                activationFrameRef.current = window.requestAnimationFrame(() => {
-                    if (source !== frameRef.current?.contentWindow) return;
-                    source.postMessage(
-                        { type: 'web-deck:activate', version: 1, slideId },
-                        '*',
-                    );
-                });
+                activationFrameRef.current = window.requestAnimationFrame(
+                    () => {
+                        if (source !== frameRef.current?.contentWindow) return;
+                        source.postMessage(
+                            { type: 'web-deck:activate', version: 1, slideId },
+                            '*',
+                        );
+                    },
+                );
             });
         }
         if (event.data.type === 'web-deck:next') navigateTo(activeIndex + 1);
-        if (event.data.type === 'web-deck:previous') navigateTo(activeIndex - 1);
-        if (event.data.type === 'web-deck:escape') controlsRef.current?.closeForEscape();
+        if (event.data.type === 'web-deck:previous')
+            navigateTo(activeIndex - 1);
+        if (event.data.type === 'web-deck:escape')
+            controlsRef.current?.closeForEscape();
     });
 
     const onWindowKeyDown = useEffectEvent((event) => {
@@ -147,38 +158,55 @@ export function PlayerStage({ leaving, onClose, presentation }) {
     };
 
     return (
-        <main className={`${styles.player} ${leaving ? styles.playerLeaving : ''}`} ref={playerRef}>
+        <main
+            className={`${styles.player} ${leaving ? styles.playerLeaving : ''}`}
+            ref={playerRef}
+        >
             <div className={styles.stage}>
-                {runtime && renderedIndexes.map((slideIndex) => {
-                    const renderedSlide = metadata.slides[slideIndex];
-                    const isActive = slideIndex === activeIndex;
-                    const state = isActive ? (isReady ? 'ready' : 'loading') : 'waiting';
-                    const isInteractive = isActive && isReady;
-                    return (
-                        <div
-                            key={renderedSlide.id}
-                            className={`${styles.slideViewport} ${isActive && isReady ? styles.slideReady : ''} ${isActive ? '' : styles.slideWaiting}`}
-                            data-slide-state={state}
-                            style={viewportStyle}
-                            inert={isInteractive ? undefined : ''}
-                            aria-hidden={isInteractive ? undefined : true}
-                        >
-                            <iframe
-                                ref={isActive ? frameRef : null}
-                                className={styles.slideFrame}
-                                src={runtime.getSlideUrl(renderedSlide.id)}
-                                sandbox="allow-scripts"
-                                role="document"
-                                aria-label={`Diapositiva ${slideIndex + 1}: ${renderedSlide.title}`}
-                                tabIndex={isInteractive ? 0 : -1}
-                                referrerPolicy="no-referrer"
-                            />
-                        </div>
-                    );
-                })}
+                {runtime &&
+                    renderedIndexes.map((slideIndex) => {
+                        const renderedSlide = metadata.slides[slideIndex];
+                        const isActive = slideIndex === activeIndex;
+                        const state = isActive
+                            ? isReady
+                                ? 'ready'
+                                : 'loading'
+                            : 'waiting';
+                        const isInteractive = isActive && isReady;
+                        return (
+                            <div
+                                key={renderedSlide.id}
+                                className={`${styles.slideViewport} ${isActive && isReady ? styles.slideReady : ''} ${isActive ? '' : styles.slideWaiting}`}
+                                data-slide-state={state}
+                                style={viewportStyle}
+                                inert={!isInteractive}
+                                aria-hidden={isInteractive ? undefined : true}
+                            >
+                                <iframe
+                                    ref={isActive ? frameRef : null}
+                                    className={styles.slideFrame}
+                                    src={runtime.getSlideUrl(renderedSlide.id)}
+                                    sandbox="allow-scripts"
+                                    role="document"
+                                    aria-label={`Diapositiva ${slideIndex + 1}: ${renderedSlide.title}`}
+                                    tabIndex={isInteractive ? 0 : -1}
+                                    referrerPolicy="no-referrer"
+                                />
+                            </div>
+                        );
+                    })}
             </div>
-            {!isReady && <div className={styles.loading} role="status"><span className={styles.loadingMark} />Preparando diapositiva {activeIndex + 1}</div>}
-            {playerError && <p className={styles.playerError} role="alert">{playerError}</p>}
+            {!isReady && (
+                <div className={styles.loading} role="status">
+                    <span className={styles.loadingMark} />
+                    Preparando diapositiva {activeIndex + 1}
+                </div>
+            )}
+            {playerError && (
+                <p className={styles.playerError} role="alert">
+                    {playerError}
+                </p>
+            )}
             <PlayerControls
                 ref={controlsRef}
                 closeSignal={closeSignal}
@@ -187,8 +215,22 @@ export function PlayerStage({ leaving, onClose, presentation }) {
                 onToggleFullscreen={toggleFullscreen}
                 timer={timer}
             />
-            {timerEnabled && <time className={`${styles.timer} ${styles[timerPosition]}`} dateTime={`PT${Math.floor(elapsed)}S`} aria-live="off">{formatTime(elapsed)}</time>}
-            <div className={styles.progress} aria-hidden="true"><span style={{ transform: `scaleX(${(activeIndex + 1) / metadata.slides.length})` }} /></div>
+            {timerEnabled && (
+                <time
+                    className={`${styles.timer} ${styles[timerPosition]}`}
+                    dateTime={`PT${Math.floor(elapsed)}S`}
+                    aria-live="off"
+                >
+                    {formatTime(elapsed)}
+                </time>
+            )}
+            <div className={styles.progress} aria-hidden="true">
+                <span
+                    style={{
+                        transform: `scaleX(${(activeIndex + 1) / metadata.slides.length})`,
+                    }}
+                />
+            </div>
         </main>
     );
 }

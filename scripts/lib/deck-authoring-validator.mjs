@@ -28,6 +28,24 @@ const ACADEMIC_SOBER_STRUCTURES = new Set([
     'chart',
     'code',
 ]);
+const DIAGRAM_TYPES = new Set([
+    'architecture',
+    'workflow',
+    'sequence',
+    'data-flow',
+    'lifecycle',
+    'hierarchy',
+    'relationship-map',
+]);
+const DIAGRAM_DIRECTIONS = {
+    architecture: new Set(['left-to-right', 'top-to-bottom']),
+    workflow: new Set(['left-to-right', 'top-to-bottom']),
+    sequence: new Set(['top-to-bottom']),
+    'data-flow': new Set(['left-to-right', 'top-to-bottom']),
+    lifecycle: new Set(['left-to-right', 'radial']),
+    hierarchy: new Set(['top-to-bottom']),
+    'relationship-map': new Set(['radial']),
+};
 
 export function validateAuthoringPolicy(files, placeholderBytes) {
     for (const [path, bytes] of files) {
@@ -39,7 +57,7 @@ export function validateAuthoringPolicy(files, placeholderBytes) {
         assertLocalReferences(path, source, files);
         if (path.endsWith('.html')) {
             assertPendingResource(source, path, files, placeholderBytes);
-            assertAcademicSoberStructure(source, path);
+            assertAcademicSoberStructure(source, path, files);
         }
     }
 }
@@ -97,7 +115,7 @@ function assertPendingResource(source, path, files, placeholderBytes) {
     }
 }
 
-function assertAcademicSoberStructure(source, path) {
+function assertAcademicSoberStructure(source, path, files) {
     const body = source.match(/<body\b([^>]*)>/i);
     if (!body || attribute(body[1], 'data-template') !== 'academic-sober')
         return;
@@ -118,7 +136,7 @@ function assertAcademicSoberStructure(source, path) {
     }
     if (structure === 'pillars') assertThematicUnits(source, path);
     if (structure === 'comparison') assertComparison(source, path);
-    if (structure === 'process') assertProcess(source, path);
+    if (structure === 'process') assertProcess(source, path, files);
     if (structure === 'narrative-elements')
         assertNarrativeElements(source, path);
     if (structure === 'system-diagram') assertSystemDiagram(source, path);
@@ -233,7 +251,7 @@ function assertComparison(source, path) {
     }
 }
 
-function assertProcess(source, path) {
+function assertProcess(source, path, files) {
     if (!/\bdata-process(?:\s|=|>)/i.test(source)) {
         throw new Error(`Falta data-process: ${path}`);
     }
@@ -295,27 +313,84 @@ function assertProcess(source, path) {
             `Los pasos deben usar iconos de forma consistente: ${path}`,
         );
     }
-    const connectors =
-        source.match(/\bdata-process-connectors(?:\s|=|>)/gi) || [];
-    if (connectors.length !== 1) {
+    const connectorTags = tagsWithMarker(source, 'data-process-connectors');
+    const connectorLayers = pairedElementsWithMarker(
+        source,
+        '[a-z][a-z0-9-]*',
+        'data-process-connectors',
+    );
+    if (connectorTags.length !== 1 || connectorLayers.length !== 1) {
         throw new Error(`process requiere una capa de conectores: ${path}`);
     }
-    const arrows = [
-        ...source.matchAll(
-            /<[a-z][a-z0-9-]*\b[^>]*\bdata-process-arrow\s*=\s*["']arrow-fat-right["'][^>]*>/gi,
-        ),
-    ].map((match) => match[0]);
-    if (
-        arrows.length !== steps.length - 1 ||
-        arrows.some(
-            (tag) =>
-                !/\bclass\s*=\s*["'][^"']*\bdeck-icon\b[^"']*["']/i.test(tag),
-        )
-    ) {
+    const arrows = tagsWithMarker(
+        connectorLayers[0].content,
+        'data-process-arrow',
+    );
+    if (tagsWithMarker(source, 'data-process-arrow').length !== arrows.length) {
         throw new Error(
-            `process requiere arrow-fat-right entre cada par de pasos: ${path}`,
+            `Las flechas deben estar en la capa de process: ${path}`,
         );
     }
+    const arrowNames = arrows.map((tag) =>
+        attribute(tag, 'data-process-arrow'),
+    );
+    if (
+        arrows.length !== steps.length - 1 ||
+        arrowNames.some(
+            (name) => !name || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(name),
+        ) ||
+        new Set(arrowNames).size !== 1 ||
+        arrows.some((tag, index) => {
+            const classes = attribute(tag, 'class')?.split(/\s+/) || [];
+            const usesAssetName =
+                classes.includes(`deck-icon--${arrowNames[index]}`) ||
+                attribute(tag, 'data-icon') === arrowNames[index];
+            return !classes.includes('deck-icon') || !usesAssetName;
+        })
+    ) {
+        throw new Error(
+            `process requiere una misma flecha aprobada entre cada par de pasos: ${path}`,
+        );
+    }
+    assertProcessArrowAsset(files, arrowNames[0], path);
+}
+
+function assertProcessArrowAsset(files, arrowName, path) {
+    const stylesheetPath = 'assets/icons/icons.css';
+    const stylesheetBytes = files.get(stylesheetPath);
+    if (!stylesheetBytes) {
+        throw new Error(`Falta el activo aprobado para process: ${path}`);
+    }
+    const stylesheet = new TextDecoder()
+        .decode(stylesheetBytes)
+        .replace(/\/\*[\s\S]*?\*\//g, '');
+    const escaped = arrowName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const classSelector = new RegExp(`\\.deck-icon--${escaped}(?![a-z0-9_-])`);
+    const dataSelector = new RegExp(
+        `\\[data-icon\\s*=\\s*["']${escaped}["']\\]`,
+    );
+    const declarations = [...stylesheet.matchAll(/([^{}]+)\{([^{}]*)\}/g)]
+        .filter(
+            ([, selectors]) =>
+                classSelector.test(selectors) || dataSelector.test(selectors),
+        )
+        .map((match) => match[2]);
+    const reference = declarations.map(iconCssReference).find((value) => value);
+    if (!reference || isExternalReference(reference)) {
+        throw new Error(`Falta el activo aprobado para process: ${path}`);
+    }
+    const resolved = posix.normalize(
+        posix.join(posix.dirname(stylesheetPath), reference),
+    );
+    if (!/^assets\/icons\//.test(resolved) || !files.has(resolved)) {
+        throw new Error(`Falta el activo aprobado para process: ${path}`);
+    }
+}
+
+function iconCssReference(declarations) {
+    return declarations.match(
+        /(?:^|;)\s*(?:--icon-source|-webkit-mask(?:-image)?|mask(?:-image)?|background-image)\s*:\s*[^;{}]*?url\(\s*(["']?)([^)'"\s]+)\1\s*\)/i,
+    )?.[2];
 }
 
 function assertNarrativeElements(source, path) {
@@ -401,52 +476,436 @@ function assertOrderedPeers(peers, topicMarker, descriptionMarker, path) {
 }
 
 function assertSystemDiagram(source, path) {
-    const diagramMarkers = source.match(/\bdata-diagram(?:\s|=|>)/gi) || [];
-    const diagramTag = source.match(
-        /<(?:figure|section)\b[^>]*\bdata-diagram(?:\s*=\s*["'][^"']*["'])?[^>]*>/i,
-    )?.[0];
-    if (diagramMarkers.length !== 1 || !diagramTag) {
+    const diagramTags = tagsWithMarker(source, 'data-diagram');
+    const diagrams = pairedElementsWithMarker(
+        source,
+        'figure|section',
+        'data-diagram',
+    );
+    if (diagramTags.length !== 1 || diagrams.length !== 1) {
         throw new Error(
             `system-diagram requiere un solo data-diagram: ${path}`,
         );
     }
-    const direction = diagramTag.match(
-        /\bdata-reading-direction\s*=\s*["'](left-to-right|top-to-bottom|radial)["']/i,
-    );
+    const [{ openingTag: diagramTag, content: diagramContent }] = diagrams;
+    const direction = attribute(diagramTag, 'data-reading-direction');
     if (!direction) {
-        throw new Error(`Direccion de lectura invalida o ausente: ${path}`);
+        throw new Error(`Dirección de lectura inválida o ausente: ${path}`);
     }
-    const nodes = source.match(/\bdata-diagram-node(?:\s|=|>)/gi) || [];
-    if (nodes.length < 3 || nodes.length > 6) {
-        throw new Error(`system-diagram requiere de 3 a 6 nodos: ${path}`);
+    if (!['left-to-right', 'top-to-bottom', 'radial'].includes(direction)) {
+        throw new Error(`Dirección de lectura inválida o ausente: ${path}`);
     }
-    const connectors =
-        source.match(/\bdata-diagram-connectors(?:\s|=|>)/gi) || [];
-    if (connectors.length !== 1) {
+    const connectors = pairedElementsWithMarker(
+        diagramContent,
+        'svg',
+        'data-diagram-connectors',
+    );
+    if (
+        tagsWithMarker(source, 'data-diagram-connectors').length !== 1 ||
+        (diagramContent.match(/<svg\b[^>]*>/gi) || []).length !== 1 ||
+        connectors.length !== 1
+    ) {
         throw new Error(
             `system-diagram requiere un SVG de conectores: ${path}`,
         );
     }
-    const describedBy = diagramTag.match(
-        /\baria-describedby\s*=\s*["']([^"']+)["']/i,
-    );
+    const [connector] = connectors;
+    const htmlContent = diagramContent.replace(connector.full, '');
+    const nodeTags = tagsWithMarker(htmlContent, 'data-diagram-node');
+    if (
+        tagsWithMarker(source, 'data-diagram-node').length !== nodeTags.length
+    ) {
+        throw new Error(`Hay nodos fuera del diagrama: ${path}`);
+    }
+    if (
+        tagsWithMarker(source, 'data-diagram-edge').length !==
+        tagsWithMarker(connector.content, 'data-diagram-edge').length
+    ) {
+        throw new Error(`Hay relaciones fuera del SVG de conectores: ${path}`);
+    }
+    if (
+        tagsWithMarker(source, 'data-diagram-label').length !==
+        tagsWithMarker(htmlContent, 'data-diagram-label').length
+    ) {
+        throw new Error(`Hay etiquetas fuera del diagrama HTML: ${path}`);
+    }
+    const diagramType = attribute(diagramTag, 'data-diagram-type');
+    if (!diagramType) {
+        if (nodeTags.length < 3 || nodeTags.length > 6) {
+            throw new Error(`system-diagram requiere de 3 a 6 nodos: ${path}`);
+        }
+    } else {
+        if (!/^<figure\b/i.test(diagramTag)) {
+            throw new Error(`El diagrama tipado debe usar figure: ${path}`);
+        }
+        assertTypedDiagram(
+            htmlContent,
+            connector.content,
+            path,
+            diagramType,
+            direction,
+            nodeTags,
+        );
+    }
+    const describedBy = attribute(diagramTag, 'aria-describedby');
     if (!describedBy) {
         throw new Error(
             `system-diagram requiere una descripcion textual: ${path}`,
         );
     }
-    const labelledBy = diagramTag.match(
-        /\baria-labelledby\s*=\s*["']([^"']+)["']/i,
-    );
+    const labelledBy = attribute(diagramTag, 'aria-labelledby');
     if (!labelledBy) {
         throw new Error(`system-diagram requiere un titulo asociado: ${path}`);
     }
-    for (const id of `${labelledBy[1]} ${describedBy[1]}`.trim().split(/\s+/)) {
-        const escaped = id.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        if (!new RegExp(`\\bid\\s*=\\s*["']${escaped}["']`, 'i').test(source)) {
+    for (const id of `${labelledBy} ${describedBy}`.trim().split(/\s+/)) {
+        if (
+            !tagsWithMarker(source, 'id').some(
+                (tag) => attribute(tag, 'id') === id,
+            )
+        ) {
             throw new Error(`No existe el texto asociado ${id} en ${path}`);
         }
     }
+}
+
+function assertTypedDiagram(
+    source,
+    connectorSource,
+    path,
+    diagramType,
+    direction,
+    nodeTags,
+) {
+    if (!DIAGRAM_TYPES.has(diagramType)) {
+        throw new Error(
+            `Tipo de diagrama desconocido: ${diagramType} en ${path}`,
+        );
+    }
+    if (!DIAGRAM_DIRECTIONS[diagramType].has(direction)) {
+        throw new Error(
+            `Dirección ${direction} incompatible con ${diagramType}: ${path}`,
+        );
+    }
+    const markers = connectorSource.match(/<marker\b[^>]*>/gi) || [];
+    if (
+        markers.some((marker) => {
+            const width = Number(attribute(marker, 'markerWidth') || 0);
+            const height = Number(attribute(marker, 'markerHeight') || 0);
+            const refX = Number(attribute(marker, 'refX') || 0);
+            const refY = Number(attribute(marker, 'refY') || 0);
+            return (
+                width !== 7.2 || height !== 7.2 || refX !== 7.2 || refY !== 3.6
+            );
+        })
+    ) {
+        throw new Error(
+            `Las puntas de flecha deben ser compactas y terminar antes del nodo: ${path}`,
+        );
+    }
+
+    const minimumNodes =
+        diagramType === 'sequence' ? 2 : diagramType === 'workflow' ? 4 : 3;
+    const maximumNodes = diagramType === 'sequence' ? 6 : 7;
+    if (nodeTags.length < minimumNodes || nodeTags.length > maximumNodes) {
+        throw new Error(
+            `${diagramType} requiere de ${minimumNodes} a ${maximumNodes} nodos: ${path}`,
+        );
+    }
+
+    const nodeIds = nodeTags.map((tag) => attribute(tag, 'data-diagram-node'));
+    assertUniqueDiagramIds(nodeIds, 'nodo', path);
+
+    const markedEdgeTags = tagsWithMarker(connectorSource, 'data-diagram-edge');
+    const edgeTags = markedEdgeTags.filter((tag) => /^<path\b/i.test(tag));
+    if (edgeTags.length !== markedEdgeTags.length) {
+        throw new Error(
+            `Las relaciones deben usar path dentro del SVG: ${path}`,
+        );
+    }
+    const edgeIds = edgeTags.map((tag) => attribute(tag, 'data-diagram-edge'));
+    assertUniqueDiagramIds(edgeIds, 'relación', path);
+    if (edgeTags.length === 0) {
+        throw new Error(`El diagrama tipado necesita relaciones: ${path}`);
+    }
+
+    const nodes = new Set(nodeIds);
+    const edges = edgeTags.map((tag) => {
+        const from = attribute(tag, 'data-from');
+        const to = attribute(tag, 'data-to');
+        if (!nodes.has(from) || !nodes.has(to) || from === to) {
+            throw new Error(`Una relación referencia nodos inválidos: ${path}`);
+        }
+        return {
+            id: attribute(tag, 'data-diagram-edge'),
+            from,
+            to,
+            tag,
+        };
+    });
+    assertConnectedDiagram(nodeIds, edges, path);
+
+    const labelTags = tagsWithMarker(source, 'data-diagram-label');
+    const labelElements = pairedElementsWithMarker(
+        source,
+        '[a-z][a-z0-9-]*',
+        'data-diagram-label',
+    );
+    if (
+        labelElements.length !== labelTags.length ||
+        labelElements.some(({ openingTag, content }) => {
+            const classes = attribute(openingTag, 'class')?.split(/\s+/) || [];
+            const text = content
+                .replace(/<[^>]+>/g, ' ')
+                .replace(/&(?:nbsp|#160);/gi, ' ')
+                .trim();
+            return (
+                !text ||
+                hasAttribute(openingTag, 'hidden') ||
+                attribute(openingTag, 'aria-hidden') === 'true' ||
+                classes.includes('visually-hidden')
+            );
+        })
+    ) {
+        throw new Error(
+            `Cada relación necesita una etiqueta HTML visible: ${path}`,
+        );
+    }
+    const labelledEdges = new Set();
+    for (const tag of labelTags) {
+        const edgeId = attribute(tag, 'data-for-edge');
+        if (!edgeIds.includes(edgeId) || labelledEdges.has(edgeId)) {
+            throw new Error(
+                `Una etiqueta referencia una relación inválida o duplicada: ${path}`,
+            );
+        }
+        labelledEdges.add(edgeId);
+    }
+    assertEveryEdgeLabelled(edges, labelledEdges, diagramType, path);
+
+    if (diagramType === 'workflow') {
+        assertTagMarkerRange(nodeTags, 'data-diagram-decision', 1, 2, path);
+        if (edges.length < nodeTags.length - 1) {
+            throw new Error(
+                `workflow necesita continuidad suficiente: ${path}`,
+            );
+        }
+        const decisions = new Map(
+            nodeTags
+                .filter((tag) => hasAttribute(tag, 'data-diagram-decision'))
+                .map((tag) => [attribute(tag, 'data-diagram-node'), new Set()]),
+        );
+        for (const edge of edges) decisions.get(edge.from)?.add(edge.to);
+        if (
+            [...decisions.values()].some(
+                (destinations) => destinations.size < 2,
+            )
+        ) {
+            throw new Error(
+                `Cada decisión de workflow necesita dos destinos: ${path}`,
+            );
+        }
+    }
+    if (diagramType === 'sequence') {
+        assertTagMarkerRange(
+            nodeTags,
+            'data-diagram-participant',
+            nodeTags.length,
+            nodeTags.length,
+            path,
+        );
+        const messages = edgeTags.filter((tag) =>
+            hasAttribute(tag, 'data-diagram-message'),
+        );
+        if (
+            messages.length !== edgeTags.length ||
+            messages.length < 3 ||
+            messages.length > 10
+        ) {
+            throw new Error(`sequence requiere de 3 a 10 mensajes: ${path}`);
+        }
+    }
+    if (diagramType === 'data-flow') {
+        const stageTags = tagsWithMarker(source, 'data-diagram-stage');
+        const stageElements = pairedElementsWithMarker(
+            source,
+            '[a-z][a-z0-9-]*',
+            'data-diagram-stage',
+        );
+        if (
+            stageTags.length < 3 ||
+            stageTags.length > 5 ||
+            stageElements.length !== stageTags.length ||
+            stageElements.some(({ openingTag, content }) => {
+                const classes =
+                    attribute(openingTag, 'class')?.split(/\s+/) || [];
+                return (
+                    !content.replace(/<[^>]+>/g, ' ').trim() ||
+                    hasAttribute(openingTag, 'hidden') ||
+                    attribute(openingTag, 'aria-hidden') === 'true' ||
+                    classes.includes('visually-hidden')
+                );
+            })
+        ) {
+            throw new Error(
+                `data-flow requiere de 3 a 5 etapas con texto visible: ${path}`,
+            );
+        }
+    }
+    if (diagramType === 'lifecycle') {
+        assertTagMarkerRange(
+            nodeTags,
+            'data-diagram-state',
+            nodeTags.length,
+            nodeTags.length,
+            path,
+        );
+        assertLifecycleTopology(nodeIds, edges, path);
+    }
+    if (diagramType === 'hierarchy') {
+        assertTagMarkerRange(nodeTags, 'data-diagram-root', 1, 1, path);
+        if (edges.length !== nodeTags.length - 1) {
+            throw new Error(
+                `hierarchy requiere una relación por nivel: ${path}`,
+            );
+        }
+        const rootTag = nodeTags.find((tag) =>
+            hasAttribute(tag, 'data-diagram-root'),
+        );
+        const rootId = attribute(rootTag, 'data-diagram-node');
+        const parentCounts = new Map(nodeIds.map((id) => [id, 0]));
+        for (const edge of edges) {
+            parentCounts.set(edge.to, parentCounts.get(edge.to) + 1);
+        }
+        if (
+            parentCounts.get(rootId) !== 0 ||
+            [...parentCounts].some(
+                ([id, count]) => id !== rootId && count !== 1,
+            )
+        ) {
+            throw new Error(
+                `hierarchy necesita una sola raíz y un padre por nodo: ${path}`,
+            );
+        }
+    }
+    if (diagramType === 'relationship-map') {
+        assertTagMarkerRange(nodeTags, 'data-diagram-center', 1, 1, path);
+        const centerTag = nodeTags.find((tag) =>
+            hasAttribute(tag, 'data-diagram-center'),
+        );
+        const centerId = attribute(centerTag, 'data-diagram-node');
+        if (
+            edges.length !== nodeTags.length - 1 ||
+            edges.some((edge) => edge.from !== centerId && edge.to !== centerId)
+        ) {
+            throw new Error(
+                `relationship-map debe conectar cada nodo con el centro: ${path}`,
+            );
+        }
+    }
+}
+
+function assertLifecycleTopology(nodeIds, edges, path) {
+    const outgoing = new Map(nodeIds.map((id) => [id, new Set()]));
+    for (const edge of edges) outgoing.get(edge.from).add(edge.to);
+    const hasTerminal = [...outgoing.values()].some(
+        (destinations) => destinations.size === 0,
+    );
+    const hasAlternative = [...outgoing.values()].some(
+        (destinations) => destinations.size > 1,
+    );
+    const visiting = new Set();
+    const visited = new Set();
+    const hasCycleFrom = (node) => {
+        if (visiting.has(node)) return true;
+        if (visited.has(node)) return false;
+        visiting.add(node);
+        for (const destination of outgoing.get(node)) {
+            if (hasCycleFrom(destination)) return true;
+        }
+        visiting.delete(node);
+        visited.add(node);
+        return false;
+    };
+    const hasCycle = nodeIds.some((node) => hasCycleFrom(node));
+    if (!hasTerminal || (!hasCycle && !hasAlternative)) {
+        throw new Error(
+            `lifecycle requiere un estado terminal y un ciclo o transición alternativa: ${path}`,
+        );
+    }
+}
+
+function assertUniqueDiagramIds(ids, kind, path) {
+    if (
+        ids.some((id) => !id || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(id)) ||
+        new Set(ids).size !== ids.length
+    ) {
+        throw new Error(`ID de ${kind} inválido o duplicado: ${path}`);
+    }
+}
+
+function assertConnectedDiagram(nodeIds, edges, path) {
+    const neighbors = new Map(nodeIds.map((id) => [id, new Set()]));
+    for (const edge of edges) {
+        neighbors.get(edge.from).add(edge.to);
+        neighbors.get(edge.to).add(edge.from);
+    }
+    const visited = new Set([nodeIds[0]]);
+    const pending = [nodeIds[0]];
+    while (pending.length > 0) {
+        const current = pending.pop();
+        for (const neighbor of neighbors.get(current)) {
+            if (visited.has(neighbor)) continue;
+            visited.add(neighbor);
+            pending.push(neighbor);
+        }
+    }
+    if (visited.size !== nodeIds.length) {
+        throw new Error(`El diagrama tipado contiene nodos aislados: ${path}`);
+    }
+}
+
+function assertTagMarkerRange(tags, marker, minimum, maximum, path) {
+    const count = tags.filter((tag) => hasAttribute(tag, marker)).length;
+    if (count < minimum || count > maximum) {
+        throw new Error(
+            `${marker} requiere de ${minimum} a ${maximum} elementos: ${path}`,
+        );
+    }
+}
+
+function assertEveryEdgeLabelled(edges, labelledEdges, diagramType, path) {
+    if (edges.some((edge) => !labelledEdges.has(edge.id))) {
+        throw new Error(
+            `${diagramType} requiere una etiqueta HTML por relación: ${path}`,
+        );
+    }
+}
+
+function tagsWithMarker(source, marker) {
+    return (source.match(/<[a-z][a-z0-9-]*\b[^>]*>/gi) || []).filter((tag) =>
+        hasAttribute(tag, marker),
+    );
+}
+
+function pairedElementsWithMarker(source, tagNames, marker) {
+    const escaped = marker.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return [
+        ...source.matchAll(
+            new RegExp(
+                `<(${tagNames})\\b(?=[^>]*\\s${escaped}(?=\\s|=|/?>))([^>]*)>([\\s\\S]*?)<\\/\\1>`,
+                'gi',
+            ),
+        ),
+    ].map((match) => ({
+        openingTag: match[0].slice(0, match[0].indexOf('>') + 1),
+        content: match[3],
+        full: match[0],
+    }));
+}
+
+function hasAttribute(source, name) {
+    const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return new RegExp(`\\s${escaped}(?=\\s|=|/?>)`, 'i').test(source);
 }
 
 function assertChart(source, path) {
@@ -554,8 +1013,9 @@ function markedText(source, marker) {
 }
 
 function attribute(source, name) {
+    const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     return source.match(
-        new RegExp(`\\b${name}\\s*=\\s*["']([^"']+)["']`, 'i'),
+        new RegExp(`\\s${escaped}\\s*=\\s*["']([^"']+)["']`, 'i'),
     )?.[1];
 }
 

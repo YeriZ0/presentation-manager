@@ -11,7 +11,7 @@ La audiencia debe contrastar dos opciones, modelos o criterios equivalentes.
 - Colocar un texto breve entre ambas unidades, por ejemplo `Frente a`, para declarar la comparación
 - Mantener anchos, tamaños de icono, alineación y densidad equivalentes
 - Usar tabla para tres o más opciones con criterios compartidos
-- Para valores exactos, seguir `table.md`; para tendencias o magnitudes, seguir `chart.md`
+- Para valores exactos, seguir `../graficas/table.md`; para tendencias o magnitudes, seguir `../graficas/chart.md`
 - Centrar verticalmente la comparación como una sola composición
 
 ## Marcadores

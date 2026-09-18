@@ -69,7 +69,6 @@ describe('validateAuthoringPolicy', () => {
                 </article>
             `,
         );
-
         expect(() => validateAuthoringPolicy(files, placeholder)).not.toThrow();
     });
 
@@ -129,7 +128,6 @@ describe('validateAuthoringPolicy', () => {
                 </figure>
             `,
         );
-
         expect(() => validateAuthoringPolicy(files, placeholder)).not.toThrow();
     });
 
@@ -149,7 +147,344 @@ describe('validateAuthoringPolicy', () => {
         );
 
         expect(() => validateAuthoringPolicy(files, placeholder)).toThrow(
-            'Direccion de lectura invalida o ausente',
+            'Dirección de lectura inválida o ausente',
+        );
+    });
+
+    it.each([
+        [
+            'architecture',
+            'left-to-right',
+            ['a', 'b', 'c'],
+            [
+                ['ab', 'a', 'b'],
+                ['bc', 'b', 'c'],
+            ],
+            {},
+        ],
+        [
+            'workflow',
+            'left-to-right',
+            ['a', 'b', 'c', 'd'],
+            [
+                ['ab', 'a', 'b'],
+                ['bc', 'b', 'c'],
+                ['cd', 'c', 'd'],
+                ['cb', 'c', 'b'],
+            ],
+            { nodeMarkers: { c: 'data-diagram-decision' } },
+        ],
+        [
+            'sequence',
+            'top-to-bottom',
+            ['caller', 'service'],
+            [
+                ['request', 'caller', 'service'],
+                ['response', 'service', 'caller'],
+                ['confirm', 'caller', 'service'],
+            ],
+            {
+                allNodeMarker: 'data-diagram-participant',
+                allEdgeMarker: 'data-diagram-message',
+            },
+        ],
+        [
+            'data-flow',
+            'left-to-right',
+            ['source', 'process', 'store'],
+            [
+                ['raw', 'source', 'process'],
+                ['clean', 'process', 'store'],
+            ],
+            {
+                extra: '<span data-diagram-stage>Etapa</span>'.repeat(3),
+                labelAll: true,
+            },
+        ],
+        [
+            'lifecycle',
+            'left-to-right',
+            ['draft', 'review', 'done'],
+            [
+                ['submit', 'draft', 'review'],
+                ['approve', 'review', 'done'],
+                ['revise', 'review', 'draft'],
+            ],
+            { allNodeMarker: 'data-diagram-state', labelAll: true },
+        ],
+        [
+            'hierarchy',
+            'top-to-bottom',
+            ['root', 'left', 'right'],
+            [
+                ['root-left', 'root', 'left'],
+                ['root-right', 'root', 'right'],
+            ],
+            { nodeMarkers: { root: 'data-diagram-root' } },
+        ],
+        [
+            'relationship-map',
+            'radial',
+            ['center', 'one', 'two'],
+            [
+                ['center-one', 'center', 'one'],
+                ['center-two', 'center', 'two'],
+            ],
+            { nodeMarkers: { center: 'data-diagram-center' } },
+        ],
+    ])(
+        'accepts a typed %s diagram',
+        (type, direction, nodes, edges, options) => {
+            const files = academicSlide(
+                'system-diagram',
+                typedDiagram(type, direction, nodes, edges, options),
+            );
+
+            expect(() =>
+                validateAuthoringPolicy(files, placeholder),
+            ).not.toThrow();
+        },
+    );
+
+    it('rejects an unknown diagram type', () => {
+        const files = academicSlide(
+            'system-diagram',
+            typedDiagram(
+                'network',
+                'left-to-right',
+                ['a', 'b', 'c'],
+                [
+                    ['ab', 'a', 'b'],
+                    ['bc', 'b', 'c'],
+                ],
+            ),
+        );
+
+        expect(() => validateAuthoringPolicy(files, placeholder)).toThrow(
+            'Tipo de diagrama desconocido',
+        );
+    });
+
+    it('rejects an incompatible typed-diagram direction', () => {
+        const files = academicSlide(
+            'system-diagram',
+            typedDiagram(
+                'hierarchy',
+                'radial',
+                ['root', 'left', 'right'],
+                [
+                    ['root-left', 'root', 'left'],
+                    ['root-right', 'root', 'right'],
+                ],
+                { nodeMarkers: { root: 'data-diagram-root' } },
+            ),
+        );
+
+        expect(() => validateAuthoringPolicy(files, placeholder)).toThrow(
+            'incompatible con hierarchy',
+        );
+    });
+
+    it('rejects a typed relationship with an unknown endpoint', () => {
+        const files = academicSlide(
+            'system-diagram',
+            typedDiagram(
+                'architecture',
+                'left-to-right',
+                ['a', 'b', 'c'],
+                [
+                    ['ab', 'a', 'b'],
+                    ['missing', 'b', 'unknown'],
+                ],
+            ),
+        );
+
+        expect(() => validateAuthoringPolicy(files, placeholder)).toThrow(
+            'referencia nodos inválidos',
+        );
+    });
+
+    it('rejects isolated nodes in a typed diagram', () => {
+        const files = academicSlide(
+            'system-diagram',
+            typedDiagram(
+                'architecture',
+                'left-to-right',
+                ['a', 'b', 'isolated'],
+                [['ab', 'a', 'b']],
+            ),
+        );
+
+        expect(() => validateAuthoringPolicy(files, placeholder)).toThrow(
+            'contiene nodos aislados',
+        );
+    });
+
+    it('requires labels for every data-flow relationship', () => {
+        const files = academicSlide(
+            'system-diagram',
+            typedDiagram(
+                'data-flow',
+                'left-to-right',
+                ['source', 'process', 'store'],
+                [
+                    ['raw', 'source', 'process'],
+                    ['clean', 'process', 'store'],
+                ],
+                {
+                    extra: '<span data-diagram-stage>Etapa</span>'.repeat(3),
+                    labelAll: false,
+                },
+            ),
+        );
+
+        expect(() => validateAuthoringPolicy(files, placeholder)).toThrow(
+            'requiere una etiqueta HTML por relación',
+        );
+    });
+
+    it('rejects data-flow stages without visible text', () => {
+        const files = academicSlide(
+            'system-diagram',
+            typedDiagram(
+                'data-flow',
+                'left-to-right',
+                ['source', 'process', 'store'],
+                [
+                    ['raw', 'source', 'process'],
+                    ['clean', 'process', 'store'],
+                ],
+                { extra: '<span data-diagram-stage></span>'.repeat(3) },
+            ),
+        );
+
+        expect(() => validateAuthoringPolicy(files, placeholder)).toThrow(
+            'etapas con texto visible',
+        );
+    });
+
+    it('rejects a workflow with fewer than four nodes', () => {
+        const files = academicSlide(
+            'system-diagram',
+            typedDiagram(
+                'workflow',
+                'left-to-right',
+                ['start', 'decision', 'done'],
+                [
+                    ['review', 'start', 'decision'],
+                    ['approve', 'decision', 'done'],
+                ],
+                { nodeMarkers: { decision: 'data-diagram-decision' } },
+            ),
+        );
+
+        expect(() => validateAuthoringPolicy(files, placeholder)).toThrow(
+            'workflow requiere de 4 a 7 nodos',
+        );
+    });
+
+    it('rejects a workflow decision with only one destination', () => {
+        const files = academicSlide(
+            'system-diagram',
+            typedDiagram(
+                'workflow',
+                'left-to-right',
+                ['start', 'review', 'decision', 'done'],
+                [
+                    ['submit', 'start', 'review'],
+                    ['evaluate', 'review', 'decision'],
+                    ['approve', 'decision', 'done'],
+                ],
+                { nodeMarkers: { decision: 'data-diagram-decision' } },
+            ),
+        );
+
+        expect(() => validateAuthoringPolicy(files, placeholder)).toThrow(
+            'decisión de workflow necesita dos destinos',
+        );
+    });
+
+    it('rejects an empty diagram relationship label', () => {
+        const files = academicSlide(
+            'system-diagram',
+            typedDiagram(
+                'architecture',
+                'left-to-right',
+                ['a', 'b', 'c'],
+                [
+                    ['ab', 'a', 'b'],
+                    ['bc', 'b', 'c'],
+                ],
+            ).replace('>ab</span>', '></span>'),
+        );
+
+        expect(() => validateAuthoringPolicy(files, placeholder)).toThrow(
+            'etiqueta HTML visible',
+        );
+    });
+
+    it('rejects an oversized diagram arrowhead', () => {
+        const diagram = typedDiagram(
+            'architecture',
+            'left-to-right',
+            ['a', 'b', 'c'],
+            [
+                ['ab', 'a', 'b'],
+                ['bc', 'b', 'c'],
+            ],
+        ).replace(
+            '<svg data-diagram-connectors aria-hidden="true">',
+            '<svg data-diagram-connectors aria-hidden="true"><defs><marker markerWidth="12" markerHeight="12" refX="10"></marker></defs>',
+        );
+        const files = academicSlide('system-diagram', diagram);
+
+        expect(() => validateAuthoringPolicy(files, placeholder)).toThrow(
+            'puntas de flecha deben ser compactas',
+        );
+    });
+
+    it('rejects nodes and edges declared outside the diagram', () => {
+        const diagram = typedDiagram(
+            'architecture',
+            'left-to-right',
+            ['a', 'b', 'c'],
+            [
+                ['ab', 'a', 'b'],
+                ['bc', 'b', 'c'],
+            ],
+        )
+            .replace('<article data-diagram-node="c"', '<article data-node="c"')
+            .replace(
+                '<path data-diagram-edge="bc" data-from="b" data-to="c" ></path>',
+                '',
+            );
+        const files = academicSlide(
+            'system-diagram',
+            `${diagram}<article data-diagram-node="c"></article><svg><path data-diagram-edge="bc" data-from="b" data-to="c"></path></svg>`,
+        );
+
+        expect(() => validateAuthoringPolicy(files, placeholder)).toThrow(
+            'Hay nodos fuera del diagrama',
+        );
+    });
+
+    it('rejects a linear lifecycle without a cycle or alternative', () => {
+        const files = academicSlide(
+            'system-diagram',
+            typedDiagram(
+                'lifecycle',
+                'left-to-right',
+                ['draft', 'review', 'done'],
+                [
+                    ['submit', 'draft', 'review'],
+                    ['approve', 'review', 'done'],
+                ],
+                { allNodeMarker: 'data-diagram-state' },
+            ),
+        );
+
+        expect(() => validateAuthoringPolicy(files, placeholder)).toThrow(
+            'un ciclo o transición alternativa',
         );
     });
 
@@ -214,15 +549,57 @@ describe('validateAuthoringPolicy', () => {
             `
                 <section data-process>
                     <div data-process-connectors>
-                        <span class="deck-icon deck-icon--arrow-fat-right" data-process-arrow="arrow-fat-right"></span>
-                        <span class="deck-icon deck-icon--arrow-fat-right" data-process-arrow="arrow-fat-right"></span>
+                        <span class="deck-icon deck-icon--process-next" data-icon="arrow-fat-right" data-process-arrow="arrow-fat-right"></span>
+                        <span class="deck-icon deck-icon--process-next" data-icon="arrow-fat-right" data-process-arrow="arrow-fat-right"></span>
                     </div>
                     <ol>${step(1)}${step(2)}${step(3)}</ol>
                 </section>
             `,
         );
+        addArrowAsset(files, 'arrow-fat-right', 'phosphor', true);
 
         expect(() => validateAuthoringPolicy(files, placeholder)).not.toThrow();
+    });
+
+    it('accepts one equivalent arrow from a user-selected library', () => {
+        const step = (number) =>
+            `<li data-process-step><span data-step-number>${number}</span><h2 data-step-title>Paso ${number}</h2><span class="deck-icon"></span><p data-step-description>Descripcion breve.</p></li>`;
+        const files = academicSlide(
+            'process',
+            `
+                <section data-process>
+                    <div data-process-connectors>
+                        <span class="deck-icon deck-icon--arrow-right" data-process-arrow="arrow-right"></span>
+                        <span class="deck-icon deck-icon--arrow-right" data-process-arrow="arrow-right"></span>
+                    </div>
+                    <ol>${step(1)}${step(2)}${step(3)}</ol>
+                </section>
+            `,
+        );
+        addArrowAsset(files, 'arrow-right', 'lucide');
+
+        expect(() => validateAuthoringPolicy(files, placeholder)).not.toThrow();
+    });
+
+    it('rejects process arrows outside the connector layer', () => {
+        const step = (number) =>
+            `<li data-process-step><span data-step-number>${number}</span><h2 data-step-title>Paso ${number}</h2><p data-step-description>Descripcion breve.</p></li>`;
+        const files = academicSlide(
+            'process',
+            `
+                <section data-process>
+                    <div data-process-connectors></div>
+                    <span class="deck-icon deck-icon--arrow-right" data-process-arrow="arrow-right"></span>
+                    <span class="deck-icon deck-icon--arrow-right" data-process-arrow="arrow-right"></span>
+                    <ol>${step(1)}${step(2)}${step(3)}</ol>
+                </section>
+            `,
+        );
+        addArrowAsset(files, 'arrow-right', 'lucide');
+
+        expect(() => validateAuthoringPolicy(files, placeholder)).toThrow(
+            'flechas deben estar en la capa',
+        );
     });
 
     it('accepts narrative copy with open elements', () => {
@@ -322,6 +699,55 @@ function academicSlide(structure, content) {
             <main data-slide-body data-vertical-align="center">${content}</main>
         </body>
     `);
+}
+
+function addArrowAsset(files, name, library, useDataSelector = false) {
+    const selector = useDataSelector
+        ? `.deck-icon[data-icon="${name}"]`
+        : `.deck-icon--${name}`;
+    files.set(
+        'assets/icons/icons.css',
+        new TextEncoder().encode(
+            `${selector} { mask-image: url("./${library}/${name}.svg"); }`,
+        ),
+    );
+    files.set(`assets/icons/${library}/${name}.svg`, placeholder);
+}
+
+function typedDiagram(type, direction, nodes, edges, options = {}) {
+    const nodeTags = nodes
+        .map((id) => {
+            const markers = [options.allNodeMarker, options.nodeMarkers?.[id]]
+                .filter(Boolean)
+                .join(' ');
+            return `<article data-diagram-node="${id}" ${markers}>${id}</article>`;
+        })
+        .join('');
+    const edgeTags = edges
+        .map(
+            ([id, from, to]) =>
+                `<path data-diagram-edge="${id}" data-from="${from}" data-to="${to}" ${options.allEdgeMarker || ''}></path>`,
+        )
+        .join('');
+    const labels =
+        options.labelAll !== false
+            ? edges
+                  .map(
+                      ([id]) =>
+                          `<span data-diagram-label data-for-edge="${id}">${id}</span>`,
+                  )
+                  .join('')
+            : '';
+    return `
+        <h1 id="typed-diagram-title">Diagrama tipado</h1>
+        <figure data-diagram data-diagram-type="${type}" data-reading-direction="${direction}" aria-labelledby="typed-diagram-title" aria-describedby="typed-diagram-description">
+            <svg data-diagram-connectors aria-hidden="true">${edgeTags}</svg>
+            ${nodeTags}
+            ${labels}
+            ${options.extra || ''}
+            <figcaption id="typed-diagram-description">Descripcion equivalente.</figcaption>
+        </figure>
+    `;
 }
 
 function authoredHtml(source) {

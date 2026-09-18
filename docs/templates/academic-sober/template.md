@@ -3,7 +3,7 @@ id: academic-sober
 name: Academica sobria
 summary: Estilo institucional claro, monocromatico y modular para exposiciones academicas y tecnicas
 viewport: 1920x1080
-structureIndex: structures/index.md
+structureIndex: slides/index.md
 always:
     - foundations/palette-and-type.md
     - foundations/sizing.md
@@ -56,10 +56,13 @@ La plantilla admite institucion, facultad o carrera, materia, docente, titulo, s
 - Composiciones tematicas de dos a cuatro unidades abiertas
 - Diagramas relacionales dedicados a todo el cuerpo de la diapositiva
 - Iconos reservados para conceptos concretos
+- Phosphor como fuente predeterminada de iconos y bibliotecas alternativas solo cuando el usuario las seleccione
+- Ningún icono es generado, trazado, aproximado o redibujado por la IA
 - Tarjetas solo cuando una frontera semantica sea necesaria
 - Composiciones variadas dentro de una identidad consistente
 - Cuerpos centrados verticalmente entre cabecera y pie
-- Contexto superior en peso normal y cursiva, nunca en mayúsculas forzadas
+- Contexto superior en color tinta, peso normal y cursiva, nunca en mayúsculas forzadas
+- Ningún rótulo, contexto o categoría usa barras inferiores, subrayados decorativos ni líneas de prolongación
 - Ningún texto usa transformación automática a mayúsculas
 - Jerarquía título, icono y descripción para unidades equivalentes
 
@@ -74,4 +77,9 @@ La plantilla admite institucion, facultad o carrera, materia, docente, titulo, s
 - Las graficas tienen una conclusion, unidad, periodo y fuente visibles
 - Las tablas, graficas, diagramas y fragmentos de codigo conservan una alternativa textual suficiente
 - El color de acento no es la unica señal de una diferencia o estado
+- Cada icono procede de una biblioteca aprobada o de un archivo aportado por el usuario
 - Los detalles para la exposicion permanecen en las notas cuando no son necesarios para comprender la idea visual
+
+## Procedencia
+
+Las referencias de diagramación inspiradas por terceros y sus licencias se registran en `ATTRIBUTIONS.md` y `licenses/` dentro de esta plantilla.

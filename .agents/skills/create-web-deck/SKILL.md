@@ -35,7 +35,7 @@ Use the selected manifest progressively:
 4. Load a `conditional` module only when its concern is present
 5. Do not scan or concatenate every Markdown file in the template directory
 
-Load a template's diagram module when a slide contains nodes, connectors, a directed flow or explicit relationships. Do not treat independent icon-and-description units as a relational diagram.
+Load a template's diagram module when a slide contains nodes, connectors, a directed flow or explicit relationships. Do not treat independent icon-and-description units as a relational diagram. When a template exposes diagram variants under one structure, assign the structure ID to the outline and select the variant separately from the structure ID.
 
 ## Two-phase questionnaire
 
@@ -218,6 +218,8 @@ Use Phosphor Icons by default. The local source is `node_modules/@phosphor-icons
 
 Accept icon requests as an exact Phosphor name, a semantic description or an official Phosphor URL. The user never needs to place icon files manually.
 
+The numbered workflow below applies when Phosphor remains selected. For a user-selected alternative library or user-supplied files, do not run `vendor:icons`; follow the alternative-source rules below and create the local stylesheet, manifest, license and attribution records directly.
+
 1. Identify concrete objects, actions, states or concepts in the approved outline
 2. Map them to semantic roles from `scripts/icon-catalog.json` when possible
 3. Exclude categories, leads and introductory text that would use icons only as decoration
@@ -245,7 +247,23 @@ When Phosphor assets are used:
 - Override an individual icon with the same CSS variables when the composition requires it
 - Use `regular` for normal use, `bold` for prominent roles and `duotone` only when the secondary opacity remains legible
 
-When the user requests alternatives, offer Phosphor, Lucide, Tabler Icons, Heroicons, Fluent UI System Icons, Bootstrap Icons, a custom source or no icons. Other libraries may be used only after the user selects one and its license is verified.
+When the user requests alternatives, offer Phosphor, Lucide, Tabler Icons, Heroicons, Fluent UI System Icons, Bootstrap Icons, a user-supplied source or no icons. Other libraries may be used only after the user selects one and its license is verified.
+
+Never generate, draw, trace, approximate, combine or redraw an icon. A custom icon must be an existing file supplied by the user. If no approved library asset has a clear semantic relationship, omit the icon or ask the user to provide one. Do not reconstruct icons from screenshots or visual references.
+
+For a user-selected alternative library:
+
+- Copy only the approved static SVG assets into the deck
+- Do not ship React components, webfonts, external scripts, CDN references or runtime icon APIs
+- Verify that each asset works through local HTML and CSS without a library runtime
+- Copy the applicable license into `assets/licenses/`
+- Record the library, version, source URL, license and copied paths in `assets/ATTRIBUTIONS.md`
+- Register every copied asset in `assets/icons/manifest.json` with `source: "library"`, library ID, version, license and HTTPS source URL
+- Use one icon library per slide
+
+Register a user-supplied icon in `assets/icons/manifest.json` with `source: "user"`, `providedByUser: true`, its packaged path and SHA-256. Store these files under `assets/icons/user/`; this declaration records provenance but does not grant new rights.
+
+Functional SVG geometry such as diagram connectors, arrowheads, lifelines, axes and chart marks is not an icon. Logos and trademarks remain governed by Brand integrity.
 
 ## Template structure markers
 
@@ -282,7 +300,9 @@ For processes:
 - Use an ordered list with three to five `data-process-step` items
 - Mark number, title and description with `data-step-number`, `data-step-title` and `data-step-description`
 - Mark the connector layer with `data-process-connectors`
-- Use the approved Phosphor `arrow-fat-right` icon between consecutive steps and mark each one with `data-process-arrow="arrow-fat-right"`
+- Use the approved Phosphor `arrow-fat-right` icon by default, or an equivalent arrow from the user-selected library, between consecutive steps
+- Mark each connector with `data-process-arrow` set to the exact approved asset name and use the same asset between every step
+- When a semantic role class differs from the asset name, also set `data-icon` to the exact asset name registered by `icons.css`
 - Arrange every step on one horizontal axis from left to right with constant spacing
 
 For narrative elements:
@@ -309,10 +329,23 @@ For code:
 For relational diagrams:
 
 - Use a `figure` with `data-diagram` and `data-reading-direction`
-- Mark each node with `data-diagram-node`
+- For new `academic-sober` diagrams, keep `data-slide-structure="system-diagram"` and select `data-diagram-type="architecture|workflow|sequence|data-flow|lifecycle|hierarchy|relationship-map"` on the figure
+- Mark each new node with a unique ASCII value in `data-diagram-node`
 - Mark the inline connector SVG with `data-diagram-connectors`
+- Mark each new connector path with a unique ASCII value in `data-diagram-edge`, plus `data-from` and `data-to` values that reference declared nodes
+- Keep relationship labels in HTML with `data-diagram-label` and `data-for-edge`
 - Associate a textual relationship description through `aria-describedby`
 - Keep the diagram as the only body composition; title, identity and a short source or caption may remain outside it
+- Center diagrams that use few nodes instead of stretching them to the viewport edges
+- Use staggered nodes when that keeps equivalent connectors short and uniform
+- Keep every relationship label clear of its line, arrowhead and adjacent nodes, and match the label color to its connector
+- Render optional node context as ink-colored italic text without an underline or decorative bar
+- Keep legacy untyped diagrams valid, but never author a new untyped diagram
+- Use three to seven nodes by default; sequence permits two to six participants and three to ten messages
+- Use `architecture` for parts and boundaries, `workflow` for decisions and responsibility, `sequence` for time-ordered messages, `data-flow` for information movement, `lifecycle` for state transitions, `hierarchy` for parent-child levels and `relationship-map` for one real center
+- Use `process` instead of `workflow` when the content is a linear sequence of three to five steps without decisions
+- Use HTML and CSS for nodes and layout, inline SVG for functional geometry and local JavaScript only for finite activation or motion
+- Do not add Mermaid, D3, a diagram runtime, external scripts or runtime topology discovery
 
 ## Brand integrity
 

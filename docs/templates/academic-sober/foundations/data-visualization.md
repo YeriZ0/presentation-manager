@@ -8,7 +8,7 @@ Elegir la forma por la pregunta que debe responder la audiencia, no por novedad 
 
 - Usar grafito para ejes, texto, lineas base y datos principales
 - Usar tonos institucionales diferenciables para series secundarias; evitar grises sin contraste suficiente
-- Reservar `[ACENTO]` para una sola conclusion, serie o punto de atencion
+- Reservar `[ACENTO]` para una sola conclusion, serie o punto de atencion, no para numeraciones
 - Usar una escala de luminosidad para datos ordenados
 - No usar color como unica diferencia entre series; sumar etiquetas, formas, patrones o posicion
 - Mantener al menos 3:1 de contraste para objetos graficos relevantes y 4.5:1 para texto pequeno
@@ -35,7 +35,7 @@ Elegir la forma por la pregunta que debe responder la audiencia, no por novedad 
 
 ## Diagramas
 
-Los diagramas relacionales no son graficas de datos. Cargar `foundations/diagrams.md` y seguir la estructura `system-diagram` cuando existan nodos y conectores.
+Los diagramas relacionales no son graficas de datos. Cargar `foundations/diagrams.md` y seguir la estructura `system-diagram` cuando existan nodos y conectores. Usar `data-flow` para movimiento, transformacion o custodia de informacion; usar una grafica cuando la pregunta dependa de magnitudes, periodos o proporciones.
 
 ## Movimiento
 

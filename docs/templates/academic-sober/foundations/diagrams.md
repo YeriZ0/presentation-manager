@@ -2,91 +2,193 @@
 
 ## Principio
 
-Un diagrama explica una relacion, flujo o arquitectura que no se entiende mediante unidades tematicas independientes. Debe comunicar una sola idea y ocupar todo el cuerpo disponible de la diapositiva. La categoria, el titulo, la identidad y un pie breve pueden permanecer fuera de esa zona.
+Un diagrama explica relaciones que no se entienden mediante unidades independientes. Debe responder una sola pregunta, ofrecer una ruta de lectura dominante y ocupar todo el cuerpo disponible de la diapositiva. La categoría, el título, la identidad y un pie breve pueden permanecer fuera de esa zona.
 
-Los detalles que el expositor puede explicar oralmente pertenecen a las notas o a una diapositiva posterior. No agregar una columna narrativa, una lista ni un parrafo paralelo al diagrama.
+Los detalles que el expositor puede explicar oralmente pertenecen a las notas o a una diapositiva posterior. No agregar una columna narrativa, una lista ni un párrafo paralelo al diagrama.
 
-## Tipos
+Elegir primero la pregunta y después el tipo. No convertir toda colección de conceptos en una red de nodos.
 
-- Usar `pillars` para conceptos paralelos sin relaciones explicitas
-- Usar `process` para secuencias obligatorias de tres a cinco pasos
-- Usar `system-diagram` para componentes, capas, dependencias o intercambios
+## Selección
+
+| Tipo               | Pregunta principal                            | Casos tecnicos                       | Casos generales                         |
+| ------------------ | --------------------------------------------- | ------------------------------------ | --------------------------------------- |
+| `architecture`     | ¿Qué partes existen y cómo se conectan?       | Servicios, infraestructura, módulos  | Ecosistemas, actores institucionales    |
+| `workflow`         | ¿Quién actúa, decide y continúa?              | CI/CD, aprobaciones, runbooks        | Trámites, revisiones, protocolos        |
+| `sequence`         | ¿Quién interactúa con quién y en qué orden?   | Solicitudes API, autenticación       | Atención, entrevista, coordinación      |
+| `data-flow`        | ¿Qué información se mueve o transforma?       | ETL, eventos, linaje                 | Documentos, evidencia, formularios      |
+| `lifecycle`        | ¿En qué estados puede estar y qué los cambia? | Tareas, despliegues, sesiones        | Publicaciones, proyectos, solicitudes   |
+| `hierarchy`        | ¿Qué depende o forma parte de qué?            | Paquetes, módulos, permisos          | Organigramas, taxonomías, objetivos     |
+| `relationship-map` | ¿Qué elementos rodean un centro real?         | Integraciones, dependencias directas | Factores, partes interesadas, conceptos |
+
+- Usar `pillars` para conceptos paralelos sin relaciones explícitas
+- Usar `process` para secuencias lineales obligatorias de tres a cinco pasos
+- Usar `system-diagram` con un tipo para componentes, intercambios, ramas, estados o jerarquías
 - Usar `mixed-content` solo para un recurso visual ilustrativo simple que necesite contexto adyacente
-- Dividir el contenido cuando una sola direccion de lectura no pueda explicar todas las relaciones
+- Usar `chart` para magnitudes, tendencias o composiciones cuantitativas
+- Dividir el contenido cuando una sola dirección de lectura no pueda explicar todas las relaciones
+
+## Contrato común
+
+- Declarar `data-diagram-type` con uno de los tipos documentados
+- Declarar `data-reading-direction="left-to-right"`, `top-to-bottom` o `radial`
+- Mantener todo texto visible y editable en HTML
+- Usar un SVG inline, situado detrás de los nodos, solamente para conectores y geometría funcional
+- Asignar un identificador ASCII único a cada `data-diagram-node`
+- Marcar cada ruta con `data-diagram-edge`, `data-from` y `data-to`
+- Etiquetar cada ruta en HTML y asociarla mediante `data-diagram-label` y `data-for-edge`
+- Conservar una descripción textual equivalente mediante `aria-describedby`
+- No inventar relaciones, responsables, secuencias, estados ni causalidad que la fuente no sostenga
 
 ## Nodos
 
-- Usar de tres a seis nodos en un diagrama de sistema
-- Mantener un titulo de una a cuatro palabras por nodo
-- Permitir una descripcion opcional de hasta diez palabras y dos lineas
+- Usar de tres a siete nodos; `workflow` requiere de cuatro a siete y `sequence` admite de dos a seis participantes
+- Mantener un título de una a cuatro palabras por nodo
+- Permitir una descripción opcional de hasta diez palabras y dos líneas
 - Mantener formas y dimensiones equivalentes para nodos del mismo tipo
 - Limitar el diagrama a dos familias de formas y tres niveles visuales
-- Reservar el color de acento para un nodo, una ruta o una conclusion
-- Usar iconos solo cuando identifiquen tipos de componente; no usarlos como decoracion
+- Reservar el color de acento para un nodo, una ruta o una conclusión
+- Centrar el conjunto cuando sus nodos no necesiten ocupar todo el ancho o alto disponible
+- Usar una mención breve en color tinta y cursiva cuando un nodo necesite contexto superior; no subrayarla ni prolongarla con una barra
+- Usar iconos solo cuando identifiquen tipos de componente; no usarlos como decoración
+- Preferir etiquetas directas a leyendas que obliguen a decodificar la composición
 
-## Direccion de lectura
+## Dirección de lectura
 
-- Declarar `data-reading-direction="left-to-right"`, `top-to-bottom` o `radial`
-- Preferir izquierda a derecha para procesos, dependencias y transferencias
-- Preferir arriba abajo para capas o jerarquias
-- Usar una composicion radial solo cuando exista un centro real
+- Preferir izquierda a derecha para arquitectura, workflow y flujo de datos
+- Usar arriba abajo para secuencia y jerarquía
+- Usar izquierda a derecha o radial para ciclos de vida según exista una ruta principal o un retorno dominante
+- Usar radial solamente para un ciclo cerrado o un centro real
 - No mezclar direcciones principales en la misma diapositiva
 
 ## Conectores
 
-- Dibujar conectores en un SVG inline situado detras de los nodos
 - Usar rutas rectas u ortogonales de forma consistente
-- Evitar cruces y limitar cada ruta a dos dobleces
-- Conectar el perimetro de los nodos, no atravesar su contenido
+- Evitar cruces y limitar cada ruta ortogonal a dos dobleces
+- Conectar el perímetro de los nodos, no atravesar su contenido
 - Usar trazos de 3px a 4px y terminaciones consistentes
+- Usar puntas de `7.2x7.2` unidades, con `refX="7.2"` y `refY="3.6"`, en un SVG de `1680x620`
 - Mantener al menos 80px entre cajas de nodos
-- Mantener 32px de separacion entre una ruta y cualquier nodo no relacionado
-- Usar flechas solo para direccion, dependencia o transferencia
-- Usar lineas sin flecha para asociaciones no dirigidas
-- Limitar las etiquetas de relacion a tres palabras
-- Diferenciar relaciones mediante etiqueta, patron o terminacion, no solo mediante color
+- Mantener 32px de separación entre una ruta y cualquier nodo no relacionado
+- Mantener longitudes equivalentes entre conectores de la misma ruta o jerarquía visual
+- Escalonar nodos cuando una retícula horizontal produzca recorridos extensos o deje poco espacio para las etiquetas
+- Usar flechas solo para dirección, dependencia o transferencia
+- Usar líneas sin flecha para asociaciones no dirigidas
+- Limitar las etiquetas de relación a tres palabras, salvo mensajes o eventos técnicos que deban conservar su nombre exacto
+- Colocar cada etiqueta fuera del trazo y del segmento terminal; nunca cubrir la punta ni tocar un nodo
+- Usar en cada etiqueta el mismo color de su conector
+- Diferenciar relaciones mediante etiqueta, patrón o terminación, no solo mediante color
+- Mantener una ruta principal claramente más legible que las ramas secundarias
+
+## Reglas por tipo
+
+### Arquitectura
+
+- Usar de tres a siete componentes y hasta dos límites semánticos
+- Organizar una espina principal con ramas cortas
+- Marcar límites de confianza, propiedad o despliegue solo cuando sean hechos conocidos
+
+### Workflow
+
+- Usar de cuatro a siete nodos y una o dos decisiones
+- Marcar cada decisión con `data-diagram-decision`
+- Mantener el camino principal monótono y llevar excepciones fuera de su corredor
+- Usar carriles solo cuando representen responsables o fases reales
+
+### Secuencia
+
+- Usar de dos a seis participantes y de tres a diez mensajes
+- Marcar participantes con `data-diagram-participant`
+- Marcar rutas de mensajes con `data-diagram-message`
+- Ordenar los mensajes de arriba abajo y diferenciar llamadas, retornos y mensajes asíncronos con texto o patrón
+
+### Flujo de datos
+
+- Usar de tres a siete nodos distribuidos en tres a cinco etapas
+- Marcar cada etapa con `data-diagram-stage`
+- Mostrar el nombre de etapa como texto color tinta en cursiva, sin subrayado, separador ni barra inferior
+- Etiquetar todas las rutas con el dato, documento o resultado que circula
+- Distinguir transformaciones, almacenes y consumidores por nombre, no solo por forma
+
+### Ciclo de vida
+
+- Usar de tres a siete estados y etiquetar transiciones con eventos
+- Marcar estados con `data-diagram-state`
+- Mostrar explícitamente estados terminales y ciclos de recuperación reales
+- No llamar ciclo a una secuencia que no regresa ni ofrece transiciones alternativas
+
+### Jerarquía
+
+- Usar de tres a siete nodos y un solo `data-diagram-root`
+- Organizar niveles horizontales de arriba abajo
+- Mantener cada nodo, excepto la raíz, con un solo padre visible
+
+### Mapa relacional
+
+- Usar de tres a siete nodos y un solo `data-diagram-center`
+- Conectar cada elemento primario con el centro
+- Evitar relaciones laterales que conviertan el mapa en una red sin dirección
 
 ## Marcado
 
-Las diapositivas generadas con esta plantilla declaran su estructura en el elemento `body`:
-
 ```html
-<body data-template="academic-sober" data-slide-structure="system-diagram">
-```
-
-Un diagrama relacional usa estos marcadores:
-
-```html
-<h1 id="diagram-title">La validacion produce resultados trazables</h1>
+<h1 id="diagram-title">La validación produce resultados trazables</h1>
 <figure
     data-diagram
+    data-diagram-type="architecture"
     data-reading-direction="left-to-right"
     aria-labelledby="diagram-title"
     aria-describedby="diagram-description"
 >
-    <svg data-diagram-connectors aria-hidden="true"></svg>
-    <div data-diagram-node>...</div>
+    <svg data-diagram-connectors aria-hidden="true">
+        <path
+            data-diagram-edge="prepare"
+            data-from="input"
+            data-to="process"
+        ></path>
+        <path
+            data-diagram-edge="validation"
+            data-from="process"
+            data-to="result"
+        ></path>
+    </svg>
+    <article data-diagram-node="input">Entrada</article>
+    <article data-diagram-node="process">Validación</article>
+    <article data-diagram-node="result">Resultado</article>
+    <span data-diagram-label data-for-edge="prepare">Prepara</span>
+    <span data-diagram-label data-for-edge="validation">Valida</span>
     <figcaption id="diagram-description" class="visually-hidden">
-        Descripcion de los componentes y sus relaciones
+        La entrada se valida antes de producir el resultado.
     </figcaption>
 </figure>
 ```
 
-Los textos de los nodos permanecen en HTML. El SVG contiene solamente conectores y formas que no necesiten editarse como texto.
+Los diagramas existentes sin `data-diagram-type` ni identificadores conservan compatibilidad como diagramas generales. Toda diapositiva nueva debe usar el contrato tipado.
 
 ## Accesibilidad
 
 - Mantener al menos 3:1 de contraste en nodos, conectores y terminaciones esenciales
 - Mantener 4.5:1 para texto normal y 3:1 para texto grande
-- Proporcionar una descripcion textual equivalente de componentes, direccion y relaciones
-- Marcar el SVG de conectores como decorativo cuando la descripcion textual ya comunique sus relaciones
-- No depender solo del color, la posicion o la forma para identificar una relacion
+- Proporcionar una descripción textual equivalente de componentes, dirección y relaciones
+- Marcar el SVG de conectores como decorativo cuando la descripción textual ya comunique sus relaciones
+- No depender solo del color, la posición o la forma para identificar una relación
+- Mantener el orden DOM coherente con la lectura principal
+
+## Movimiento
+
+- Revelar nodos y relaciones en el orden de lectura
+- Mantener toda animación finita y sin cambiar la topología
+- No usar movimiento para simular tráfico, actividad o causalidad no demostrada
 
 ## Evitar
 
-- Diagramas relacionales reducidos para dejar espacio a una explicacion lateral
-- Nodos que funcionan como parrafos
+- Diagramas relacionales reducidos para dejar espacio a una explicación lateral
+- Nodos que funcionan como párrafos
 - Formas distintas sin significado distinto
-- Flechas grandes usadas como decoracion
+- Flechas grandes usadas como decoración
+- Etiquetas superpuestas al trazo, la punta de flecha o el perímetro de un nodo
+- Nodos estirados hasta los bordes cuando una composición centrada reduce los recorridos
+- Rótulos superiores acompañados por barras o subrayados decorativos
 - Conectores diagonales mezclados con rutas ortogonales
-- Leyendas que obliguen a decodificar mas de dos tipos de relacion
+- Leyendas que obliguen a decodificar más de dos tipos de relación
+- Redes densas sin una ruta principal
+- Rutas calculadas en tiempo de ejecución cuando una geometría explícita y estable sea suficiente

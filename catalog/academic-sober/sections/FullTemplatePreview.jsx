@@ -2,12 +2,18 @@ import { SlideFrame } from '../components/SlideFrame.jsx';
 import { ClosingSpecimen } from '../specimens/ClosingSpecimen.jsx';
 import { ComparisonSpecimen } from '../specimens/ComparisonSpecimen.jsx';
 import { CoverSpecimen } from '../specimens/CoverSpecimen.jsx';
+import { DataFlowDiagram } from '../specimens/DataFlowDiagram.jsx';
+import { HierarchyDiagram } from '../specimens/HierarchyDiagram.jsx';
+import { LifecycleDiagram } from '../specimens/LifecycleDiagram.jsx';
 import { MixedContentSpecimen } from '../specimens/MixedContentSpecimen.jsx';
 import { NarrativeSpecimen } from '../specimens/NarrativeSpecimen.jsx';
 import { ProcessSpecimen } from '../specimens/ProcessSpecimen.jsx';
 import { ReferencesSpecimen } from '../specimens/ReferencesSpecimen.jsx';
+import { RelationshipMapDiagram } from '../specimens/RelationshipMapDiagram.jsx';
+import { SequenceDiagram } from '../specimens/SequenceDiagram.jsx';
 import { SystemDiagram } from '../specimens/SystemDiagram.jsx';
 import { ThematicSpecimen } from '../specimens/ThematicSpecimen.jsx';
+import { WorkflowDiagram } from '../specimens/WorkflowDiagram.jsx';
 
 export function FullTemplatePreview() {
     return (
@@ -75,10 +81,53 @@ export function FullTemplatePreview() {
                     <NarrativeSpecimen />
                 </SlideFrame>
                 <SlideFrame
-                    label="system-diagram"
+                    label="system-diagram / architecture"
+                    structure="system-diagram"
                     title="Las partes se entienden por su relación"
                 >
                     <SystemDiagram />
+                </SlideFrame>
+                <SlideFrame
+                    label="system-diagram / workflow"
+                    structure="system-diagram"
+                    title="La decisión mantiene visible el camino de retorno"
+                >
+                    <WorkflowDiagram />
+                </SlideFrame>
+                <SlideFrame
+                    label="system-diagram / sequence"
+                    structure="system-diagram"
+                    title="El orden aclara quién solicita y quién responde"
+                >
+                    <SequenceDiagram />
+                </SlideFrame>
+                <SlideFrame
+                    label="system-diagram / data-flow"
+                    structure="system-diagram"
+                    title="La evidencia conserva su origen al transformarse"
+                >
+                    <DataFlowDiagram />
+                </SlideFrame>
+                <SlideFrame
+                    label="system-diagram / lifecycle"
+                    structure="system-diagram"
+                    title="Cada estado permite anticipar el siguiente cambio"
+                >
+                    <LifecycleDiagram />
+                </SlideFrame>
+                <SlideFrame
+                    label="system-diagram / hierarchy"
+                    structure="system-diagram"
+                    title="Los niveles distinguen alcance y dependencia"
+                >
+                    <HierarchyDiagram />
+                </SlideFrame>
+                <SlideFrame
+                    label="system-diagram / relationship-map"
+                    structure="system-diagram"
+                    title="Un centro real ordena los factores relacionados"
+                >
+                    <RelationshipMapDiagram />
                 </SlideFrame>
                 <SlideFrame
                     label="references"

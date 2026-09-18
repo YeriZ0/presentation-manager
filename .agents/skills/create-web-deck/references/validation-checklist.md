@@ -29,9 +29,15 @@
 - [ ] Runtime charts retain a semantic data table or equivalent textual data alternative in HTML
 - [ ] Bar and column scales are honest and start at zero when encoding magnitude
 - [ ] Color is not the only signal for categories, states or series
-- [ ] Diagrams have a declared reading direction and accessible relationship labels
+- [ ] New diagrams have a recognized type, declared reading direction and accessible relationship labels
 - [ ] Relational diagrams occupy the full slide body without a competing narrative column
-- [ ] Relational diagrams use three to six nodes and no unnecessary connector crossings
+- [ ] Relational diagrams use limits appropriate to their type and no unnecessary connector crossings
+- [ ] New diagram nodes and edges have unique IDs, and every edge references declared endpoints
+- [ ] Relationship labels remain editable HTML associated with their edges
+- [ ] Relationship labels match connector colors and do not overlap lines, arrowheads or nodes
+- [ ] Equivalent connectors use uniform lengths, and small diagrams are centered instead of stretched to viewport edges
+- [ ] Optional node context uses ink-colored italic text without an underline or decorative bar
+- [ ] Linear processes use `process`; branching workflows, sequences, state changes and hierarchies use a typed `system-diagram`
 - [ ] Academic-sober thematic units use two to four peers in topic, icon and description order
 - [ ] Academic-sober thematic descriptions contain no more than 24 words
 - [ ] Academic-sober slides declare `data-template` and `data-slide-structure`
@@ -40,7 +46,7 @@
 - [ ] Context above an academic-sober title uses sentence case, normal weight and italics
 - [ ] No academic-sober text uses uppercase transformation
 - [ ] Comparisons use two open options and visible central comparison text without bars
-- [ ] Processes use three to five steps on one horizontal axis with small, equally aligned Phosphor `arrow-fat-right` icons
+- [ ] Processes use three to five steps on one horizontal axis with small, equally aligned copies of one approved arrow icon
 - [ ] Narrative elements use two to four open units without separator lines
 - [ ] Donut segments total 100 and share identifiers, values and colors with their legend entries
 - [ ] Donut segments use constant inner and outer radii
@@ -59,8 +65,13 @@
 - [ ] Equivalent peer items use icons consistently or omit them consistently
 - [ ] Categories, leads and introductory text do not use decorative icons
 - [ ] Letters in boxes are not used as icon substitutes
+- [ ] No icon was generated, traced, approximated, combined or redrawn by the AI
+- [ ] Custom icons are existing files supplied by the user
+- [ ] User-selected icon libraries use only copied local SVG assets and no runtime, CDN, component or webfont dependency
+- [ ] Alternative and user-supplied icons have valid provenance entries in `assets/icons/manifest.json`; library entries include version and user entries include a matching SHA-256
 - [ ] Phosphor license is included when Phosphor assets are used
 - [ ] `assets/ATTRIBUTIONS.md` records sources and licenses
+- [ ] Every alternative icon library includes its applicable license and copied asset paths
 - [ ] Chart runtime versions, source URLs, licenses and asset paths are recorded when used
 - [ ] Logos are exact supplied or verified assets, never simulations
 - [ ] Pending resources use the copied `image-broken.svg` in slide HTML

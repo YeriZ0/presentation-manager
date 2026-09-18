@@ -18,7 +18,7 @@ La diapositiva presenta el proyecto, la identidad académica y sus integrantes.
 ## Texto y nombres
 
 - Omitir la categoría cuando repita el título, la materia o el tema ya visible
-- Ajustar la escala del título según el número de palabras definido en `sizing.md`
+- Ajustar la escala del título según el número de palabras definido en `../../foundations/sizing.md`
 - Sintetizar el subtítulo antes de reducir los datos académicos
 - Conservar los nombres completos y su ortografía proporcionada
 - Colocar un integrante por línea, sin separarlos con comas

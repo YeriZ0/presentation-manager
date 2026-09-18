@@ -342,6 +342,23 @@ function auditAcademicSoberLayout(slideId) {
                     message: 'el diagrama no ocupa el cuerpo principal',
                 });
             }
+            const connectors = diagram.querySelector(
+                'svg[data-diagram-connectors]',
+            );
+            if (diagram.dataset.diagramType && connectors) {
+                const connectorRect = connectors.getBoundingClientRect();
+                if (
+                    connectorRect.width < rect.width * 0.95 ||
+                    connectorRect.height < rect.height * 0.95
+                ) {
+                    failures.push({
+                        slide: slideId,
+                        selector: '[data-diagram-connectors]',
+                        message:
+                            'la capa de conectores no cubre el area del diagrama',
+                    });
+                }
+            }
         }
         const nodes = [...document.querySelectorAll('[data-diagram-node]')];
         for (let leftIndex = 0; leftIndex < nodes.length; leftIndex += 1) {
@@ -364,6 +381,358 @@ function auditAcademicSoberLayout(slideId) {
                         message: 'dos nodos se superponen',
                     });
                 }
+            }
+        }
+        const labels = [...document.querySelectorAll('[data-diagram-label]')];
+        const diagramRect = diagram?.getBoundingClientRect();
+        const edges = diagram
+            ? [...diagram.querySelectorAll('[data-diagram-edge]')]
+            : [];
+        if (
+            labels.some((label) => {
+                const rect = label.getBoundingClientRect();
+                let current = label;
+                while (current && current !== diagram?.parentElement) {
+                    const style = getComputedStyle(current);
+                    if (
+                        style.display === 'none' ||
+                        style.visibility === 'hidden' ||
+                        style.visibility === 'collapse' ||
+                        Number(style.opacity) <= 0
+                    ) {
+                        return true;
+                    }
+                    current = current.parentElement;
+                }
+                return rect.width <= 0 || rect.height <= 0;
+            })
+        ) {
+            failures.push({
+                slide: slideId,
+                selector: '[data-diagram-label]',
+                message: 'una etiqueta de relación no es visible',
+            });
+        }
+        if (
+            diagramRect &&
+            labels.some((label) => {
+                const rect = label.getBoundingClientRect();
+                return (
+                    rect.left < diagramRect.left ||
+                    rect.right > diagramRect.right ||
+                    rect.top < diagramRect.top ||
+                    rect.bottom > diagramRect.bottom
+                );
+            })
+        ) {
+            failures.push({
+                slide: slideId,
+                selector: '[data-diagram-label]',
+                message: 'una etiqueta sale del area del diagrama',
+            });
+        }
+        if (
+            labels.some((label) => {
+                const edgeId = label.dataset.forEdge;
+                const edge = edges.find(
+                    (candidate) => candidate.dataset.diagramEdge === edgeId,
+                );
+                if (!edge) return true;
+                return (
+                    getComputedStyle(label).color !==
+                    getComputedStyle(edge).stroke
+                );
+            })
+        ) {
+            failures.push({
+                slide: slideId,
+                selector: '[data-diagram-label]',
+                message: 'una etiqueta no usa el color de su conector',
+            });
+        }
+        if (
+            labels.some((label) => {
+                const labelRect = label.getBoundingClientRect();
+                return nodes.some((node) => {
+                    const nodeRect = node.getBoundingClientRect();
+                    return (
+                        labelRect.left < nodeRect.right &&
+                        labelRect.right > nodeRect.left &&
+                        labelRect.top < nodeRect.bottom &&
+                        labelRect.bottom > nodeRect.top
+                    );
+                });
+            })
+        ) {
+            failures.push({
+                slide: slideId,
+                selector: '[data-diagram-label]',
+                message: 'una etiqueta se superpone con un nodo',
+            });
+        }
+        if (
+            labels.some((label) => {
+                const associatedEdge = edges.find(
+                    (candidate) =>
+                        candidate.dataset.diagramEdge === label.dataset.forEdge,
+                );
+                if (!associatedEdge) return true;
+                const labelRect = label.getBoundingClientRect();
+                for (const edge of edges) {
+                    const matrix = edge.getScreenCTM();
+                    if (!matrix || typeof edge.getTotalLength !== 'function')
+                        return true;
+                    const length = edge.getTotalLength();
+                    const point = edge.ownerSVGElement.createSVGPoint();
+                    for (let distance = 0; distance <= length; distance += 2) {
+                        const pathPoint = edge.getPointAtLength(distance);
+                        point.x = pathPoint.x;
+                        point.y = pathPoint.y;
+                        const screenPoint = point.matrixTransform(matrix);
+                        if (
+                            screenPoint.x >= labelRect.left - 3 &&
+                            screenPoint.x <= labelRect.right + 3 &&
+                            screenPoint.y >= labelRect.top - 3 &&
+                            screenPoint.y <= labelRect.bottom + 3
+                        ) {
+                            return true;
+                        }
+                    }
+                    if (edge.getAttribute('marker-end')) {
+                        const endpoint = edge.getPointAtLength(length);
+                        point.x = endpoint.x;
+                        point.y = endpoint.y;
+                        const screenPoint = point.matrixTransform(matrix);
+                        const scale = Math.max(
+                            Math.hypot(matrix.a, matrix.b),
+                            Math.hypot(matrix.c, matrix.d),
+                        );
+                        const markerId = edge
+                            .getAttribute('marker-end')
+                            .match(/^url\(#(.+)\)$/)?.[1];
+                        const marker = markerId
+                            ? edge.ownerSVGElement.querySelector(
+                                  `[id="${markerId}"]`,
+                              )
+                            : null;
+                        const markerUnits =
+                            marker?.getAttribute('markerUnits') ||
+                            'strokeWidth';
+                        const unitScale =
+                            markerUnits === 'userSpaceOnUse'
+                                ? 1
+                                : Number.parseFloat(
+                                      getComputedStyle(edge).strokeWidth,
+                                  );
+                        const radius =
+                            Math.max(
+                                Number(marker?.getAttribute('markerWidth')) ||
+                                    0,
+                                Number(marker?.getAttribute('markerHeight')) ||
+                                    0,
+                            ) *
+                            unitScale *
+                            scale;
+                        if (
+                            labelRect.left < screenPoint.x + radius &&
+                            labelRect.right > screenPoint.x - radius &&
+                            labelRect.top < screenPoint.y + radius &&
+                            labelRect.bottom > screenPoint.y - radius
+                        ) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            })
+        ) {
+            failures.push({
+                slide: slideId,
+                selector: '[data-diagram-label]',
+                message: 'una etiqueta cubre su conector o punta de flecha',
+            });
+        }
+        if (
+            diagram &&
+            [...diagram.querySelectorAll('marker')].some((marker) => {
+                const width = Number(marker.getAttribute('markerWidth'));
+                return (
+                    width !== 7.2 ||
+                    Number(marker.getAttribute('markerHeight')) !== 7.2 ||
+                    Number(marker.getAttribute('refX')) !== 7.2 ||
+                    Number(marker.getAttribute('refY')) !== 3.6
+                );
+            })
+        ) {
+            failures.push({
+                slide: slideId,
+                selector: '[data-diagram-connectors] marker',
+                message: 'una punta de flecha supera el tamaño permitido',
+            });
+        }
+        if (
+            diagram &&
+            !['sequence', 'hierarchy', 'relationship-map'].includes(
+                diagram.dataset.diagramType,
+            ) &&
+            edges.some((edge) => {
+                if (!edge.getAttribute('marker-end')) return false;
+                const target = diagram.querySelector(
+                    `[data-diagram-node="${edge.dataset.to}"]`,
+                );
+                const matrix = edge.getScreenCTM();
+                if (!target || !matrix) return true;
+                const point = edge.ownerSVGElement.createSVGPoint();
+                const endpoint = edge.getPointAtLength(edge.getTotalLength());
+                point.x = endpoint.x;
+                point.y = endpoint.y;
+                const screenPoint = point.matrixTransform(matrix);
+                const targetRect = target.getBoundingClientRect();
+                return (
+                    screenPoint.x > targetRect.left &&
+                    screenPoint.x < targetRect.right &&
+                    screenPoint.y > targetRect.top &&
+                    screenPoint.y < targetRect.bottom
+                );
+            })
+        ) {
+            failures.push({
+                slide: slideId,
+                selector: '[data-diagram-edge]',
+                message:
+                    'una punta de flecha queda cubierta por el nodo destino',
+            });
+        }
+        if (
+            ['architecture', 'workflow', 'data-flow'].includes(
+                diagram?.dataset.diagramType,
+            ) &&
+            edges.length > 1
+        ) {
+            const lengths = edges.map((edge) => edge.getTotalLength());
+            if (Math.max(...lengths) - Math.min(...lengths) > 2) {
+                failures.push({
+                    slide: slideId,
+                    selector: '[data-diagram-edge]',
+                    message:
+                        'los conectores equivalentes deben mantener una longitud uniforme',
+                });
+            }
+        }
+        if (
+            diagramRect &&
+            ['architecture', 'workflow', 'data-flow'].includes(
+                diagram?.dataset.diagramType,
+            ) &&
+            nodes.length > 0
+        ) {
+            const nodeRects = nodes.map((node) => node.getBoundingClientRect());
+            const left = Math.min(...nodeRects.map((rect) => rect.left));
+            const right = Math.max(...nodeRects.map((rect) => rect.right));
+            const nodeCenter = (left + right) / 2;
+            const diagramCenter = (diagramRect.left + diagramRect.right) / 2;
+            if (Math.abs(nodeCenter - diagramCenter) > 24) {
+                failures.push({
+                    slide: slideId,
+                    selector: '[data-diagram-node]',
+                    message: 'el conjunto de nodos debe permanecer centrado',
+                });
+            }
+        }
+        if (
+            diagram?.dataset.diagramType === 'workflow' &&
+            diagram.dataset.readingDirection === 'left-to-right'
+        ) {
+            const rows = new Set(
+                nodes.map((node) =>
+                    Math.round(node.getBoundingClientRect().top / 12),
+                ),
+            );
+            if (rows.size < 2) {
+                failures.push({
+                    slide: slideId,
+                    selector: '[data-diagram-type="workflow"]',
+                    message:
+                        'el workflow horizontal debe escalonar sus nodos para liberar los conectores',
+                });
+            }
+        }
+        const stages = diagram
+            ? [...diagram.querySelectorAll('[data-diagram-stage]')]
+            : [];
+        let stageInkColor = null;
+        if (
+            diagram &&
+            getComputedStyle(diagram).getPropertyValue('--catalog-ink').trim()
+        ) {
+            const probe = document.createElement('span');
+            probe.style.color = 'var(--catalog-ink)';
+            diagram.appendChild(probe);
+            stageInkColor = getComputedStyle(probe).color;
+            probe.remove();
+        }
+        if (
+            stages.some((stage) => {
+                const style = getComputedStyle(stage);
+                const before = getComputedStyle(stage, '::before');
+                const after = getComputedStyle(stage, '::after');
+                const nodeTitle = diagram?.querySelector(
+                    '[data-diagram-node] strong',
+                );
+                return (
+                    !stage.textContent.trim() ||
+                    style.fontStyle !== 'italic' ||
+                    style.textDecorationLine !== 'none' ||
+                    Number.parseFloat(style.borderBottomWidth) > 0 ||
+                    !['none', 'normal'].includes(before.content) ||
+                    !['none', 'normal'].includes(after.content) ||
+                    (stageInkColor
+                        ? style.color !== stageInkColor
+                        : nodeTitle &&
+                          style.color !== getComputedStyle(nodeTitle).color)
+                );
+            })
+        ) {
+            failures.push({
+                slide: slideId,
+                selector: '[data-diagram-stage]',
+                message:
+                    'las etapas deben usar texto color tinta en cursiva sin barra inferior',
+            });
+        }
+        if (diagram?.dataset.diagramType === 'sequence') {
+            const participants = [
+                ...diagram.querySelectorAll('[data-diagram-participant]'),
+            ].map((participant) => participant.getBoundingClientRect());
+            if (
+                participants.some(
+                    (rect) => Math.abs(rect.top - participants[0].top) > 12,
+                )
+            ) {
+                failures.push({
+                    slide: slideId,
+                    selector: '[data-diagram-participant]',
+                    message:
+                        'los participantes de la secuencia deben compartir cabecera',
+                });
+            }
+        }
+        if (diagram?.dataset.diagramType === 'hierarchy') {
+            const root = diagram.querySelector('[data-diagram-root]');
+            const rootRect = root?.getBoundingClientRect();
+            if (
+                rootRect &&
+                nodes.some(
+                    (node) =>
+                        node !== root &&
+                        node.getBoundingClientRect().top <= rootRect.top,
+                )
+            ) {
+                failures.push({
+                    slide: slideId,
+                    selector: '[data-diagram-root]',
+                    message: 'la raiz debe preceder visualmente a sus niveles',
+                });
             }
         }
     }
