@@ -9,6 +9,7 @@ import {
 } from 'node:fs';
 import { resolve } from 'node:path';
 import process from 'node:process';
+import { normalizeIconSelection } from './lib/icon-selection.mjs';
 
 const [presentationRoot, selectionArg] = process.argv.slice(2);
 if (!presentationRoot) {
@@ -18,16 +19,14 @@ if (!presentationRoot) {
 }
 
 const root = resolve(presentationRoot);
-const selectionPath = resolve(
-    selectionArg || `${root}/_working/icons.json`,
-);
+const selectionPath = resolve(selectionArg || `${root}/_working/icons.json`);
 const catalog = JSON.parse(
     readFileSync(new URL('./icon-catalog.json', import.meta.url), 'utf8'),
 );
 const selection = existsSync(selectionPath)
     ? JSON.parse(readFileSync(selectionPath, 'utf8'))
     : { icons: [] };
-const icons = normalizeSelection(selection.icons || [], catalog);
+const icons = normalizeIconSelection(selection.icons || [], catalog);
 if (icons.length === 0) {
     throw new Error('No hay iconos aprobados en la seleccion');
 }
@@ -35,12 +34,25 @@ const destination = resolve(root, 'assets/icons');
 const iconDestination = resolve(destination, 'phosphor');
 const sourceRoot = resolve('node_modules/@phosphor-icons/core/assets');
 
+for (const icon of icons) {
+    const source = resolve(
+        sourceRoot,
+        icon.weight,
+        `${icon.name}${suffix(icon.weight)}.svg`,
+    );
+    if (!existsSync(source)) {
+        throw new Error(
+            `No existe el icono de Phosphor: ${icon.name} (${icon.weight})`,
+        );
+    }
+}
 mkdirSync(iconDestination, { recursive: true });
 for (const icon of icons) {
-    const source = resolve(sourceRoot, icon.weight, `${icon.name}${suffix(icon.weight)}.svg`);
-    if (!existsSync(source)) {
-        throw new Error(`No existe el icono de Phosphor: ${icon.name} (${icon.weight})`);
-    }
+    const source = resolve(
+        sourceRoot,
+        icon.weight,
+        `${icon.name}${suffix(icon.weight)}.svg`,
+    );
     cpSync(source, resolve(iconDestination, outputName(icon)));
 }
 
@@ -55,21 +67,6 @@ cpSync(licenseSource, resolve(root, 'assets/licenses/phosphor-icons.txt'));
 updateAttributions(root, catalog);
 
 process.stdout.write(`${icons.length} iconos copiados a ${iconDestination}\n`);
-
-function normalizeSelection(rawIcons, catalog) {
-    const icons = rawIcons.map((icon) => {
-        const name = catalog.roles[icon.name] || icon.name;
-        const weight = icon.weight || 'regular';
-        if (!Object.values(catalog.roles).includes(name)) {
-            throw new Error(`Icono fuera del catalogo curado: ${icon.name}`);
-        }
-        if (!catalog.weights.includes(weight)) {
-            throw new Error(`Peso de icono no permitido: ${weight}`);
-        }
-        return { role: icon.role || icon.name, name, weight };
-    });
-    return [...new Map(icons.map((icon) => [assetKey(icon), icon])).values()];
-}
 
 function createStylesheet(icons, catalog) {
     const lines = [
@@ -94,7 +91,8 @@ function createStylesheet(icons, catalog) {
             `.deck-icon[data-icon="${icon.name}"]:not([data-icon-weight]) {`,
             `    --icon-source: ${source};`,
             '}',
-            `.deck-icon--${icon.role} {`,
+            `.deck-icon--${icon.role}[data-icon-weight="${icon.weight}"],`,
+            `.deck-icon--${icon.role}:not([data-icon-weight]) {`,
             `    --icon-source: ${source};`,
             '}',
             '',
@@ -131,8 +129,4 @@ function suffix(weight) {
 
 function outputName(icon) {
     return `${icon.name}${suffix(icon.weight)}.svg`;
-}
-
-function assetKey(icon) {
-    return `${icon.name}:${icon.weight}`;
 }
