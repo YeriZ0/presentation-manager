@@ -9,6 +9,7 @@ always:
     - foundations/sizing.md
     - foundations/spacing.md
     - foundations/hierarchy.md
+    - foundations/deck-consistency.md
 conditional:
     icons: foundations/iconography.md
     diagrams: foundations/diagrams.md
@@ -40,7 +41,7 @@ Solicitar solamente valores no proporcionados:
 - Color institucional o color de acento
 - Fondo blanco puro o blanco tiza
 - Marco grafito, color institucional o sin marco; usar sin marco por defecto
-- Presencia de co-branding en cabeceras internas
+- Recurso institucional auténtico y uso de una sola marca en cabeceras internas; co-branding únicamente por solicitud explícita
 - Preferencia entre imagenes, diagramas, tablas o composiciones tipograficas
 - Preferencia entre tablas semanticas, graficas simples, diagramas o fragmentos de codigo
 
@@ -58,13 +59,16 @@ La plantilla admite institucion, facultad o carrera, materia, docente, titulo, s
 - Iconos reservados para conceptos concretos
 - Phosphor como fuente predeterminada de iconos y bibliotecas alternativas solo cuando el usuario las seleccione
 - Ningún icono es generado, trazado, aproximado o redibujado por la IA
-- Tarjetas solo cuando una frontera semantica sea necesaria
+- Pilares, comparaciones, elementos narrativos y pasos abiertos, sin tarjetas ni recuadros con bordes
+- Iconos semánticos por defecto en esas unidades; una omisión sigue `foundations/iconography.md`
 - Composiciones variadas dentro de una identidad consistente
 - Cuerpos centrados verticalmente entre cabecera y pie
+- Pilares, comparaciones, elementos narrativos y pasos con tema, icono y descripción centrados horizontalmente en cada columna, incluido el texto, desde el CSS inicial según `foundations/hierarchy.md`
 - Contexto superior en color tinta, peso normal y cursiva, nunca en mayúsculas forzadas
-- Ningún rótulo, contexto o categoría usa barras inferiores, subrayados decorativos ni líneas de prolongación
+- Ninguna estructura usa barras, separadores ni subrayados decorativos; aplicar la regla global de `foundations/hierarchy.md`
 - Ningún texto usa transformación automática a mayúsculas
 - Jerarquía título, icono y descripción para unidades equivalentes
+- Numeración persistente e identidad institucional según `foundations/deck-consistency.md`
 
 ## Criterios de aceptacion
 
@@ -83,3 +87,5 @@ La plantilla admite institucion, facultad o carrera, materia, docente, titulo, s
 ## Procedencia
 
 Las referencias de diagramación inspiradas por terceros y sus licencias se registran en `ATTRIBUTIONS.md` y `licenses/` dentro de esta plantilla.
+
+Las referencias históricas registradas en `ATTRIBUTIONS.md` explican la procedencia de las reglas, no son archivos que deban abrirse durante cada creación. No consultar otra presentación salvo autorización explícita para la tarea actual; aplicar directamente los fundamentos y estructuras de esta plantilla.

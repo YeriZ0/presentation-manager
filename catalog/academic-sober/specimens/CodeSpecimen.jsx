@@ -83,9 +83,9 @@ export function CodeSpecimen() {
             <div className="code-block">
                 <div className="code-meta">
                     <span>repository.js</span>
-                    <span>JavaScript · líneas 18-29</span>
+                    <span data-code-range>JavaScript · líneas 18–29</span>
                 </div>
-                <pre>
+                <pre data-code-start="18" data-code-end="29">
                     <code>
                         {lines.map((line, index) => {
                             const isFocus = index >= 5 && index <= 9;
@@ -99,10 +99,10 @@ export function CodeSpecimen() {
                                     }
                                     key={index}
                                 >
-                                    <b aria-hidden="true">
+                                    <b data-code-number aria-hidden="true">
                                         {String(index + 18).padStart(2, '0')}
                                     </b>
-                                    <em>
+                                    <em data-code-content>
                                         {line.length === 0
                                             ? ' '
                                             : line.map(

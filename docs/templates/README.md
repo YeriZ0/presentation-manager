@@ -2,6 +2,8 @@
 
 Cada subcarpeta directa representa una plantilla seleccionable por la skill `create-web-deck`. La skill descubre solamente archivos `docs/templates/*/template.md` y usa cada uno como manifiesto.
 
+Para crear o mantener una plantilla, usa `docs/template-authoring-guide.md`. Esta guía separa el mantenimiento de plantillas del cuestionario de creación de presentaciones.
+
 Una plantilla define apariencia y composicion. El formato `web-deck`, la seguridad, la estructura de salida, los recursos y el empaquetado pertenecen a la skill.
 
 ## Estructura requerida
@@ -64,6 +66,7 @@ Las rutas son relativas a la carpeta de la plantilla y deben usar barras diagona
 - `sizing.md`: escala tipografica, iconos, logos, bordes y medidas del viewport
 - `spacing.md`: escala espacial, margenes, proximidad y distribucion vertical
 - `hierarchy.md`: orden de lectura, niveles visuales y reglas de enfasis
+- `deck-consistency.md`: en `academic-sober`, fuente compartida de numeración e identidad institucional persistentes; se carga mediante `always`
 - `iconography.md`: criterio semantico, consistencia y pesos recomendados
 - `content-density.md`: limites para texto, listas, tablas, pasos y referencias
 - `motion.md`: ritmo visual especifico de la plantilla

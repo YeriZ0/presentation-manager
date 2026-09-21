@@ -13,7 +13,7 @@
 - Barras o columnas: 7 categorias como maximo
 - Lineas: 2 series y 10 puntos por serie como maximo
 - Pastel: 5 segmentos como maximo
-- Codigo: 12 a 16 lineas visibles y 80 caracteres por linea aproximadamente
+- Código: hasta 16 líneas visibles, sin mínimo de relleno; longitud de línea subordinada al ancho efectivo según `code.md`
 - Proceso: 3 a 5 pasos
 - Arquitectura, flujo de datos, ciclo de vida, jerarquía o mapa relacional: 3 a 7 nodos
 - Workflow: 4 a 7 nodos y 1 a 2 decisiones
@@ -30,3 +30,7 @@ Si el contenido supera estos limites, dividirlo en mas diapositivas. No compensa
 - Compacta: tablas, referencias o evidencia con jerarquia estricta; no agrega una quinta unidad tematica
 
 El modo compacto no autoriza texto principal inferior a 24px.
+
+## Ajuste físico
+
+Los máximos textuales son límites, no garantías de ajuste a `1920x1080`. Comprobar dimensiones reales, interlineado, rellenos, cabecera, marca y contador según `spacing.md`. Sintetizar primero, llevar detalle auxiliar a notas o dividir después; nunca recortar, desplazar ni reducir por debajo de los mínimos. En narrativa, conservar una sola fila de columnas derivadas aun cuando se reduzca la cantidad de contenido.

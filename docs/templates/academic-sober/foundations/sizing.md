@@ -7,6 +7,8 @@
 - Sin marco por defecto
 - Marco opcional: 8px a 12px, solo cuando se seleccione explícitamente
 
+Fijar ancho y alto de autoría, no solamente `min-height`. Incluir rellenos y bordes en las dimensiones, por ejemplo mediante `box-sizing: border-box`. El documento no puede crecer ni ofrecer desplazamiento para contenido esencial. `overflow: hidden` no demuestra ajuste: ningún texto, icono o recurso visible puede quedar recortado. El escalado del visor debe conservar la composición fija.
+
 ## Escala tipografica
 
 - Título de portada de hasta 4 palabras: 84px a 96px
@@ -27,6 +29,8 @@ No reducir contenido principal por debajo de 24px. Sintetizar o dividir antes de
 - Logo de cabecera: 80px a 112px de alto
 - Icono protagonista: 96px a 144px
 - Icono de unidad tematica: 96px a 128px
+- Icono de elemento narrativo: 72px a 104px
+- Icono de paso de proceso: 72px a 104px
 - Icono auxiliar: 32px a 56px
 - Icono dentro de un nodo: 48px a 64px
 - Conector principal: 3px a 4px
@@ -38,5 +42,7 @@ No reducir contenido principal por debajo de 24px. Sintetizar o dividir antes de
 - Codigo: 22px a 28px con interlineado de 1.35 a 1.55
 
 Los elementos equivalentes deben compartir dimensiones y alineacion optica.
+
+Para código, comenzar con interlineado `1.35`; aumentarlo dentro del rango solo si el bloque completo cabe. El código tiene un mínimo específico de 22px; el texto principal conserva su mínimo de 24px. No usar el tamaño de icono auxiliar como valor predeterminado de pilares o elementos narrativos. El logo de cabecera conserva su proporción y ocupa el espacio superior derecho reservado según `deck-consistency.md`.
 
 El borde fino corresponde a límites semánticos internos. No debe convertirse en un contorno predeterminado de la diapositiva.

@@ -20,8 +20,8 @@ Los valores pueden adaptarse a una identidad institucional confirmada. Mantener 
 - Fondo blanco o blanco tiza para el lienzo principal
 - Grafito para titulos, marco y elementos de mayor jerarquia
 - Texto atenuado solo para informacion secundaria
-- Superficies grises unicamente cuando separen grupos reales
-- Bordes finos y sin sombras pesadas
+- Superficies grises solo para evidencia o límites funcionales admitidos por la estructura; no convertir unidades temáticas en tarjetas
+- Bordes finos únicamente para límites funcionales según `hierarchy.md`; no son un recurso de agrupación de pilares, comparaciones, elementos narrativos o pasos
 - Color de acento reservado para orientacion, estado o enfasis
 - No usar degradados en tarjetas, superficies, fondos, iconos ni elementos de datos
 - Preferir superficies de color solido para que el contraste pueda verificarse sin ambiguedad

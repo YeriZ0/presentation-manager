@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { validateAuthoringPolicy } from './deck-authoring-validator.mjs';
+import { donutFixture } from './test-fixtures/donut.mjs';
+import { codeFixture } from './test-fixtures/code.mjs';
 
 const placeholder = new Uint8Array([1, 2, 3]);
 const baseFiles = new Map([['slides/001/index.html', new Uint8Array()]]);
@@ -541,27 +543,64 @@ describe('validateAuthoringPolicy', () => {
         );
     });
 
-    it('accepts an ordered process with Phosphor arrows', () => {
-        const step = (number) =>
-            `<li data-process-step><span data-step-number>${number}</span><h2 data-step-title>Paso ${number}</h2><span class="deck-icon"></span><p data-step-description>Descripcion breve.</p></li>`;
+    it('rejects thematic-unit markers on comparisons', () => {
         const files = academicSlide(
-            'process',
+            'comparison',
             `
-                <section data-process>
-                    <div data-process-connectors>
-                        <span class="deck-icon deck-icon--process-next" data-icon="arrow-fat-right" data-process-arrow="arrow-fat-right"></span>
-                        <span class="deck-icon deck-icon--process-next" data-icon="arrow-fat-right" data-process-arrow="arrow-fat-right"></span>
-                    </div>
-                    <ol>${step(1)}${step(2)}${step(3)}</ol>
+                <section data-comparison>
+                    <article data-comparison-option data-thematic-unit><h2 data-unit-topic>Local</h2><p data-unit-description>Control operativo.</p></article>
+                    <span data-comparison-connector>Frente a</span>
+                    <article data-comparison-option><h2 data-unit-topic>Hibrido</h2><p data-unit-description>Control y escala.</p></article>
                 </section>
             `,
         );
-        addArrowAsset(files, 'arrow-fat-right', 'phosphor', true);
+
+        expect(() => validateAuthoringPolicy(files, placeholder)).toThrow(
+            'no debe usar data-thematic-unit',
+        );
+    });
+
+    it('does not reject border resets before rendered inspection', () => {
+        const files = academicSlideFiles(
+            'pillars',
+            '<article data-thematic-unit><h2 data-unit-topic>Uno</h2><span class="deck-icon"></span><p data-unit-description>Guia breve.</p></article><article data-thematic-unit><h2 data-unit-topic>Dos</h2><span class="deck-icon"></span><p data-unit-description>Guia breve.</p></article>',
+            '.pillar { border: none; }',
+        );
 
         expect(() => validateAuthoringPolicy(files, placeholder)).not.toThrow();
     });
 
-    it('accepts one equivalent arrow from a user-selected library', () => {
+    it('does not reject inactive pseudo-elements before rendered inspection', () => {
+        const files = academicSlideFiles(
+            'pillars',
+            '<article data-thematic-unit><h2 data-unit-topic>Uno</h2><span class="deck-icon"></span><p data-unit-description>Guia breve.</p></article><article data-thematic-unit><h2 data-unit-topic>Dos</h2><span class="deck-icon"></span><p data-unit-description>Guia breve.</p></article>',
+            '.pillar::before { content: none; }',
+        );
+
+        expect(() => validateAuthoringPolicy(files, placeholder)).not.toThrow();
+    });
+
+    it.each([3, 4, 5])(
+        'accepts %i numbered steps without arrow assets',
+        (count) => {
+            const step = (number) =>
+                `<li data-process-step><span data-step-number>${number}</span><h2 data-step-title>Paso ${number}</h2><span class="deck-icon"></span><p data-step-description>Descripcion breve.</p></li>`;
+            const files = academicSlide(
+                'process',
+                `
+                <section data-process>
+                    <ol>${Array.from({ length: count }, (_, index) => step(String(index + 1).padStart(2, '0'))).join('')}</ol>
+                </section>
+            `,
+            );
+
+            expect(() =>
+                validateAuthoringPolicy(files, placeholder),
+            ).not.toThrow();
+        },
+    );
+
+    it('rejects separator arrows even from an approved library', () => {
         const step = (number) =>
             `<li data-process-step><span data-step-number>${number}</span><h2 data-step-title>Paso ${number}</h2><span class="deck-icon"></span><p data-step-description>Descripcion breve.</p></li>`;
         const files = academicSlide(
@@ -576,9 +615,9 @@ describe('validateAuthoringPolicy', () => {
                 </section>
             `,
         );
-        addArrowAsset(files, 'arrow-right', 'lucide');
-
-        expect(() => validateAuthoringPolicy(files, placeholder)).not.toThrow();
+        expect(() => validateAuthoringPolicy(files, placeholder)).toThrow(
+            'sin flechas ni conectores',
+        );
     });
 
     it('rejects process arrows outside the connector layer', () => {
@@ -595,11 +634,24 @@ describe('validateAuthoringPolicy', () => {
                 </section>
             `,
         );
-        addArrowAsset(files, 'arrow-right', 'lucide');
 
         expect(() => validateAuthoringPolicy(files, placeholder)).toThrow(
-            'flechas deben estar en la capa',
+            'sin flechas ni conectores',
         );
+    });
+
+    it.each([
+        [1, 1, 3],
+        [1, 3, 4],
+        [0, 1, 2],
+    ])('rejects invalid step sequence %j', (...numbers) => {
+        const content = `<ol data-process>${numbers.map((number) => `<li data-process-step><span data-step-number>${number}</span><h2 data-step-title>Paso</h2><p data-step-description>Detalle.</p></li>`).join('')}</ol>`;
+        expect(() =>
+            validateAuthoringPolicy(
+                academicSlide('process', content),
+                placeholder,
+            ),
+        ).toThrow('numeración consecutiva');
     });
 
     it('accepts narrative copy with open elements', () => {
@@ -642,40 +694,114 @@ describe('validateAuthoringPolicy', () => {
     });
 
     it('accepts a donut with synchronized segments and legend', () => {
-        const files = academicSlide(
-            'chart',
-            `
-                <figure data-chart-type="donut">
-                    <svg>
-                        <path data-chart-segment="one" data-value="50"></path>
-                        <path data-chart-segment="two" data-value="30"></path>
-                        <path data-chart-segment="three" data-value="20"></path>
-                    </svg>
-                    <span data-chart-legend="one">Uno</span>
-                    <span data-chart-legend="two">Dos</span>
-                    <span data-chart-legend="three">Tres</span>
-                </figure>
-            `,
-        );
+        const files = academicSlide('chart', donutFixture());
 
         expect(() => validateAuthoringPolicy(files, placeholder)).not.toThrow();
     });
 
-    it('accepts code with visible lines and an associated focus', () => {
-        const regularLines =
-            '<span data-code-line><i data-code-token="keyword">const</i> <i data-code-token="variable">value</i> <i data-code-token="number">1</i></span>'.repeat(
-                11,
-            );
-        const files = academicSlide(
-            'code',
-            `
-                <pre><code>${regularLines}<span data-code-line data-code-focus aria-describedby="code-note">return value;</span></code></pre>
-                <aside id="code-note" data-code-note>Devuelve el resultado.</aside>
-            `,
+    it.each([
+        ['data-chart-type="donut"', '', 'data-chart-type'],
+        ['data-chart-legend="part-2"', 'data-chart-legend="part-1"', 'leyenda'],
+        ['data-chart-inner-radius="58"', '', 'radios válidos'],
+        ['<path ', '<circle ', 'sectores path'],
+        [
+            '<strong data-chart-value style="display:block;font-size:32px">40%</strong>',
+            '<strong data-chart-value style="display:block;font-size:32px">100%</strong>',
+            'máximos',
+        ],
+        [
+            'data-chart-center-item="part-1"',
+            'data-chart-center-item="part-2"',
+            'máximos',
+        ],
+    ])('rejects invalid donut contract: %s', (from, to, message) => {
+        const files = academicSlide('chart', donutFixture().replace(from, to));
+        expect(() => validateAuthoringPolicy(files, placeholder)).toThrow(
+            message,
         );
-
-        expect(() => validateAuthoringPolicy(files, placeholder)).not.toThrow();
     });
+
+    it('accepts all tied maxima and requires the tie label', () => {
+        const content = donutFixture([40, 40, 10, 10]);
+        expect(() =>
+            validateAuthoringPolicy(
+                academicSlide('chart', content),
+                placeholder,
+            ),
+        ).not.toThrow();
+        expect(() =>
+            validateAuthoringPolicy(
+                academicSlide(
+                    'chart',
+                    content.replace('data-chart-tie', 'data-unmarked'),
+                ),
+                placeholder,
+            ),
+        ).toThrow('máximos');
+    });
+
+    it.each([1, 3, 16])(
+        'accepts %i numbered code lines without filler',
+        (count) => {
+            expect(() =>
+                validateAuthoringPolicy(
+                    academicSlide('code', codeFixture(count)),
+                    placeholder,
+                ),
+            ).not.toThrow();
+        },
+    );
+
+    it.each([
+        ['data-code-number', 'data-unmarked'],
+        ['data-code-end="20"', 'data-code-end="32"'],
+        ['Líneas 18–20', 'Líneas 1–15'],
+        ['aria-hidden="true"', 'aria-hidden="false"'],
+    ])('rejects missing or inconsistent code numbering: %s', (from, to) => {
+        expect(() =>
+            validateAuthoringPolicy(
+                academicSlide('code', codeFixture().replace(from, to)),
+                placeholder,
+            ),
+        ).toThrow('rango y números');
+    });
+
+    it.each(['pillars', 'comparison', 'narrative-elements', 'process'])(
+        'requires default icons for %s and an explicit omission policy',
+        (structure) => {
+            const content = {
+                pillars:
+                    '<article data-thematic-unit><h2 data-unit-topic>Uno</h2><p data-unit-description>Detalle.</p></article><article data-thematic-unit><h2 data-unit-topic>Dos</h2><p data-unit-description>Detalle.</p></article>',
+                comparison:
+                    '<section data-comparison><article data-comparison-option><h2 data-unit-topic>Uno</h2><p data-unit-description>Detalle.</p></article><article data-comparison-option><h2 data-unit-topic>Dos</h2><p data-unit-description>Detalle.</p></article><span data-comparison-connector>Frente a</span></section>',
+                'narrative-elements':
+                    '<section data-narrative><div data-narrative-copy>Contexto.</div><div data-narrative-elements><article data-narrative-element><h2 data-element-topic>Uno</h2><p data-element-description>Detalle.</p></article><article data-narrative-element><h2 data-element-topic>Dos</h2><p data-element-description>Detalle.</p></article></div></section>',
+                process: `<ol data-process>${[1, 2, 3].map((number) => `<li data-process-step><span data-step-number>${number}</span><h2 data-step-title>Paso</h2><p data-step-description>Detalle.</p></li>`).join('')}</ol>`,
+            }[structure];
+            expect(() =>
+                validateAuthoringPolicy(
+                    academicSlide(structure, content),
+                    placeholder,
+                ),
+            ).toThrow('salvo omisión explícita');
+            expect(() =>
+                validateAuthoringPolicy(
+                    academicSlide(structure, content, 'data-icons="none"'),
+                    placeholder,
+                ),
+            ).toThrow('motivo explícito');
+            expect(() =>
+                validateAuthoringPolicy(
+                    academicSlide(
+                        structure,
+                        content,
+                        'data-icons="none" data-icon-omission="user-request"',
+                    ),
+                    placeholder,
+                ),
+            ).not.toThrow();
+        },
+    );
 
     it('rejects code focus without an associated note', () => {
         const regularLines =
@@ -693,25 +819,18 @@ describe('validateAuthoringPolicy', () => {
     });
 });
 
-function academicSlide(structure, content) {
+function academicSlide(structure, content, attributes = '') {
     return authoredHtml(`
-        <body data-template="academic-sober" data-slide-structure="${structure}">
+        <body data-template="academic-sober" data-slide-structure="${structure}" ${attributes}>
             <main data-slide-body data-vertical-align="center">${content}</main>
         </body>
     `);
 }
 
-function addArrowAsset(files, name, library, useDataSelector = false) {
-    const selector = useDataSelector
-        ? `.deck-icon[data-icon="${name}"]`
-        : `.deck-icon--${name}`;
-    files.set(
-        'assets/icons/icons.css',
-        new TextEncoder().encode(
-            `${selector} { mask-image: url("./${library}/${name}.svg"); }`,
-        ),
-    );
-    files.set(`assets/icons/${library}/${name}.svg`, placeholder);
+function academicSlideFiles(structure, content, css) {
+    const files = academicSlide(structure, content);
+    files.set('slides/001/styles.css', new TextEncoder().encode(css));
+    return files;
 }
 
 function typedDiagram(type, direction, nodes, edges, options = {}) {

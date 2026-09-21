@@ -2,6 +2,17 @@
 
 import { chromium } from '@playwright/test';
 import { pathToFileURL } from 'node:url';
+import {
+    auditAcademicDecorations,
+    auditDonutCharts,
+    auditNumberedProcesses,
+} from './lib/academic-sober-visual-audit.mjs';
+import {
+    auditCodeLayouts,
+    auditThematicIcons,
+    auditThematicAlignment,
+    auditSlideCounter,
+} from './lib/academic-sober-content-audit.mjs';
 
 export async function auditDeckContrast(sourceRoot, deck) {
     let browser;
@@ -21,7 +32,7 @@ export async function auditDeckContrast(sourceRoot, deck) {
     const failures = [];
 
     try {
-        for (const slide of deck.slides) {
+        for (const [index, slide] of deck.slides.entries()) {
             const slidePath = new URL(
                 slide.source,
                 pathToFileURL(`${sourceRoot}/`),
@@ -36,6 +47,27 @@ export async function auditDeckContrast(sourceRoot, deck) {
             );
             failures.push(
                 ...(await page.evaluate(auditAcademicSoberLayout, slide.id)),
+            );
+            failures.push(
+                ...(await page.evaluate(auditAcademicDecorations, slide.id)),
+            );
+            failures.push(
+                ...(await page.evaluate(auditNumberedProcesses, slide.id)),
+            );
+            failures.push(...(await page.evaluate(auditDonutCharts, slide.id)));
+            failures.push(
+                ...(await page.evaluate(auditThematicIcons, slide.id)),
+            );
+            failures.push(
+                ...(await page.evaluate(auditThematicAlignment, slide.id)),
+            );
+            failures.push(...(await page.evaluate(auditCodeLayouts, slide.id)));
+            failures.push(
+                ...(await page.evaluate(auditSlideCounter, {
+                    slideId: slide.id,
+                    index,
+                    total: deck.slides.length,
+                })),
             );
         }
     } finally {
@@ -57,6 +89,106 @@ export async function auditDeckContrast(sourceRoot, deck) {
 }
 
 function auditVisibleContrast(slideId) {
+    function graphicColors(
+        style,
+        { hasText, isGraphic, isMaskedIcon, isSvgText },
+    ) {
+        if (isMaskedIcon) {
+            const color = parseColor(style.backgroundColor);
+            return color ? [{ color, graphic: true, kind: 'mask' }] : [];
+        }
+        if (!isGraphic) {
+            const color = parseColor(style.color);
+            return color ? [{ color, graphic: false, kind: '' }] : [];
+        }
+        const colors = [];
+        const fill = style.fill !== 'none' ? parseColor(style.fill) : null;
+        if (fill && fill.a > 0) {
+            colors.push({ color: fill, graphic: !isSvgText, kind: 'fill' });
+        }
+        const stroke =
+            style.stroke !== 'none' ? parseColor(style.stroke) : null;
+        if (
+            stroke &&
+            stroke.a > 0 &&
+            Number.parseFloat(style.strokeWidth) > 0
+        ) {
+            colors.push({ color: stroke, graphic: !isSvgText, kind: 'stroke' });
+        }
+        if (colors.length === 0 && hasText) {
+            const color = parseColor(style.color);
+            if (color) colors.push({ color, graphic: false, kind: '' });
+        }
+        return colors;
+    }
+    function findBackground(element) {
+        let current = element;
+        while (current) {
+            const style = getComputedStyle(current);
+            const color = parseColor(style.backgroundColor);
+            if (color && color.a >= 0.99) return color;
+            if (style.backgroundImage !== 'none') return null;
+            current = current.parentElement;
+        }
+        return { r: 255, g: 255, b: 255, a: 1 };
+    }
+    function composite(foreground, background) {
+        if (foreground.a >= 0.99) return foreground;
+        return {
+            r: foreground.r * foreground.a + background.r * (1 - foreground.a),
+            g: foreground.g * foreground.a + background.g * (1 - foreground.a),
+            b: foreground.b * foreground.a + background.b * (1 - foreground.a),
+            a: 1,
+        };
+    }
+    function parseColor(value) {
+        const match = value.match(/rgba?\(([^)]+)\)/i);
+        if (match) {
+            const parts = match[1]
+                .split(',')
+                .map((part) => Number.parseFloat(part));
+            if (parts.length < 3 || parts.some(Number.isNaN)) return null;
+            return { r: parts[0], g: parts[1], b: parts[2], a: parts[3] ?? 1 };
+        }
+        const hex = value.match(/^#([0-9a-f]{3,8})$/i);
+        if (!hex) return null;
+        const digits = hex[1].length;
+        const expanded =
+            digits <= 4
+                ? [...hex[1]].map((digit) => digit + digit).join('')
+                : hex[1];
+        return {
+            r: Number.parseInt(expanded.slice(0, 2), 16),
+            g: Number.parseInt(expanded.slice(2, 4), 16),
+            b: Number.parseInt(expanded.slice(4, 6), 16),
+            a:
+                expanded.length === 8
+                    ? Number.parseInt(expanded.slice(6), 16) / 255
+                    : 1,
+        };
+    }
+    function contrastRatio(left, right) {
+        const leftLum = luminance(left);
+        const rightLum = luminance(right);
+        return (
+            (Math.max(leftLum, rightLum) + 0.05) /
+            (Math.min(leftLum, rightLum) + 0.05)
+        );
+    }
+    function luminance(color) {
+        const channels = [color.r, color.g, color.b].map(
+            (channel) => channel / 255,
+        );
+        const linear = channels.map((channel) =>
+            channel <= 0.03928
+                ? channel / 12.92
+                : ((channel + 0.055) / 1.055) ** 2.4,
+        );
+        return 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2];
+    }
+    function formatColor(color) {
+        return `rgb(${color.r}, ${color.g}, ${color.b})`;
+    }
     const failures = [];
     const elements = [...document.querySelectorAll('*')];
     for (const element of elements) {
@@ -127,32 +259,6 @@ function auditVisibleContrast(slideId) {
         }
     }
     return failures;
-}
-
-function graphicColors(style, { hasText, isGraphic, isMaskedIcon, isSvgText }) {
-    if (isMaskedIcon) {
-        const color = parseColor(style.backgroundColor);
-        return color ? [{ color, graphic: true, kind: 'mask' }] : [];
-    }
-    if (!isGraphic) {
-        const color = parseColor(style.color);
-        return color ? [{ color, graphic: false, kind: '' }] : [];
-    }
-
-    const colors = [];
-    const fill = style.fill !== 'none' ? parseColor(style.fill) : null;
-    if (fill && fill.a > 0) {
-        colors.push({ color: fill, graphic: !isSvgText, kind: 'fill' });
-    }
-    const stroke = style.stroke !== 'none' ? parseColor(style.stroke) : null;
-    if (stroke && stroke.a > 0 && Number.parseFloat(style.strokeWidth) > 0) {
-        colors.push({ color: stroke, graphic: !isSvgText, kind: 'stroke' });
-    }
-    if (colors.length === 0 && hasText) {
-        const color = parseColor(style.color);
-        if (color) colors.push({ color, graphic: false, kind: '' });
-    }
-    return colors;
 }
 
 function auditAcademicSoberLayout(slideId) {
@@ -261,70 +367,6 @@ function auditAcademicSoberLayout(slideId) {
                     message: `separacion de ${Math.round(gap)}px; requiere 64px`,
                 });
             }
-        }
-    }
-
-    if (structure === 'comparison' || structure === 'narrative-elements') {
-        const selector =
-            structure === 'comparison'
-                ? '[data-comparison-option]'
-                : '[data-narrative-element]';
-        for (const unit of document.querySelectorAll(selector)) {
-            const style = getComputedStyle(unit);
-            if (
-                Number.parseFloat(style.borderTopWidth) > 0 ||
-                Number.parseFloat(style.borderBottomWidth) > 0
-            ) {
-                failures.push({
-                    slide: slideId,
-                    selector,
-                    message:
-                        'las unidades abiertas no deben usar barras o separadores',
-                });
-            }
-        }
-    }
-
-    if (structure === 'process') {
-        const steps = [...document.querySelectorAll('[data-process-step]')];
-        const connectors = document.querySelector('[data-process-connectors]');
-        if (!connectors) {
-            failures.push({
-                slide: slideId,
-                selector: '[data-process-connectors]',
-                message: 'falta la continuidad visual entre pasos',
-            });
-        }
-        for (let index = 1; index < steps.length; index += 1) {
-            const previous = steps[index - 1].getBoundingClientRect();
-            const current = steps[index].getBoundingClientRect();
-            if (
-                current.left <= previous.left ||
-                Math.abs(current.top - previous.top) > 12
-            ) {
-                failures.push({
-                    slide: slideId,
-                    selector: '[data-process-step]',
-                    message:
-                        'los pasos deben formar una progresion horizontal uniforme',
-                });
-                break;
-            }
-        }
-        const arrows = [...document.querySelectorAll('[data-process-arrow]')];
-        const arrowRects = arrows.map((arrow) => arrow.getBoundingClientRect());
-        if (
-            arrowRects.some((rect) => rect.width > 48 || rect.height > 48) ||
-            arrowRects.some(
-                (rect) => Math.abs(rect.top - arrowRects[0].top) > 2,
-            )
-        ) {
-            failures.push({
-                slide: slideId,
-                selector: '[data-process-arrow]',
-                message:
-                    'las flechas deben ser conectores pequenos y alineados',
-            });
         }
     }
 
@@ -738,78 +780,4 @@ function auditAcademicSoberLayout(slideId) {
     }
 
     return failures;
-}
-
-function findBackground(element) {
-    let current = element;
-    while (current) {
-        const style = getComputedStyle(current);
-        const color = parseColor(style.backgroundColor);
-        if (color && color.a >= 0.99) return color;
-        if (style.backgroundImage !== 'none') return null;
-        current = current.parentElement;
-    }
-    return { r: 255, g: 255, b: 255, a: 1 };
-}
-
-function composite(foreground, background) {
-    if (foreground.a >= 0.99) return foreground;
-    return {
-        r: foreground.r * foreground.a + background.r * (1 - foreground.a),
-        g: foreground.g * foreground.a + background.g * (1 - foreground.a),
-        b: foreground.b * foreground.a + background.b * (1 - foreground.a),
-        a: 1,
-    };
-}
-
-function parseColor(value) {
-    const match = value.match(/rgba?\(([^)]+)\)/i);
-    if (match) {
-        const parts = match[1]
-            .split(',')
-            .map((part) => Number.parseFloat(part));
-        if (parts.length < 3 || parts.some(Number.isNaN)) return null;
-        return { r: parts[0], g: parts[1], b: parts[2], a: parts[3] ?? 1 };
-    }
-    const hex = value.match(/^#([0-9a-f]{3,8})$/i);
-    if (!hex) return null;
-    const digits = hex[1].length;
-    const expanded =
-        digits <= 4
-            ? [...hex[1]].map((digit) => digit + digit).join('')
-            : hex[1];
-    return {
-        r: Number.parseInt(expanded.slice(0, 2), 16),
-        g: Number.parseInt(expanded.slice(2, 4), 16),
-        b: Number.parseInt(expanded.slice(4, 6), 16),
-        a:
-            expanded.length === 8
-                ? Number.parseInt(expanded.slice(6), 16) / 255
-                : 1,
-    };
-}
-
-function contrastRatio(left, right) {
-    const leftLum = luminance(left);
-    const rightLum = luminance(right);
-    return (
-        (Math.max(leftLum, rightLum) + 0.05) /
-        (Math.min(leftLum, rightLum) + 0.05)
-    );
-}
-
-function luminance(color) {
-    const channels = [color.r, color.g, color.b].map(
-        (channel) => channel / 255,
-    );
-    const linear = channels.map((channel) =>
-        channel <= 0.03928
-            ? channel / 12.92
-            : ((channel + 0.055) / 1.055) ** 2.4,
-    );
-    return 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2];
-}
-
-function formatColor(color) {
-    return `rgb(${color.r}, ${color.g}, ${color.b})`;
 }

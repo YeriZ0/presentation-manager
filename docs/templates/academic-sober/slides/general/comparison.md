@@ -8,6 +8,7 @@ La audiencia debe contrastar dos opciones, modelos o criterios equivalentes.
 
 - Usar exactamente dos unidades abiertas y equivalentes
 - Mantener en cada unidad el orden título, icono y descripción
+- Centrar horizontalmente las cajas de título, icono y descripción y el texto de ambas opciones según `../../foundations/hierarchy.md`; aplicar el CSS a `[data-comparison-option]`, no a una clase ausente
 - Colocar un texto breve entre ambas unidades, por ejemplo `Frente a`, para declarar la comparación
 - Mantener anchos, tamaños de icono, alineación y densidad equivalentes
 - Usar tabla para tres o más opciones con criterios compartidos
@@ -20,7 +21,7 @@ La audiencia debe contrastar dos opciones, modelos o criterios equivalentes.
 - Marcar cada `article` con `data-comparison-option`
 - Usar `data-unit-topic` y `data-unit-description` en cada opción
 - Marcar el texto central con `data-comparison-connector`
-- Usar `.deck-icon` en ambas opciones o no usar iconos
+- Incluir `.deck-icon` en ambas opciones por defecto; una omisión sigue `../../foundations/iconography.md`
 
 ## Límites
 

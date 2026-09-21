@@ -22,6 +22,9 @@ Elegir la forma por la pregunta que debe responder la audiencia, no por novedad 
 - Incluir fuente visible y una descripcion textual del hallazgo principal
 - En una dona, generar segmentos, porcentajes, colores y leyenda desde la misma fuente de datos
 - Mantener un único centro y radios constantes para todos los segmentos de una dona
+- Derivar la geometría, la leyenda y el texto central de la misma colección durante la autoría; no ajustar longitudes de trazos de forma independiente
+- En una dona, mostrar en el centro la categoría de mayor porcentaje y su valor; resaltar ese sector y comunicar explícitamente todos los máximos si hay empate
+- No mostrar el total genérico como centro ni agregar un tono de fondo que se lea como una categoría adicional; aplicar el contrato completo de `../slides/graficas/chart.md`
 - Crear graficas con SVG inline en el HTML; no depender de Canvas o renderizado de datos en JavaScript
 
 ## Escalas y marcas

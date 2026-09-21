@@ -57,7 +57,7 @@ export function validateAuthoringPolicy(files, placeholderBytes) {
         assertLocalReferences(path, source, files);
         if (path.endsWith('.html')) {
             assertPendingResource(source, path, files, placeholderBytes);
-            assertAcademicSoberStructure(source, path, files);
+            assertAcademicSoberStructure(source, path);
         }
     }
 }
@@ -115,7 +115,7 @@ function assertPendingResource(source, path, files, placeholderBytes) {
     }
 }
 
-function assertAcademicSoberStructure(source, path, files) {
+function assertAcademicSoberStructure(source, path) {
     const body = source.match(/<body\b([^>]*)>/i);
     if (!body || attribute(body[1], 'data-template') !== 'academic-sober')
         return;
@@ -134,14 +134,56 @@ function assertAcademicSoberStructure(source, path, files) {
     if (structure !== 'cover' && structure !== 'closing') {
         assertCenteredBody(source, path);
     }
+    if (/<hr\b/i.test(source)) {
+        throw new Error(`academic-sober no permite separadores hr: ${path}`);
+    }
     if (structure === 'pillars') assertThematicUnits(source, path);
     if (structure === 'comparison') assertComparison(source, path);
-    if (structure === 'process') assertProcess(source, path, files);
+    if (structure === 'process') assertProcess(source, path);
     if (structure === 'narrative-elements')
         assertNarrativeElements(source, path);
     if (structure === 'system-diagram') assertSystemDiagram(source, path);
     if (structure === 'chart') assertChart(source, path);
     if (structure === 'code') assertCode(source, path);
+    const peerMarker = {
+        pillars: 'data-thematic-unit',
+        comparison: 'data-comparison-option',
+        process: 'data-process-step',
+        'narrative-elements': 'data-narrative-element',
+    }[structure];
+    if (peerMarker) assertPeerIconPolicy(source, body[1], peerMarker, path);
+}
+
+function assertPeerIconPolicy(source, body, marker, path) {
+    const peers = pairedElementsWithMarker(source, 'article|li', marker);
+    const counts = peers.map(
+        (peer) =>
+            (
+                peer.content.match(
+                    /\bclass\s*=\s*["'][^"']*\bdeck-icon\b[^"']*["']/gi,
+                ) || []
+            ).length,
+    );
+    const policy = attribute(body, 'data-icons');
+    const reason = attribute(body, 'data-icon-omission');
+    if (policy === 'none') {
+        if (
+            !['user-request', 'no-semantic-match'].includes(reason) ||
+            counts.some((count) => count !== 0)
+        ) {
+            throw new Error(
+                `La omisión de iconos requiere motivo explícito y un grupo sin iconos: ${path}`,
+            );
+        }
+    } else if (
+        (policy && policy !== 'required') ||
+        reason ||
+        counts.some((count) => count !== 1)
+    ) {
+        throw new Error(
+            `academic-sober requiere un icono por unidad salvo omisión explícita: ${path}`,
+        );
+    }
 }
 
 function assertCenteredBody(source, path) {
@@ -237,6 +279,10 @@ function assertComparison(source, path) {
         );
     }
 
+    if (/\bdata-thematic-unit(?:\s|=|>)/i.test(source)) {
+        throw new Error(`comparison no debe usar data-thematic-unit: ${path}`);
+    }
+
     assertOrderedPeers(
         options,
         'data-unit-topic',
@@ -251,7 +297,7 @@ function assertComparison(source, path) {
     }
 }
 
-function assertProcess(source, path, files) {
+function assertProcess(source, path) {
     if (!/\bdata-process(?:\s|=|>)/i.test(source)) {
         throw new Error(`Falta data-process: ${path}`);
     }
@@ -274,6 +320,7 @@ function assertProcess(source, path, files) {
         );
     }
     const iconCounts = [];
+    let expectedNumber = 1;
     for (const [, step] of steps) {
         const number = markedText(step, 'data-step-number');
         const title = markedText(step, 'data-step-title');
@@ -281,6 +328,14 @@ function assertProcess(source, path, files) {
         if (!number || !title || !description) {
             throw new Error(
                 `Cada paso necesita número, título y descripción: ${path}`,
+            );
+        }
+        if (
+            !/^\d+$/.test(number.text) ||
+            Number(number.text) !== expectedNumber++
+        ) {
+            throw new Error(
+                `Los pasos requieren numeración consecutiva desde 1: ${path}`,
             );
         }
         if (wordCount(title.text) > 4 || wordCount(description.text) > 24) {
@@ -313,84 +368,15 @@ function assertProcess(source, path, files) {
             `Los pasos deben usar iconos de forma consistente: ${path}`,
         );
     }
-    const connectorTags = tagsWithMarker(source, 'data-process-connectors');
-    const connectorLayers = pairedElementsWithMarker(
-        source,
-        '[a-z][a-z0-9-]*',
-        'data-process-connectors',
-    );
-    if (connectorTags.length !== 1 || connectorLayers.length !== 1) {
-        throw new Error(`process requiere una capa de conectores: ${path}`);
-    }
-    const arrows = tagsWithMarker(
-        connectorLayers[0].content,
-        'data-process-arrow',
-    );
-    if (tagsWithMarker(source, 'data-process-arrow').length !== arrows.length) {
-        throw new Error(
-            `Las flechas deben estar en la capa de process: ${path}`,
-        );
-    }
-    const arrowNames = arrows.map((tag) =>
-        attribute(tag, 'data-process-arrow'),
-    );
     if (
-        arrows.length !== steps.length - 1 ||
-        arrowNames.some(
-            (name) => !name || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(name),
-        ) ||
-        new Set(arrowNames).size !== 1 ||
-        arrows.some((tag, index) => {
-            const classes = attribute(tag, 'class')?.split(/\s+/) || [];
-            const usesAssetName =
-                classes.includes(`deck-icon--${arrowNames[index]}`) ||
-                attribute(tag, 'data-icon') === arrowNames[index];
-            return !classes.includes('deck-icon') || !usesAssetName;
-        })
+        tagsWithMarker(source, 'data-process-connectors').length ||
+        tagsWithMarker(source, 'data-process-arrow').length ||
+        /<svg\b/i.test(list)
     ) {
         throw new Error(
-            `process requiere una misma flecha aprobada entre cada par de pasos: ${path}`,
+            `process usa numeración, sin flechas ni conectores: ${path}`,
         );
     }
-    assertProcessArrowAsset(files, arrowNames[0], path);
-}
-
-function assertProcessArrowAsset(files, arrowName, path) {
-    const stylesheetPath = 'assets/icons/icons.css';
-    const stylesheetBytes = files.get(stylesheetPath);
-    if (!stylesheetBytes) {
-        throw new Error(`Falta el activo aprobado para process: ${path}`);
-    }
-    const stylesheet = new TextDecoder()
-        .decode(stylesheetBytes)
-        .replace(/\/\*[\s\S]*?\*\//g, '');
-    const escaped = arrowName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const classSelector = new RegExp(`\\.deck-icon--${escaped}(?![a-z0-9_-])`);
-    const dataSelector = new RegExp(
-        `\\[data-icon\\s*=\\s*["']${escaped}["']\\]`,
-    );
-    const declarations = [...stylesheet.matchAll(/([^{}]+)\{([^{}]*)\}/g)]
-        .filter(
-            ([, selectors]) =>
-                classSelector.test(selectors) || dataSelector.test(selectors),
-        )
-        .map((match) => match[2]);
-    const reference = declarations.map(iconCssReference).find((value) => value);
-    if (!reference || isExternalReference(reference)) {
-        throw new Error(`Falta el activo aprobado para process: ${path}`);
-    }
-    const resolved = posix.normalize(
-        posix.join(posix.dirname(stylesheetPath), reference),
-    );
-    if (!/^assets\/icons\//.test(resolved) || !files.has(resolved)) {
-        throw new Error(`Falta el activo aprobado para process: ${path}`);
-    }
-}
-
-function iconCssReference(declarations) {
-    return declarations.match(
-        /(?:^|;)\s*(?:--icon-source|-webkit-mask(?:-image)?|mask(?:-image)?|background-image)\s*:\s*[^;{}]*?url\(\s*(["']?)([^)'"\s]+)\1\s*\)/i,
-    )?.[2];
 }
 
 function assertNarrativeElements(source, path) {
@@ -909,16 +895,25 @@ function hasAttribute(source, name) {
 }
 
 function assertChart(source, path) {
-    const chartTag = source.match(
-        /<[a-z][a-z0-9-]*\b[^>]*\bdata-chart-type\s*=\s*["']donut["'][^>]*>/i,
-    )?.[0];
-    if (!chartTag) return;
-
-    const segmentTags = [
-        ...source.matchAll(
-            /<path\b[^>]*\bdata-chart-segment\s*=\s*["'][^"']+["'][^>]*>/gi,
-        ),
-    ].map((match) => match[0]);
+    const charts = tagsWithMarker(source, 'data-chart-type').filter(
+        (tag) => attribute(tag, 'data-chart-type') === 'donut',
+    );
+    const segmentTags = tagsWithMarker(source, 'data-chart-segment');
+    const legendTags = tagsWithMarker(source, 'data-chart-legend');
+    const centers = tagsWithMarker(source, 'data-chart-center');
+    if (
+        !charts.length &&
+        !segmentTags.length &&
+        !legendTags.length &&
+        !centers.length
+    )
+        return;
+    if (charts.length !== 1 || !/^<figure\b/i.test(charts[0])) {
+        throw new Error(
+            `La dona requiere figure con data-chart-type="donut": ${path}`,
+        );
+    }
+    const chartTag = charts[0];
     if (segmentTags.length < 3 || segmentTags.length > 5) {
         throw new Error(`La dona requiere de tres a cinco segmentos: ${path}`);
     }
@@ -926,7 +921,12 @@ function assertChart(source, path) {
     for (const tag of segmentTags) {
         const id = attribute(tag, 'data-chart-segment');
         const value = Number(attribute(tag, 'data-value'));
-        if (!id || !Number.isFinite(value) || value <= 0 || segments.has(id)) {
+        if (
+            !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(id ?? '') ||
+            !Number.isFinite(value) ||
+            value <= 0 ||
+            segments.has(id)
+        ) {
             throw new Error(`La dona contiene un segmento inválido: ${path}`);
         }
         segments.set(id, value);
@@ -936,17 +936,123 @@ function assertChart(source, path) {
         throw new Error(`Los segmentos de la dona deben sumar 100: ${path}`);
     }
 
-    const legendIds = [
-        ...source.matchAll(/\bdata-chart-legend\s*=\s*["']([^"']+)["']/gi),
-    ].map((match) => match[1]);
+    if (
+        segmentTags.some(
+            (tag) =>
+                !/^<path\b/i.test(tag) ||
+                !attribute(tag, 'd') ||
+                !attribute(tag, 'data-label')?.trim(),
+        )
+    ) {
+        throw new Error(
+            `La dona requiere sectores path con geometría y data-label: ${path}`,
+        );
+    }
+    const geometry = [
+        'data-chart-cx',
+        'data-chart-cy',
+        'data-chart-inner-radius',
+        'data-chart-outer-radius',
+    ].map((name) => attribute(chartTag, name));
+    const [cx, cy, innerRadius, outerRadius] = geometry.map(Number);
+    if (
+        geometry.some((value) => value == null || !value.trim()) ||
+        ![cx, cy, innerRadius, outerRadius].every(Number.isFinite) ||
+        innerRadius <= 0 ||
+        outerRadius <= innerRadius
+    ) {
+        throw new Error(`La dona requiere centro y radios válidos: ${path}`);
+    }
+    const legendIds = legendTags.map((tag) =>
+        attribute(tag, 'data-chart-legend'),
+    );
     if (
         legendIds.length !== segments.size ||
+        new Set(legendIds).size !== legendIds.length ||
         legendIds.some((id) => !segments.has(id))
     ) {
         throw new Error(
             `La leyenda de la dona no coincide con sus segmentos: ${path}`,
         );
     }
+    const labels = new Map(
+        segmentTags.map((tag) => [
+            attribute(tag, 'data-chart-segment'),
+            attribute(tag, 'data-label'),
+        ]),
+    );
+    const legends = pairedElementsWithMarker(
+        source,
+        '[a-z][a-z0-9-]*',
+        'data-chart-legend',
+    );
+    if (
+        legends.length !== segments.size ||
+        legends.some(
+            (entry) =>
+                !matchesChartText(
+                    entry,
+                    'data-chart-legend',
+                    segments,
+                    labels,
+                ) ||
+                tagsWithMarker(entry.content, 'data-chart-swatch').length !== 1,
+        )
+    ) {
+        throw new Error(
+            `La leyenda requiere etiqueta, porcentaje y muestra por categoría: ${path}`,
+        );
+    }
+    const maximum = Math.max(...segments.values());
+    const maxima = [...segments]
+        .filter(([, value]) => value === maximum)
+        .map(([id]) => id);
+    const highlighted = segmentTags
+        .filter((tag) => hasAttribute(tag, 'data-chart-highlight'))
+        .map((tag) => attribute(tag, 'data-chart-segment'));
+    const centerItems = pairedElementsWithMarker(
+        source,
+        '[a-z][a-z0-9-]*',
+        'data-chart-center-item',
+    );
+    const centerIds = centerItems.map((entry) =>
+        attribute(entry.openingTag, 'data-chart-center-item'),
+    );
+    if (
+        centers.length !== 1 ||
+        centerIds.length !== maxima.length ||
+        new Set(centerIds).size !== centerIds.length ||
+        centerIds.some((id) => !maxima.includes(id)) ||
+        highlighted.length !== maxima.length ||
+        highlighted.some((id) => !maxima.includes(id)) ||
+        centerItems.some(
+            (entry) =>
+                !matchesChartText(
+                    entry,
+                    'data-chart-center-item',
+                    segments,
+                    labels,
+                ),
+        ) ||
+        (maxima.length > 1 &&
+            !markedText(source, 'data-chart-tie')?.text.trim())
+    ) {
+        throw new Error(
+            `El centro y los sectores resaltados deben mostrar los máximos y sus categorías: ${path}`,
+        );
+    }
+}
+
+function matchesChartText(entry, marker, values, labels) {
+    const id = attribute(entry.openingTag, marker);
+    const label = markedText(entry.content, 'data-chart-label');
+    const percentage = markedText(entry.content, 'data-chart-value');
+    const match = percentage?.text.match(/^(\d+(?:[.,]\d+)?)\s*%$/);
+    return (
+        label?.text === labels.get(id) &&
+        match &&
+        Math.abs(Number(match[1].replace(',', '.')) - values.get(id)) < 0.001
+    );
 }
 
 function assertCode(source, path) {
@@ -962,8 +1068,8 @@ function assertCode(source, path) {
             /<[a-z][a-z0-9-]*\b[^>]*\bdata-code-line(?:\s*=\s*["'][^"']*["'])?[^>]*>/gi,
         ),
     ].map((match) => match[0]);
-    if (lineTags.length < 12 || lineTags.length > 16) {
-        throw new Error(`code requiere de 12 a 16 líneas visibles: ${path}`);
+    if (lineTags.length < 1 || lineTags.length > 16) {
+        throw new Error(`code requiere de 1 a 16 líneas visibles: ${path}`);
     }
     const focusIndexes = lineTags.flatMap((tag, index) =>
         /\bdata-code-focus(?:\s|=|>)/i.test(tag) ? [index] : [],
@@ -993,6 +1099,38 @@ function assertCode(source, path) {
     if (tokenKinds.size < 3) {
         throw new Error(
             `code requiere resaltado sintáctico para al menos tres tipos de token: ${path}`,
+        );
+    }
+    const pre = source.match(/<pre\b[^>]*>/i)?.[0] || '';
+    const start = Number(attribute(pre, 'data-code-start'));
+    const end = Number(attribute(pre, 'data-code-end'));
+    const range = markedText(source, 'data-code-range')?.text.match(
+        /(\d+)\s*[-–]\s*(\d+)/,
+    );
+    const numbers = pairedElementsWithMarker(
+        source,
+        '[a-z][a-z0-9-]*',
+        'data-code-number',
+    );
+    if (
+        !Number.isInteger(start) ||
+        start < 1 ||
+        end !== start + lineTags.length - 1 ||
+        !range ||
+        Number(range[1]) !== start ||
+        Number(range[2]) !== end ||
+        numbers.length !== lineTags.length ||
+        tagsWithMarker(source, 'data-code-content').length !==
+            lineTags.length ||
+        numbers.some(
+            (number, index) =>
+                !/^\d+$/.test(number.content.trim()) ||
+                Number(number.content.trim()) !== start + index ||
+                attribute(number.openingTag, 'aria-hidden') !== 'true',
+        )
+    ) {
+        throw new Error(
+            `El código requiere rango y números consecutivos en HTML con data-code-number y data-code-content: ${path}`,
         );
     }
 }

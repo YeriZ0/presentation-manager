@@ -1,6 +1,14 @@
 # Authoring guide
 
+La autoría técnica descrita aquí no sustituye el flujo de creación guiada. Para crear una presentación mediante un agente, consulta `.agents/skills/create-web-deck/references/creation-workflow.md`; para crear o mantener una plantilla, consulta `docs/template-authoring-guide.md`.
+
 Las presentaciones creadas en este proyecto se guardan en `presentations/<slug>/`. La carpeta `examples/` contiene solamente referencias y paquetes de prueba.
+
+El slug se deriva de un nombre de trabajo obligatorio, explicado al usuario como nombre de la carpeta de recursos iniciales. No tiene que coincidir con el título visible: este puede definirse después de leer fuentes y queda en `deck.json.title`. Cambiar el título no renombra automáticamente la carpeta.
+
+No consultar otras presentaciones como modelos de contenido, diseño o código salvo indicación explícita para el trabajo actual. Los ejemplos mínimos explican el formato, no autorizan imitar otros decks. El flujo permite proponer subtítulos y temáticas desde fuentes autorizadas o desde la conversación, o recogerlos del usuario.
+
+Antes de escribir HTML/CSS, cargar las reglas aplicables y construir cabecera, cuerpo y pie directamente sin separadores decorativos. Revisar la base de un generador antes de propagarla; la auditoría final no sustituye esta preparación ni debe convertirse en una limpieza rutinaria de bordes.
 
 ## Estructura
 
@@ -31,6 +39,8 @@ presentations/
 
 `_working/sources/` guarda documentos de referencia y `_working/structure/` guarda esquemas aportados por el usuario. Esta carpeta es de trabajo y nunca se incluye en el ZIP final.
 
+Durante la creación, comunique ambas rutas al usuario: `presentations/<slug>/_working/sources/` recibe documentos, imágenes y recursos fuente; `presentations/<slug>/_working/structure/` recibe guiones, estructuras de diapositivas y esquemas. La creación, validación y empaquetado no requiere Python.
+
 1. Crea una carpeta para cada diapositiva
 2. Agrega `index.html`, `styles.css` y `script.js` en cada carpeta
 3. Conserva todo el texto visible directamente en el HTML
@@ -42,7 +52,7 @@ presentations/
 9. Comprime el contenido de forma que `deck.json` quede en la raiz
 10. Guarda el ZIP en `presentations/packages/`
 
-Para empaquetar una carpeta ya creada, ejecuta `npm run package:deck -- presentations/<slug> presentations/packages/<slug>.zip`. El comando valida `deck.json`, incluye solamente `deck.json`, `assets/`, `slides/` y `notes/`, y rechaza runtimes de graficas no utilizados o faltantes.
+Para empaquetar una carpeta ya creada, ejecuta `npm run package:deck -- presentations/<slug> presentations/packages/<slug>.zip`. El comando valida `deck.json`, incluye solamente `deck.json`, `assets/`, `slides/` y `notes/`, y rechaza runtimes de graficas no utilizados o faltantes. No uses scripts Python ni empaquetadores alternativos que omitan estas validaciones.
 
 La skill no permite emojis en diapositivas, notas, titulos, textos alternativos ni etiquetas ARIA. El empaquetador tambien ejecuta una auditoria renderizada de contraste: 4.5:1 para texto normal, 3:1 para texto grande y elementos graficos relevantes. Un fallo bloquea la creacion del ZIP.
 
@@ -234,6 +244,8 @@ Las diapositivas creadas con `academic-sober` declaran la plantilla y la estruct
 
 Una composicion tematica contiene de dos a cuatro unidades y mantiene el orden tema, icono y descripcion:
 
+En pilares, comparaciones, elementos narrativos y procesos, el CSS inicial debe centrar las cajas de esos elementos y su texto dentro de cada unidad. Usar los marcadores obligatorios como selectores según `docs/templates/academic-sober/foundations/hierarchy.md`: `[data-comparison-option]` no equivale a `.comparison-option`. Comprobar el marcado final después de cualquier transformación. El cuerpo centrado verticalmente no demuestra esta alineación horizontal y una omisión de iconos no exime al texto de centrado.
+
 ```html
 <section class="thematic-units">
     <article data-thematic-unit>
@@ -286,11 +298,15 @@ Toda composición interna se centra verticalmente y no usa marco salvo que se ha
 </body>
 ```
 
-Los procesos usan un `ol` horizontal de tres a cinco pasos sobre el mismo eje, marcadores `data-process-step`, `data-step-number`, `data-step-title` y `data-step-description`, además de una capa `data-process-connectors` con copias pequeñas y alineadas de una misma flecha aprobada. Phosphor `arrow-fat-right` es el valor predeterminado; una biblioteca elegida por el usuario puede aportar un equivalente. Cada flecha declara el nombre exacto mediante `data-process-arrow`. Las explicaciones narrativas usan `data-narrative-copy` y de dos a cuatro `article` con `data-narrative-element`.
+Los procesos usan un `ol` horizontal de tres a cinco pasos sobre el mismo eje, con `data-process-step`, `data-step-number`, `data-step-title` y `data-step-description`. Numerar consecutivamente desde 1 en HTML visible, con ceros iniciales opcionales. La numeración basta para expresar continuidad: no incluir flechas, líneas ni capas de conectores. Incluir iconos semánticos por defecto en pasos, pilares, comparaciones y elementos narrativos; una omisión sigue `docs/templates/academic-sober/foundations/iconography.md` y queda declarada en `body` con `data-icons="none"` y un motivo permitido. Las explicaciones narrativas usan `data-narrative-copy` y de dos a cuatro `article` con `data-narrative-element`.
 
-Las donas declaran `data-chart-type="donut"`; cada segmento usa `data-chart-segment` y `data-value`, y su entrada equivalente usa `data-chart-legend`. Los valores deben sumar 100 y la geometría se deriva de la misma fuente de datos que la leyenda.
+Las donas siguen el contrato completo de `docs/templates/academic-sober/slides/graficas/chart.md`. Cada sector anular es un `path` con ID, valor y etiqueta; cada entrada de leyenda tiene el mismo ID, etiqueta, porcentaje y color. El centro muestra el máximo y su categoría, incluidos los empates, nunca el total genérico. Derivar todos esos elementos y su geometría durante la autoría de una sola colección. `scripts/lib/donut-geometry.mjs` ofrece `createDonutGeometry`, función local sin dependencias externas, para calcular sectores acumulados y máximos; no es un runtime que deba copiarse a las slides.
 
 Los fragmentos de código marcan cada línea con `data-code-line`, una región contigua con `data-code-focus`, su explicación con `data-code-note` y cada token con `data-code-token`. Las palabras clave, funciones, propiedades, cadenas, números, comentarios y puntuación deben diferenciarse con contraste suficiente y señales adicionales al color.
+
+Cada línea contiene `data-code-number` con `aria-hidden="true"` y `data-code-content`. El `pre` declara `data-code-start` y `data-code-end`, coherentes con el metadato `data-code-range`. Usar una fila por línea, de una a dieciséis, con fuente de 22–28px e interlineado inicial de 1.35. El contenedor de filas usa `white-space: normal` y el contenido de cada línea `white-space: pre`, evitando filas accidentales entre elementos de bloque. Mantener números, nota y contador de diapositiva visibles dentro del lienzo.
+
+En donas, mantener figura, leyenda y centro en un mismo `figure`, con una caja relativa para SVG y texto central. Aplicar CSS a los elementos reales, preferiblemente mediante sus marcadores. Verificar que el centro quepa dentro del hueco, la leyenda tenga campos separados y la alternativa `sr-only` tenga ocultación visual accesible efectiva. La guía resumida para usuarios es `docs/generation-requirements.md`.
 
 Una diapositiva con relaciones reserva todo el cuerpo al diagrama. Mantiene nodos, etiquetas y descripciones en HTML, y usa SVG solamente para conectores y geometría funcional. Las variantes autorizadas son `architecture`, `workflow`, `sequence`, `data-flow`, `lifecycle`, `hierarchy` y `relationship-map`:
 

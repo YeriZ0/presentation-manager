@@ -9,7 +9,7 @@ La audiencia necesita consultar valores exactos, comparar criterios compartidos 
 - Usar `<table>` con `<caption>`, `<thead>`, `<tbody>`, `<th scope="col">` y `<th scope="row">`
 - Alinear texto a la izquierda y numeros a la derecha
 - Mantener unidades en el encabezado, no repetirlas en cada celda
-- Usar separadores horizontales finos y evitar una caja por celda
+- Separar filas y encabezados mediante espacio, alineación y peso tipográfico; no añadir divisores decorativos ni una caja por celda, según `../../foundations/hierarchy.md`
 - Resaltar una fila, columna o celda solo cuando sostenga la conclusion
 - Mostrar una nota y fuente fuera de la cuadricula cuando sean necesarias
 

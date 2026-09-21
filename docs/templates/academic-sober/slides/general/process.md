@@ -10,8 +10,11 @@ El contenido describe una secuencia lineal con orden obligatorio y sin decisione
 - Ordenar la progresión horizontalmente de izquierda a derecha
 - Mantener todos los pasos sobre el mismo eje y con separaciones constantes
 - Mantener en cada paso el orden título, icono y descripción
-- Mostrar el número como metadato secundario, nunca como sustituto del título
-- Conectar pasos consecutivos con el icono Phosphor `arrow-fat-right` por defecto o con una flecha equivalente de la biblioteca seleccionada por el usuario
+- Centrar número, título, caja del icono y descripción dentro de cada `[data-process-step]`, incluido el texto, según `../../foundations/hierarchy.md`; avanzar de izquierda a derecha no significa alinear el contenido del paso a la izquierda
+- Mostrar números consecutivos y únicos desde 1, con ceros iniciales opcionales, nunca como sustitutos del título
+- La numeración expresa el orden; no agregar flechas, líneas ni capas de conectores entre pasos
+- Cada paso incluye un icono semántico por defecto; una omisión requiere la decisión explícita de `../../foundations/iconography.md`
+- Los pasos son unidades abiertas sin tarjetas ni recuadros con bordes
 - Centrar verticalmente la secuencia completa
 - Animar en el mismo orden de la secuencia
 
@@ -21,11 +24,8 @@ El contenido describe una secuencia lineal con orden obligatorio y sin decisione
 - Marcar el `ol` o cada `li` de forma semántica
 - Marcar cada paso con `data-process-step`
 - Usar `data-step-number`, `data-step-title` y `data-step-description`
-- Marcar la capa con `data-process-connectors`
-- Marcar cada flecha con `data-process-arrow` y el nombre exacto del activo aprobado
-- Cuando la clase use un rol semántico distinto del activo, declarar también `data-icon` con el nombre exacto que registra `icons.css`
-- Usar el mismo activo, biblioteca, peso y tamaño entre todos los pasos
-- Usar flechas de 32px a 48px, menores que los iconos de los pasos
+- Escribir la numeración directamente en HTML visible y en orden de lectura
+- No usar `data-process-connectors` ni `data-process-arrow` en nuevas autorías
 
 ## Límites
 
@@ -38,6 +38,6 @@ El contenido describe una secuencia lineal con orden obligatorio y sin decisione
 
 - Desniveles o inclinaciones diferentes entre pasos equivalentes
 - Tarjetas desconectadas que oculten la secuencia
-- Flechas grandes como decoración
+- Flechas, SVG, líneas o iconos utilizados como separadores entre pasos
 - Numeración generada con CSS `content`
 - Agregar una explicación lateral que compita con la secuencia

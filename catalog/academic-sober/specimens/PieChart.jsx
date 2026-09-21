@@ -1,106 +1,98 @@
+import { createDonutGeometry } from '../../../scripts/lib/donut-geometry.mjs';
+
 const parts = [
-    { id: 'digital', label: 'Digital', value: 52, className: 'pie-accent' },
+    { id: 'digital', label: 'Digital', value: 52 },
     {
         id: 'presencial',
         label: 'Presencial',
         value: 28,
-        className: 'pie-dark',
     },
     {
         id: 'telefono',
         label: 'Teléfono',
         value: 12,
-        className: 'pie-mid',
     },
-    { id: 'otros', label: 'Otros', value: 8, className: 'pie-light' },
+    { id: 'otros', label: 'Otros', value: 8 },
 ];
 
-const CENTER = 300;
-const OUTER_RADIUS = 190;
-const INNER_RADIUS = 88;
-
-function pointOnCircle(radius, angle) {
-    const radians = ((angle - 90) * Math.PI) / 180;
-    return {
-        x: CENTER + radius * Math.cos(radians),
-        y: CENTER + radius * Math.sin(radians),
-    };
-}
-
-function createDonutPath(startAngle, endAngle) {
-    const outerStart = pointOnCircle(OUTER_RADIUS, startAngle);
-    const outerEnd = pointOnCircle(OUTER_RADIUS, endAngle);
-    const innerStart = pointOnCircle(INNER_RADIUS, startAngle);
-    const innerEnd = pointOnCircle(INNER_RADIUS, endAngle);
-    const largeArc = endAngle - startAngle > 180 ? 1 : 0;
-
-    return [
-        `M ${outerStart.x} ${outerStart.y}`,
-        `A ${OUTER_RADIUS} ${OUTER_RADIUS} 0 ${largeArc} 1 ${outerEnd.x} ${outerEnd.y}`,
-        `L ${innerEnd.x} ${innerEnd.y}`,
-        `A ${INNER_RADIUS} ${INNER_RADIUS} 0 ${largeArc} 0 ${innerStart.x} ${innerStart.y}`,
-        'Z',
-    ].join(' ');
-}
+const chart = createDonutGeometry(parts);
+const colorClasses = ['pie-accent', 'pie-dark', 'pie-mid', 'pie-light'];
+const colors = new Map(
+    [
+        ...chart.maxima,
+        ...chart.segments.filter((part) => !part.highlighted),
+    ].map((part, index) => [part.id, colorClasses[index]]),
+);
 
 export function PieChart() {
-    let angle = 0;
-    const segments = parts.map((part) => {
-        const startAngle = angle;
-        angle += part.value * 3.6;
-        return { ...part, path: createDonutPath(startAngle, angle) };
-    });
-
     return (
         <figure
             className="pie-body"
             data-chart-type="donut"
             data-chart-total="100"
+            data-chart-cx={chart.cx}
+            data-chart-cy={chart.cy}
+            data-chart-inner-radius={chart.innerRadius}
+            data-chart-outer-radius={chart.outerRadius}
         >
-            <svg
-                viewBox="0 0 600 600"
-                className="pie-svg"
-                role="img"
-                aria-labelledby="pie-chart-title pie-chart-description"
-            >
-                <title id="pie-chart-title">
-                    La mayoría prefiere el canal digital
-                </title>
-                <desc id="pie-chart-description">
-                    Distribución de canales: Digital 52%, Presencial 28%,
-                    Teléfono 12% y Otros 8%.
-                </desc>
-                {segments.map(({ id, label, value, className, path }) => (
-                    <path
-                        d={path}
-                        className={`pie-slice ${className}`}
-                        data-chart-segment={id}
-                        data-value={value}
-                        aria-label={`${label}: ${value}%`}
-                        key={id}
-                    />
-                ))}
-                <text x="300" y="292" textAnchor="middle" className="pie-total">
-                    52%
-                </text>
-                <text
-                    x="300"
-                    y="322"
-                    textAnchor="middle"
-                    className="pie-caption"
+            <div className="pie-visual">
+                <svg
+                    viewBox="0 0 600 600"
+                    className="pie-svg"
+                    role="img"
+                    aria-labelledby="pie-chart-title pie-chart-description"
                 >
-                    Digital
-                </text>
-            </svg>
+                    <title id="pie-chart-title">
+                        La mayoría prefiere el canal digital
+                    </title>
+                    <desc id="pie-chart-description">
+                        {chart.segments
+                            .map(({ label, value }) => `${label}: ${value}%`)
+                            .join(', ')}
+                    </desc>
+                    {chart.segments.map(
+                        ({ id, label, value, path, highlighted }) => (
+                            <path
+                                d={path}
+                                className={`pie-slice ${colors.get(id)}`}
+                                data-chart-segment={id}
+                                data-value={value}
+                                data-label={label}
+                                data-chart-highlight={
+                                    highlighted ? '' : undefined
+                                }
+                                aria-label={`${label}: ${value}%`}
+                                key={id}
+                            />
+                        ),
+                    )}
+                </svg>
+                <div className="pie-center" data-chart-center>
+                    {chart.maxima.length > 1 ? (
+                        <span data-chart-tie>Empate</span>
+                    ) : null}
+                    {chart.maxima.map(({ id, label, value }) => (
+                        <div data-chart-center-item={id} key={id}>
+                            <strong className="pie-total" data-chart-value>
+                                {value}%
+                            </strong>
+                            <span className="pie-caption" data-chart-label>
+                                {label}
+                            </span>
+                        </div>
+                    ))}
+                </div>
+            </div>
             <ol className="pie-legend" aria-label="Canales de respuesta">
-                {segments.map(({ id, label, value, className }) => (
+                {chart.segments.map(({ id, label, value }) => (
                     <li data-chart-legend={id} key={id}>
                         <i
-                            className={`legend-swatch ${className}`}
+                            className={`legend-swatch ${colors.get(id)}`}
                             aria-hidden="true"
+                            data-chart-swatch
                         />
-                        <span>{label}</span>
-                        <strong>{value}%</strong>
+                        <span data-chart-label>{label}</span>
+                        <strong data-chart-value>{value}%</strong>
                     </li>
                 ))}
             </ol>

@@ -66,10 +66,10 @@ Elegir primero la pregunta y después el tipo. No convertir toda colección de c
 - Evitar cruces y limitar cada ruta ortogonal a dos dobleces
 - Conectar el perímetro de los nodos, no atravesar su contenido
 - Usar trazos de 3px a 4px y terminaciones consistentes
-- Usar puntas de `7.2x7.2` unidades, con `refX="7.2"` y `refY="3.6"`, en un SVG de `1680x620`
+- Declarar explícitamente unidades, geometría y estilo de las puntas según el contrato geométrico siguiente; comprobar su tamaño visual real
 - Mantener al menos 80px entre cajas de nodos
 - Mantener 32px de separación entre una ruta y cualquier nodo no relacionado
-- Mantener longitudes equivalentes entre conectores de la misma ruta o jerarquía visual
+- Mantener longitudes equivalentes solo entre conectores con una función y jerarquía realmente equivalentes; no igualar arbitrariamente ramas principales, excepciones o retornos
 - Escalonar nodos cuando una retícula horizontal produzca recorridos extensos o deje poco espacio para las etiquetas
 - Usar flechas solo para dirección, dependencia o transferencia
 - Usar líneas sin flecha para asociaciones no dirigidas
@@ -78,6 +78,19 @@ Elegir primero la pregunta y después el tipo. No convertir toda colección de c
 - Usar en cada etiqueta el mismo color de su conector
 - Diferenciar relaciones mediante etiqueta, patrón o terminación, no solo mediante color
 - Mantener una ruta principal claramente más legible que las ramas secundarias
+
+## Contrato geométrico
+
+- Definir una única geometría de autoría para cajas HTML, rutas SVG y etiquetas; el `viewBox` corresponde al tamaño real del área del diagrama, no a un tamaño fijo ajeno a esa área
+- Si se combinan porcentajes y coordenadas absolutas, documentar y aplicar su conversión al mismo sistema; no escalar únicamente conectores mientras los nodos conservan otras dimensiones
+- Calcular anclajes sobre el perímetro real de cada forma, incluidos rombos; la ruta sale y entra por los lados elegidos con dirección coherente, sin huecos ni cruces por el contenido
+- Medir separación entre cajas y reservar antes el espacio de título, marca, leyenda y contador según `spacing.md`
+- Aplicar trazo y `marker-end` a `[data-diagram-edge]`, nunca indiscriminadamente a todos los `path`; las formas de `<defs>` tienen relleno y trazo propios sin heredar marcadores
+- Usar, como punto inicial, `markerUnits="userSpaceOnUse"`, `viewBox="0 0 7.2 7.2"`, `markerWidth="7.2"`, `markerHeight="7.2"`, `refX="7.2"`, `refY="3.6"` y `orient="auto"`, con la punta en `(7.2, 3.6)`, relleno del color del conector y `stroke="none"`
+- Ajustar ese punto inicial según escala y contraste renderizados; `markerWidth` no garantiza por sí solo el tamaño visible, y `strokeWidth` multiplica las unidades por el grosor del trazo si se elige ese modo
+- Asignar una posición independiente a cada etiqueta y comprobar colisiones frente a otras etiquetas, rutas, puntas y nodos
+- Evitar tramos compartidos ambiguos; mostrar una unión explícita solo si representa una convergencia sustentada por el contenido, preservando la dirección y el significado de cada relación
+- Comprobar conectores y marcadores con sus estilos CSS efectivos, además de los atributos SVG; la inspección estática no sustituye la revisión renderizada y visual a `1920x1080`
 
 ## Reglas por tipo
 

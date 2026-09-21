@@ -15,7 +15,7 @@ Se permiten ajustes opticos de hasta 8px cuando una tipografia o un logo lo requ
 - Margen horizontal: 96px a 112px
 - Margen superior: 72px a 88px
 - Margen inferior: 40px a 72px segun el pie
-- Cabecera interna: 120px a 152px de alto, incluido el contexto opcional
+- Cabecera interna: 120px a 152px de alto como base, incluido el contexto opcional; ampliarla si el título de dos líneas lo exige y descontar esa altura del cuerpo
 
 ## Proximidad
 
@@ -43,3 +43,16 @@ Un grupo debe reconocerse por cercania antes de necesitar borde o fondo.
 - Portada y cierre: centrar la pila completa dentro del lienzo disponible
 - Evitar grandes franjas vacias sin intencion compositiva
 - En diapositivas de diagrama, usar el espacio negativo para separar rutas y grupos; no llenarlo con explicaciones auxiliares
+
+## Presupuesto del lienzo
+
+- Descontar de 1080px los márgenes, cabecera real, metadatos externos al cuerpo, separaciones y pie con contador antes de asignar la altura del cuerpo
+- Incluir en el cuerpo rellenos, bordes, leyendas, fuentes, anotaciones y todas las líneas visibles; no contar dos veces los elementos ya incluidos en otra zona
+- Descontar de 1920px márgenes y separaciones antes de repartir columnas; en cabecera, reservar además ancho de marca y distancia al título
+- Para narrativa, repartir el ancho restante en proporción `2fr 3fr`, con mínimos de cero, en vez de `40% + 60% + gap`; descontar también los huecos internos antes de repartir las columnas derivadas
+- Mantener las columnas derivadas en una sola fila, sin envolverlas ni apilarlas para resolver el exceso
+- Aplicar a pilares, comparaciones, elementos narrativos y procesos las distancias tema–icono e icono–descripción de Proximidad, salvo ajustes documentados por estructura; alinear bandas compartidas y centrar cajas y texto de cada pila horizontalmente según `hierarchy.md`
+- Centrar el conjunto visible completo entre cabecera y contador, no solamente su primer hijo
+- Si el presupuesto no alcanza, sintetizar, retirar detalle auxiliar o dividir; no ocultar contenido ni introducir desplazamiento
+
+La separación se obtiene mediante espacio, según la prohibición global de `hierarchy.md`, sin barras en cabeceras, pies o anotaciones.

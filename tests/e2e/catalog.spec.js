@@ -447,23 +447,7 @@ test('uses open centered compositions without default frames', async ({
                 ),
         )
         .toBe(true);
-    await expect
-        .poll(() =>
-            page.locator('[data-process-arrow]').evaluateAll((arrows) => {
-                const rects = arrows.map((arrow) =>
-                    arrow.getBoundingClientRect(),
-                );
-                return arrows.every(
-                    (arrow, index) =>
-                        Number.parseFloat(getComputedStyle(arrow).width) <=
-                            48 &&
-                        Number.parseFloat(getComputedStyle(arrow).height) <=
-                            48 &&
-                        Math.abs(rects[index].top - rects[0].top) <= 2,
-                );
-            }),
-        )
-        .toBe(true);
+    await expect(page.locator('[data-process-arrow]')).toHaveCount(0);
     await expect
         .poll(() =>
             page
@@ -489,19 +473,14 @@ test('comparison, process and narrative follow the shared hierarchy', async ({
         'Frente a',
     );
     await expect(page.locator('[data-process-step]')).toHaveCount(4);
-    await expect(page.locator('[data-process-connectors]')).toHaveCount(1);
-    await expect(page.locator('[data-process-arrow]')).toHaveCount(3);
-    await expect
-        .poll(() =>
-            page
-                .locator('[data-process-arrow]')
-                .evaluateAll((arrows) =>
-                    arrows.every(
-                        (arrow) => arrow.complete && arrow.naturalWidth > 0,
-                    ),
-                ),
-        )
-        .toBe(true);
+    await expect(page.locator('[data-process-connectors]')).toHaveCount(0);
+    await expect(page.locator('[data-process-arrow]')).toHaveCount(0);
+    await expect(page.locator('[data-step-number]')).toHaveText([
+        '01',
+        '02',
+        '03',
+        '04',
+    ]);
     await expect(page.locator('[data-narrative-element]')).toHaveCount(3);
     await expect
         .poll(() =>
@@ -571,6 +550,16 @@ test('donut data and legend remain synchronized', async ({ page }) => {
 
     await expect(page.locator('[data-chart-segment]')).toHaveCount(4);
     await expect(page.locator('[data-chart-legend]')).toHaveCount(4);
+    await expect(
+        page.locator('[data-chart-center] [data-chart-value]'),
+    ).toHaveText('52%');
+    await expect(
+        page.locator('[data-chart-center] [data-chart-label]'),
+    ).toHaveText('Digital');
+    await expect(page.locator('[data-chart-highlight]')).toHaveAttribute(
+        'data-chart-segment',
+        'digital',
+    );
     await expect
         .poll(() =>
             page.locator('[data-chart-type="donut"]').evaluate((chart) => {

@@ -6,18 +6,21 @@ La diapositiva presenta el proyecto, la identidad académica y sus integrantes.
 
 ## Composición
 
-- Omitir cabecera interna y pie convencional
+- Omitir cabecera interna y pie convencional; conservar el contador de `../../foundations/deck-consistency.md`
 - Colocar el logo confirmado como ancla superior centrada
 - Construir una sola pila centrada debajo del logo
+- Mostrar la institución inmediatamente después del logo y antes de la temática
 - Mostrar categoría, título y subtítulo antes de la ficha académica
 - Agrupar materia y docente por proximidad
 - Mostrar equipo e integrantes en una lista vertical limpia
-- Colocar la fecha al final del bloque
+- Incluir la fecha, si está confirmada, dentro de la ficha académica y antes de los estudiantes, que cierran la pila
 - Desplazar el centro optico ligeramente hacia abajo
 
 ## Texto y nombres
 
 - Omitir la categoría cuando repita el título, la materia o el tema ya visible
+- El título visible no tiene que coincidir con el nombre de la carpeta de trabajo
+- Proponer subtítulo y contexto solo desde la procedencia elegida en el flujo; la delegación no obliga a incluir texto redundante
 - Ajustar la escala del título según el número de palabras definido en `../../foundations/sizing.md`
 - Sintetizar el subtítulo antes de reducir los datos académicos
 - Conservar los nombres completos y su ortografía proporcionada
@@ -26,7 +29,8 @@ La diapositiva presenta el proyecto, la identidad académica y sus integrantes.
 
 ## Espaciado específico
 
-- Logo a categoría: 48px a 72px
+- Logo a institución: 32px a 48px
+- Institución a temática: 48px a 72px
 - Categoría a título: 16px a 24px
 - Título a subtítulo: 20px a 32px
 - Subtítulo a ficha: 48px a 64px

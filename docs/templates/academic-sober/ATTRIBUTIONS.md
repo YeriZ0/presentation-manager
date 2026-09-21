@@ -13,3 +13,9 @@ Archify se estudió como referencia inspiracional para la selección de diagrama
 - Texto de licencia: `licenses/archify-MIT.txt`
 
 Esta plantilla no incorpora los renderizadores, el visor, los activos de marca ni las dependencias de ejecución de Archify. Las composiciones, reglas y el marcado HTML de `academic-sober` son una implementación propia para Armadillo PP in Web.
+
+## Referencia aportada: TuxChess
+
+El usuario utilizó TuxChess como referencia histórica de identidad y distribución al definir la plantilla. Su PDF no forma parte de las dependencias de generación, no concede licencia para extraer activos y no debe abrirse para crear otra presentación salvo autorización explícita para esa tarea.
+
+Su combinación de marcas es particular del ejemplo, no un valor predeterminado. El Ishikawa manual queda excluido como modelo de construcción. Las reglas escritas de la plantilla prevalecen sobre cualquier diferencia del PDF.

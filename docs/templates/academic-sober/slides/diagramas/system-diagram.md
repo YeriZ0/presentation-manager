@@ -38,6 +38,8 @@ Seguir la matriz y las reglas completas de `../../foundations/diagrams.md`.
 - Usar CSS para la composición y JavaScript local solo para activación o movimiento finito
 - No cargar motores de diagramación, scripts externos, CDN ni APIs
 - No depender de JavaScript para generar texto visible o descubrir la topología
+- Aplicar el contrato geométrico de `../../foundations/diagrams.md`: coordenadas comunes, anclajes reales, estilos aislados para rutas y puntas, etiquetas sin colisiones y convergencias explícitas
+- Verificar la geometría renderizada y su lectura visual; no considerar suficiente declarar los marcadores de autoría
 
 ## Iconos
 
