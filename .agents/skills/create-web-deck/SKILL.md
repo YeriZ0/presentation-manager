@@ -1,93 +1,58 @@
 ---
 name: create-web-deck
-description: Create ZIP-ready HTML, CSS and JavaScript slide decks that follow Armadillo PP in Web deck.json, security, asset and template rules. Use when a user asks for presentation slides compatible with Armadillo PP in Web.
+description: Crea presentaciones HTML, CSS y JavaScript listas para ZIP que siguen deck.json, las reglas de seguridad, activos y plantillas de Armadillo PP in Web. Úsala cuando el usuario solicite diapositivas compatibles con Armadillo PP in Web.
 ---
 
-# Create a web deck
+# Crear una presentación web
 
-Create a complete Armadillo PP in Web presentation, validate it and package it as a ZIP. Ask only for information that the user has not already provided.
+Crea una presentación completa de Armadillo PP in Web, valídala y empaquétala como ZIP. Pregunta únicamente por información que el usuario no haya proporcionado. Carga `.agents/skills/create-web-deck/references/creation-workflow.md` antes de recopilar información; ese archivo es la fuente normativa del flujo de preguntas, correcciones y reanudación.
 
-## Work mode and style selection
+La creación, validación y entrega no requiere Python. No solicites su instalación ni introduzcas scripts Python como dependencia. Usa las herramientas oficiales del proyecto basadas en Node.js.
 
-At the start of a new presentation, ask how the user wants to work:
+## Modalidad de trabajo y plantilla
 
-- Guided from a topic
-- Based on source documents
-- Based on a supplied slide structure
-- Resume or revise an existing presentation
+Al iniciar una presentación nueva, resuelve primero el nombre obligatorio de trabajo y la carpeta de fuentes según el flujo. El nombre de carpeta no exige un título visible definitivo. Después pregunta si se trabajará:
 
-Then discover template manifests matching `docs/templates/*/template.md`.
+- A partir de un tema
+- A partir de documentos fuente
+- A partir de un esquema de diapositivas
 
-- Read only each manifest to obtain its ID, visible name and summary
-- Present every discovered template by its visible name and summary
-- Let the user select a template or request a custom visual direction
-- After confirmation, load only the selected manifest and its `always` modules
-- Resolve every module path relative to the selected template directory
-- Reject absolute paths, backslashes, traversal segments and paths outside the selected template
-- Keep format, security, asset and output rules in this skill; templates define visual decisions only
-- If the project templates directory is unavailable, continue with a custom visual direction
+Si se solicita continuar o revisar una presentación existente, seguir la rama de reanudación sin pedir otro nombre de trabajo ni crear otra carpeta. Resolver esa elección antes de preparar carpetas cuando la intención sea ambigua.
 
-Use the selected manifest progressively:
+Después descubre los manifiestos `docs/templates/*/template.md`:
 
-1. Read `structureIndex` when preparing the slide outline
-2. Assign one structure ID to every proposed slide
-3. After outline approval, load only the distinct structure files used by the deck
-4. Load a `conditional` module only when its concern is present
-5. Do not scan or concatenate every Markdown file in the template directory
+- Lee solo cada manifiesto para obtener ID, nombre visible y resumen
+- Presenta cada plantilla por nombre y resumen
+- Permite seleccionar una plantilla o solicitar una dirección visual personalizada
+- Tras la confirmación, carga solo el manifiesto seleccionado y sus módulos `always`
+- Resuelve cada ruta relativa a la carpeta de la plantilla
+- Rechaza rutas absolutas, barras invertidas, segmentos de recorrido y rutas fuera de la plantilla
+- Mantén en esta skill las reglas de formato, seguridad, activos y salida; las plantillas definen decisiones visuales
+- Si no existe la carpeta de plantillas, continúa con una dirección visual personalizada
 
-Load a template's diagram module when a slide contains nodes, connectors, a directed flow or explicit relationships. Do not treat independent icon-and-description units as a relational diagram. When a template exposes diagram variants under one structure, assign the structure ID to the outline and select the variant separately from the structure ID.
+Usa el manifiesto progresivamente:
 
-## Two-phase questionnaire
+1. Lee `structureIndex` al preparar el esquema
+2. Asigna un ID de estructura a cada diapositiva propuesta
+3. Tras aprobar el esquema, carga solo las estructuras distintas utilizadas
+4. Carga un módulo `conditional` solo cuando su tema esté presente
+5. No escanees ni concatentes todos los Markdown de la plantilla
 
-Collect information in two phases and do not ask again for values already supplied.
+Carga el módulo de diagramas cuando una diapositiva tenga nodos, conectores, flujo dirigido o relaciones explícitas. Las unidades independientes de icono y descripción no son diagramas relacionales.
 
-### Phase 1: identity and design
+Usa solo fuentes autorizadas para el trabajo actual. No consultes ni copies otras presentaciones como referencia de contenido, diseño o implementación salvo indicación explícita. La detección de colisiones, los ejemplos técnicos y las atribuciones históricas no conceden esa autorización. Sigue el flujo para decidir si subtítulos y temáticas se proponen desde fuentes, conversación o redacción del usuario.
 
-Ask for these first three missing values in separate turns and in this order:
+Aplica los fundamentos y estructuras antes de escribir HTML/CSS: prepara una composición base conforme y sin separadores decorativos. No generes bordes para eliminarlos después mediante validación. La revisión final permanece obligatoria como control de regresiones.
 
-1. Exact presentation title
-2. Member names, or confirmation that it is an individual presentation
-3. Subject, or confirmation that it does not apply
+## Cuestionario
 
-Immediately after confirming the title:
+Sigue íntegramente `references/creation-workflow.md`. No repitas sus preguntas en esta skill ni vuelvas a preguntar datos ya aportados. Toda aprobación, selección o dato debe solicitarse con `question` o su equivalente cuando esté disponible.
 
-1. Derive an ASCII lowercase slug with hyphens
-2. Show `presentations/<slug>/` and let the user correct the slug
-3. Check both the source folder and `presentations/packages/<slug>.zip` for collisions
-4. If either exists, ask whether to replace it, create a new version or cancel
-5. Create `presentations/<slug>/_working/sources/` and `presentations/<slug>/_working/structure/`
-6. Tell the user to place documents in `sources/` and slide outlines in `structure/`
+Confirma los resúmenes mediante secciones breves e independientes, con una pregunta por sección, confirmación o ajustes escritos y conservación de lo ya aprobado. No presentes el esquema completo en un modal ni solicites una aprobación global al terminar. Los límites de tamaño y el registro de versiones están definidos en el flujo.
 
-After subject, group the remaining missing values in this order:
+## Salida
 
-- Optional subtitle
-- Institution, faculty or career, and instructor
-- Team name and presentation date
-- Topic when it is not clear from the title
-- Audience, language and slide count
-- Institution and project logos
-- Template-specific visual choices, color accent, typography and visual density
-- Speaker notes preference
-
-For each logo or image URL, ask whether to download it into the deck or keep the HTTPS URL. Remote hosts must be declared in `externalResources`.
-
-### Phase 2: structure and content
-
-- Read the source material supplied by the user
-- Read only the selected template's `structureIndex` before choosing compositions
-- Propose an exact numbered outline for the requested slide count
-- Show the structure ID, purpose and main content for every item
-- Let the user confirm or revise the outline
-- Load only the distinct structure files referenced by the approved outline
-- Load the density module when the content approaches a documented limit
-- Load the density module whenever the user selected a density mode
-- Collect only content that is still missing
-- Confirm icon choices before creating generated presentation artifacts
-- Collect speaker notes when requested
-
-## Output location
-
-Use an ASCII lowercase slug with hyphens. Reject traversal segments, absolute paths and backslashes.
+Deriva del nombre de trabajo obligatorio un slug ASCII en minúsculas con guiones, independiente del título visible. Rechaza recorrido, rutas absolutas, barras invertidas, slug vacío, `packages` y nombres de dispositivo de Windows. Mantén la raíz fija en `presentations/`.
 
 ```text
 presentations/
@@ -103,17 +68,11 @@ presentations/
     notes/
 ```
 
-Keep the root fixed at `presentations/` and let the user customize only the slug. Reject empty slugs, reserved `packages`, Windows device names, traversal segments, absolute paths and backslashes. Ensure the resolved path remains under `presentations/`.
+Comprueba `presentations/<slug>/` y `presentations/packages/<slug>.zip` antes de crear o reemplazar. Pide confirmación para reemplazar, crear una nueva versión o cancelar. Comunica que `presentations/<slug>/_working/sources/` recibe fuentes y recursos, y que `presentations/<slug>/_working/structure/` recibe estructuras, guiones y esquemas. Ambas carpetas quedan fuera del ZIP. Usa `scripts/package-deck.mjs` para validar y empaquetar, incluyendo únicamente `deck.json`, `assets/`, `slides/` y `notes/`. Nunca incluyas `_working/` ni una carpeta contenedora del proyecto. Las entradas ZIP deben usar barras diagonales; en Windows no uses `Compress-Archive`.
 
-If `presentations/<slug>/` or `presentations/packages/<slug>.zip` already exists, ask whether to replace it, create a new version or cancel. Never overwrite either without confirmation.
+## Estructura obligatoria de las diapositivas
 
-Create the ZIP at `presentations/packages/<slug>.zip` only after validation. Package only `deck.json`, `assets/`, `slides/` and `notes/`. Never include `_working/`. The ZIP must contain `deck.json` at its root, not an enclosing `<slug>` folder.
-
-Every ZIP entry name must use forward slashes, including directory entries. On Windows, do not use `Compress-Archive` because it writes backslashes into entry names. Use a ZIP tool that preserves POSIX paths, then inspect the raw entry names before delivery.
-
-## Required slide structure
-
-Every newly generated slide has three files:
+Cada diapositiva nueva contiene:
 
 ```text
 slides/001/index.html
@@ -121,69 +80,41 @@ slides/001/styles.css
 slides/001/script.js
 ```
 
-- Put all visible and editable text directly in `index.html`, in reading order
-- Link `styles.css` with a relative path
-- Load `script.js` locally with `defer`
-- Do not generate visible text from JavaScript or CSS `content`
-- Keep JavaScript limited to presentation behavior and animation activation
-- Do not create navigation buttons, menus or timers inside slides
-- Use complete semantic HTML documents
-- Use a 1920x1080 viewport unless the user requests another supported size
-- Respect `prefers-reduced-motion`
-- Render tables with semantic HTML, including `caption`, `thead`, `tbody` and scoped headers
-- Render simple charts and diagram connectors with inline SVG already present in the HTML
-- Chart.js and Apache ECharts are allowed only as local, vendored assets when the approved slide outline includes charts
-- Prefer Apache ECharts with its SVG renderer for complex charts; use Chart.js for simple bar, line, area or doughnut charts
-- Do not load Chart.js, ECharts, D3, Mermaid or any chart runtime from a CDN
-- Do not include chart runtimes in decks that do not contain charts
-- Keep chart data, labels, units, periods, sources and textual summaries in HTML
-- Keep an accessible semantic data table or equivalent textual data alternative in HTML when a runtime chart is used
-- Copy the selected chart runtime once into `assets/vendor/<library>/`, include its pinned version and license, and reuse it across slides
-- Treat displayed code as escaped, inert text; never evaluate or import it
+- Coloca todo texto visible y editable directamente en `index.html`, en orden de lectura
+- Enlaza CSS y JavaScript con rutas relativas; carga el script con `defer`
+- No generes texto visible desde JavaScript ni desde `content` de CSS
+- Limita JavaScript al comportamiento y activación de animaciones
+- No crees botones de navegación, menús ni temporizadores dentro de las diapositivas
+- Usa documentos HTML semánticos completos y viewport `1920x1080` salvo solicitud compatible distinta
+- Respeta `prefers-reduced-motion`
+- Usa `caption`, `thead`, `tbody` y encabezados con `scope` en tablas
+- Usa SVG inline para gráficos sencillos y conectores de diagramas
+- Usa Chart.js o Apache ECharts solo como activos locales versionados cuando el esquema aprobado incluya gráficos; no uses CDN, D3, Mermaid ni runtimes innecesarios
+- Mantén datos, etiquetas, unidades, periodos, fuentes y resumen textual en HTML
+- Conserva una tabla semántica o alternativa textual cuando uses un runtime
+- Trata el código mostrado como texto escapado e inerte; nunca lo evalúes ni lo importes
 
-## Prohibited emoji content
+## Emojis
 
-This is a global rule for every template and every generated deck:
+No uses caracteres emoji en textos, títulos, notas, `alt`, `title` ni etiquetas ARIA. No sustituyas iconos, diagramas o estados por emojis. El validador rechaza su presencia antes de crear el ZIP.
 
-- Do not use emoji characters in visible slide text, titles, captions, notes, `alt`, `title` or ARIA labels
-- Do not replace an icon, diagram or status indicator with an emoji
-- Use an approved local icon or plain text instead
-- The package validator rejects emoji content before creating the ZIP
+## Contraste y recursos
 
-## Contrast and resource status
+Todo texto visible debe ser legible contra su superficie. Exige 4.5:1 para texto normal, 3:1 para texto grande y 3:1 para iconos, bordes, marcas y gráficos relevantes. Usa `data-contrast-role="icon"` o `data-contrast-role="graphic"` para elementos no textuales relevantes. Usa `data-contrast-exempt="decorative"` solo para decoración real.
 
-Every visible text element must remain legible against the surface behind it. Generated decks must satisfy these minimum ratios:
+El empaquetador renderiza cada diapositiva y bloquea el ZIP si no puede verificar contraste o superficies. Prefiere superficies locales opacas y no coloques texto esencial sobre imágenes o efectos no verificables.
 
-- Normal text: 4.5:1
-- Large text: 3:1
-- Relevant icons, borders, chart marks and other non-text graphics: 3:1
+## Inmutabilidad de la plantilla
 
-Use `data-contrast-role="icon"` or `data-contrast-role="graphic"` for meaningful non-text elements that need auditing. Use `data-contrast-exempt="decorative"` only for elements that do not convey information. Do not use exemptions to hide a contrast failure.
+- Trata la plantilla seleccionada y sus archivos como solo lectura durante la creación
+- Usa únicamente IDs del `structureIndex`
+- No agregues estructuras, variantes, componentes, tokens ni reglas a la plantilla seleccionada
+- Adapta, divide o simplifica contenido para una estructura existente
+- Si ninguna estructura sirve, pregunta cómo adaptar el contenido; no amplíes la plantilla
 
-The packager renders every slide at its declared viewport and blocks the ZIP when contrast is insufficient or when a visible surface cannot be verified. Keep text over opaque local surfaces; do not place essential text over unverified images or effects.
+## Ciclo de animación
 
-## Template immutability
-
-- Treat the selected template and every file under `docs/templates/<template-id>/` as read-only during deck creation
-- Use only structure IDs listed by the selected template's `structureIndex`
-- Do not add new structure IDs, variants, components, tokens or rules to a selected template
-- Do not modify a template to fit content that does not match one of its documented structures
-- Adapt, split or simplify slide content to fit an existing structure
-- If no existing structure can represent the content, stop and ask the user how to adapt the content; do not extend the template
-- Changes to template files belong to a separate repository contributor task, not to deck generation
-
-## Global animation lifecycle
-
-This is a mandatory authoring rule for every slide, regardless of the selected template or custom visual direction. Templates may define duration, easing, distance and stagger, but they must not redefine the activation protocol.
-
-- Use `web-deck:activate` as the only activation source inside Armadillo PP in Web
-- Make activation idempotent and never hide elements that are already visible
-- Do not combine immediate activation, `DOMContentLoaded` activation and `web-deck:activate`
-- Use `DOMContentLoaded` only as a standalone fallback when `window.parent === window`
-- Register the hosted activation listener before sending or awaiting other slide behavior
-- Respect `prefers-reduced-motion` without leaving content hidden for a frame
-
-Use this lifecycle unless the slide has no entrance animation:
+Usa `web-deck:activate` como única fuente dentro de Armadillo PP in Web. La activación debe ser idempotente y nunca ocultar contenido ya visible. Usa `DOMContentLoaded` solo como respaldo independiente cuando `window.parent === window`, y registra primero el listener alojado.
 
 ```js
 const root = document.documentElement;
@@ -212,183 +143,72 @@ if (window.parent === window) {
 }
 ```
 
-## Phosphor icons
+## Iconos Phosphor
 
-Use Phosphor Icons by default. The local source is `node_modules/@phosphor-icons/core/assets/`, and `scripts/icon-catalog.json` provides a curated core of general-purpose icons for templates.
+Usa Phosphor por defecto. La fuente local es `node_modules/@phosphor-icons/core/assets/` y `scripts/icon-catalog.json` contiene un catálogo curado. El usuario puede indicar un nombre Phosphor exacto, una descripción semántica o una URL oficial; no necesita colocar archivos manualmente.
 
-Accept icon requests as an exact Phosphor name, a semantic description or an official Phosphor URL. The user never needs to place icon files manually.
+1. Identifica objetos, acciones, estados o conceptos concretos
+2. Asigna roles semánticos del catálogo cuando sea posible
+3. Excluye categorías, leads y textos introductorios decorativos
+4. En las unidades temáticas de `academic-sober`, incluye un icono semántico por defecto en cada par; omite el grupo únicamente según la decisión explícita documentada en iconografía
+5. Propón nombres restantes y verifica que existan localmente
+6. Presenta concepto, rol, nombre, peso y razón semántica
+7. Solicita aprobación o cambios
+8. Registra la selección en `_working/icons.json`
+9. Ejecuta `npm run vendor:icons -- presentations/<slug>`
+10. Referencia `assets/icons/icons.css` y clases o `data-icon` en el HTML
 
-The numbered workflow below applies when Phosphor remains selected. For a user-selected alternative library or user-supplied files, do not run `vendor:icons`; follow the alternative-source rules below and create the local stylesheet, manifest, license and attribution records directly.
+El peso predeterminado es `regular`; también se admiten `bold` y `duotone`. No uses letras en cajas ni fuerces iconos sin relación semántica. Nunca generes, dibujes, traces, combines, aproximes ni reconstruyas iconos. Los conectores, flechas, ejes y marcas funcionales no son iconos.
 
-1. Identify concrete objects, actions, states or concepts in the approved outline
-2. Map them to semantic roles from `scripts/icon-catalog.json` when possible
-3. Exclude categories, leads and introductory text that would use icons only as decoration
-4. Apply icons to every equivalent peer item or to none of them
-5. Infer suitable icon names for the remaining concepts
-6. Verify each candidate exists in the local Phosphor assets
-7. Present a compact mapping of concept, role, icon name, weight and semantic reason
-8. Ask the user to confirm or revise the mapping
-9. Record approved selections in `_working/icons.json`
-10. Run `npm run vendor:icons -- presentations/<slug>` to copy only approved SVG files
-11. Reference `assets/icons/icons.css` and use `data-icon` or semantic role classes from slide HTML
+Carga iconografía cuando el esquema incluya pilares, comparaciones, elementos narrativos o procesos, antes de decidir sus recursos. La biblioteca predeterminada no sustituye la obligación de incluir los iconos de esas estructuras. Una omisión aprobada se marca en `body` con `data-icons="none"` y `data-icon-omission="user-request|no-semantic-match"`, eligiendo un solo valor; registrar también el motivo y la decisión en `_working/`.
 
-Use `regular` as the default weight. The asset generator accepts `regular`, `bold` and `duotone`. Regular files use `<name>.svg`; other weights use `<name>-<weight>.svg`.
+El copiador admite nombres Phosphor locales seguros fuera del catálogo curado cuando la entrada de selección declara `approved: true`. Verificar su existencia y aprobación antes de copiar; nunca omitir silenciosamente un icono por un error del copiador.
 
-The selected template may override the visual weight for a documented structure. Do not use letters in boxes as icon substitutes, and do not force an icon when no candidate has a clear semantic relationship.
+Si Phosphor no está disponible, usa el repositorio oficial solo si existe acceso web; si no, marca el recurso como pendiente. Nunca uses CDN, webfont, script externo ni API de iconos en tiempo de ejecución.
 
-If the local package is unavailable, use the official `phosphor-icons/core` repository only when web access is available. If neither source is available, mark the requested visual resource as pending. Never use a CDN, webfont, external script or runtime icon API by default.
+Al usar Phosphor, copia la licencia MIT a `assets/licenses/phosphor-icons.txt`, registra fuente, versión y activos usados en `assets/ATTRIBUTIONS.md`, copia solo los SVG aprobados y configura `--icon-size` y `--icon-color`.
 
-When Phosphor assets are used:
+Las bibliotecas alternativas solo se usan después de selección explícita. Ofrece Phosphor, Lucide, Tabler Icons, Heroicons, Fluent UI System Icons, Bootstrap Icons, una fuente aportada por el usuario o ningún icono. Copia únicamente SVG estáticos locales, su licencia y atribuciones; registra cada activo en `assets/icons/manifest.json` con biblioteca, versión, licencia y URL HTTPS, y usa una biblioteca por diapositiva. Los iconos del usuario se guardan en `assets/icons/user/` con `source: "user"`, `providedByUser: true`, ruta empaquetada y SHA-256. Verifica que cada activo funcione sin runtime de biblioteca.
 
-- Copy its MIT license to `assets/licenses/phosphor-icons.txt`
-- Add the library, source URL, version and used asset paths to `assets/ATTRIBUTIONS.md`
-- Do not copy the complete icon library into a presentation
-- Configure defaults with `--icon-size` and `--icon-color` on the template or slide container
-- Override an individual icon with the same CSS variables when the composition requires it
-- Use `regular` for normal use, `bold` for prominent roles and `duotone` only when the secondary opacity remains legible
+## Marcadores de plantilla
 
-When the user requests alternatives, offer Phosphor, Lucide, Tabler Icons, Heroicons, Fluent UI System Icons, Bootstrap Icons, a user-supplied source or no icons. Other libraries may be used only after the user selects one and its license is verified.
-
-Never generate, draw, trace, approximate, combine or redraw an icon. A custom icon must be an existing file supplied by the user. If no approved library asset has a clear semantic relationship, omit the icon or ask the user to provide one. Do not reconstruct icons from screenshots or visual references.
-
-For a user-selected alternative library:
-
-- Copy only the approved static SVG assets into the deck
-- Do not ship React components, webfonts, external scripts, CDN references or runtime icon APIs
-- Verify that each asset works through local HTML and CSS without a library runtime
-- Copy the applicable license into `assets/licenses/`
-- Record the library, version, source URL, license and copied paths in `assets/ATTRIBUTIONS.md`
-- Register every copied asset in `assets/icons/manifest.json` with `source: "library"`, library ID, version, license and HTTPS source URL
-- Use one icon library per slide
-
-Register a user-supplied icon in `assets/icons/manifest.json` with `source: "user"`, `providedByUser: true`, its packaged path and SHA-256. Store these files under `assets/icons/user/`; this declaration records provenance but does not grant new rights.
-
-Functional SVG geometry such as diagram connectors, arrowheads, lifelines, axes and chart marks is not an icon. Logos and trademarks remain governed by Brand integrity.
-
-## Template structure markers
-
-When a selected template documents structure markers, place them directly in slide HTML so static and rendered validation can apply the template rules. For `academic-sober`, set these attributes on `body`:
+Cuando la plantilla los documente, coloca los marcadores directamente en el HTML. Para `academic-sober`:
 
 ```html
 <body data-template="academic-sober" data-slide-structure="pillars"></body>
 ```
 
-For thematic units:
+En pilares, comparaciones, elementos narrativos y procesos, centrar cajas y texto de tema, icono y descripción dentro de cada unidad; también cuando se omitan iconos explícitamente. Aplicar el bloque de CSS de `foundations/hierarchy.md` desde el inicio, usando los atributos semánticos como selectores. No confundir `.comparison-option` con `[data-comparison-option]` ni validar únicamente el centrado del icono.
 
-- Mark each peer with `data-thematic-unit`
-- Mark its short heading with `data-unit-topic`
-- Mark its supporting text with `data-unit-description`
-- Keep DOM order as topic, optional icon and description
+En `pillars`, marca unidades con `data-thematic-unit`, `data-unit-topic` y `data-unit-description`, en orden tema, icono y descripción, salvo omisión explícita del grupo. No uses `data-thematic-unit` en comparaciones, procesos, elementos narrativos u otras estructuras. En toda diapositiva interna usa `data-slide-body` y `data-vertical-align="center"`; no uses marco salvo selección explícita; conserva contexto en oración, peso normal y cursiva; nunca uses `text-transform: uppercase`.
 
-For every internal `academic-sober` slide:
+Comparaciones usan exactamente dos `data-comparison-option` y `data-comparison-connector`, sin barras, separadores ni tarjetas. Procesos usan una lista ordenada de tres a cinco `data-process-step` en un eje horizontal, con `data-step-number`, `data-step-title` y `data-step-description`. La numeración consecutiva desde 1 comunica el orden: no añadas flechas, líneas ni capas de conectores. Cada paso incluye un icono semántico por defecto; una omisión sigue la política explícita del grupo.
 
-- Mark the main composition with `data-slide-body` and `data-vertical-align="center"`
-- Center the composition as one unit between the header and footer
-- Use no slide frame by default; declare `data-frame="graphite"` or `data-frame="accent"` only when the user selected one
-- Style optional context above the title in sentence case, normal weight and italics; never force uppercase
-- Never apply uppercase text transformation to academic-sober titles, footers, metadata, labels or table headers
+Elementos narrativos usan `data-narrative-copy`, `data-narrative-elements` y de dos a cuatro `data-narrative-element`, sin líneas separadoras. Donas usan el contrato completo de `slides/graficas/chart.md`: tipo obligatorio, tres a cinco sectores anulares `path` identificados, leyenda uno a uno, valores que suman 100 y centro con categoría y porcentaje máximos. Deriva geometría, colores y textos de una sola colección en la autoría; no uses un anillo de fondo ni el total genérico como centro. Código marca cada línea con `data-code-line`, una región contigua con `data-code-focus`, una anotación `data-code-note` y tokens `data-code-token`; diferencia palabras clave, funciones, variables, propiedades, cadenas, números, comentarios y puntuación, y mantiene los números de línea ocultos para tecnologías de asistencia.
 
-For comparisons:
+El código usa de una a dieciséis filas visibles, cada una con `data-code-number` escrito en HTML y `aria-hidden="true"`, y `data-code-content` para los tokens. El rango `data-code-start`/`data-code-end` del `pre` coincide con `data-code-range`. Usar 22–28px e interlineado inicial 1.35, sin saltos literales que dupliquen filas en `<pre>`. La nota y el contador de diapositiva deben caber completos. Las donas también se verifican por tamaño físico, centro dentro del hueco, leyenda legible y ocultación accesible efectiva; tener los marcadores no basta.
 
-- Use exactly two `article` elements marked with `data-comparison-option`
-- Keep each option in topic, icon and description order
-- Mark the short central comparison text with `data-comparison-connector`
-- Do not identify options with bars, separators or cards
+Los diagramas relacionales usan `figure[data-diagram]`, dirección de lectura, tipo reconocido, nodos y conectores con IDs ASCII únicos, `data-from`, `data-to`, etiquetas HTML con `data-diagram-label` y `data-for-edge`, y `aria-describedby`. El diagrama ocupa el cuerpo sin columna narrativa competidora. Usa `process` para secuencias lineales de tres a cinco pasos y `system-diagram` para relaciones, ramas, estados, jerarquías o participantes. Usa de tres a siete nodos; `sequence` admite de dos a seis participantes y de tres a diez mensajes. Centra diagramas pequeños, escalona nodos cuando acorte conectores, conserva etiquetas fuera de líneas, puntas y nodos, y usa contexto superior en cursiva color tinta sin barra decorativa. No añadas Mermaid, D3, runtimes ni descubrimiento de topología en tiempo de ejecución.
 
-For processes:
+## Integridad de marca
 
-- Use an ordered list with three to five `data-process-step` items
-- Mark number, title and description with `data-step-number`, `data-step-title` and `data-step-description`
-- Mark the connector layer with `data-process-connectors`
-- Use the approved Phosphor `arrow-fat-right` icon by default, or an equivalent arrow from the user-selected library, between consecutive steps
-- Mark each connector with `data-process-arrow` set to the exact approved asset name and use the same asset between every step
-- When a semantic role class differs from the asset name, also set `data-icon` to the exact asset name registered by `icons.css`
-- Arrange every step on one horizontal axis from left to right with constant spacing
+Nunca inventes, aproximes, traces, redibujes ni simules logos. Usa un activo proporcionado o una fuente oficial verificable. No sustituyas una marca por un icono, no la recolorees, recortes, deformes ni reorganices contra sus reglas. Registra origen, licencia y guía de marca en `assets/ATTRIBUTIONS.md`. Si no se puede confirmar autenticidad o permiso, marca el logo como pendiente.
 
-For narrative elements:
+## Recursos visuales pendientes
 
-- Mark the copy and peer group with `data-narrative-copy` and `data-narrative-elements`
-- Use two to four `article` elements marked with `data-narrative-element`
-- Keep each peer in topic, icon and description order without separator lines
+Cuando falte una imagen, logo, captura, diagrama o ilustración reservada:
 
-For donut charts:
+1. Copia `public/resources/image-broken.svg` sin modificar a `assets/placeholders/image-broken.svg`
+2. Referéncialo explícitamente en el HTML
+3. Añade `alt` descriptivo y una leyenda visible
+4. Marca el contenedor con `data-resource-status="pending"`
+5. Usa feedback visible que comience con `Recurso pendiente:`
+6. Conserva el marcador hasta recibir el recurso final
 
-- Set `data-chart-type="donut"` and mark three to five SVG segments with `data-chart-segment` and numeric `data-value`
-- Mark matching legend entries with `data-chart-legend`
-- Generate paths and legend entries from one data source and require values to total 100
-- Use one center and constant inner and outer radii for every segment
+Si no existe el marcador fuente, informa del problema y no inventes uno. No modifiques Armadillo PP in Web para inyectarlo.
 
-For code:
+## Manifiesto, seguridad y entrega
 
-- Mark every visible line with `data-code-line`
-- Mark one contiguous focus region with `data-code-focus` and associate it with one `data-code-note`
-- Mark syntax spans with `data-code-token` and the semantic token type
-- Differentiate keywords, functions, variables, properties, strings, numbers, comments and punctuation with accessible syntax tokens
-- Keep line numbers hidden from assistive technology
+Usa `references/deck.schema.json` como contrato de `deck.json`, con el manifiesto en la raíz del paquete y las diapositivas en orden. Usa activos locales, no cargues scripts externos, no llames APIs, WebSockets ni servicios de red, no crees formularios, ventanas emergentes ni descargas, declara hosts de imágenes y fuentes HTTPS en `externalResources`, conserva notas en Markdown y usa rutas relativas con barras diagonales. Cuando uses Chart.js o ECharts, copia una sola versión exacta a `assets/vendor/<library>/`, registra versión, URL, licencia y ruta en `assets/ATTRIBUTIONS.md`, y omite todos los runtimes si no hay gráficos. Verifica límites de plantilla en gráficos, tablas, diagramas y código sin sacrificar legibilidad, escalas honestas ni estructura semántica. Valida el HTML final después de cualquier transformación o inyección de iconos; ninguna transformación puede eliminar texto aprobado.
 
-For relational diagrams:
-
-- Use a `figure` with `data-diagram` and `data-reading-direction`
-- For new `academic-sober` diagrams, keep `data-slide-structure="system-diagram"` and select `data-diagram-type="architecture|workflow|sequence|data-flow|lifecycle|hierarchy|relationship-map"` on the figure
-- Mark each new node with a unique ASCII value in `data-diagram-node`
-- Mark the inline connector SVG with `data-diagram-connectors`
-- Mark each new connector path with a unique ASCII value in `data-diagram-edge`, plus `data-from` and `data-to` values that reference declared nodes
-- Keep relationship labels in HTML with `data-diagram-label` and `data-for-edge`
-- Associate a textual relationship description through `aria-describedby`
-- Keep the diagram as the only body composition; title, identity and a short source or caption may remain outside it
-- Center diagrams that use few nodes instead of stretching them to the viewport edges
-- Use staggered nodes when that keeps equivalent connectors short and uniform
-- Keep every relationship label clear of its line, arrowhead and adjacent nodes, and match the label color to its connector
-- Render optional node context as ink-colored italic text without an underline or decorative bar
-- Keep legacy untyped diagrams valid, but never author a new untyped diagram
-- Use three to seven nodes by default; sequence permits two to six participants and three to ten messages
-- Use `architecture` for parts and boundaries, `workflow` for decisions and responsibility, `sequence` for time-ordered messages, `data-flow` for information movement, `lifecycle` for state transitions, `hierarchy` for parent-child levels and `relationship-map` for one real center
-- Use `process` instead of `workflow` when the content is a linear sequence of three to five steps without decisions
-- Use HTML and CSS for nodes and layout, inline SVG for functional geometry and local JavaScript only for finite activation or motion
-- Do not add Mermaid, D3, a diagram runtime, external scripts or runtime topology discovery
-
-## Brand integrity
-
-- Never invent, approximate, trace, redraw or simulate a logo
-- Never place initials inside a circle, shield or other shape to imitate a missing logo
-- Never replace an institution or project logo with a generic icon
-- Use only an asset supplied by the user or an exact asset from a verified official source
-- Do not recolor, crop, distort or rearrange a logo unless its official brand rules allow it
-- Treat icons whose names end in `-logo` as trademarks, not generic decoration
-- Record source, license and brand guidance in `assets/ATTRIBUTIONS.md`
-- If authenticity or usage permission cannot be established, mark the logo as pending
-
-## Pending visual resources
-
-This is a general authoring rule, not a style-template rule and not player behavior.
-
-When a slide reserves space for an image, logo, screenshot, diagram or illustration that has not been supplied:
-
-1. Copy `public/resources/image-broken.svg` without modification to `assets/placeholders/image-broken.svg`
-2. Reference that local copy explicitly from the slide HTML
-3. Add descriptive `alt` text and a visible caption naming the missing resource
-4. Mark the containing element with `data-resource-status="pending"`
-5. Use visible feedback beginning with `Recurso pendiente:` so the audience can identify the missing resource
-6. Keep the placeholder in the generated slide until the real asset is provided
-
-If the source placeholder does not exist, report the problem and do not invent a replacement. Do not modify Armadillo PP in Web to inject placeholders into embedded content.
-
-## Manifest and security
-
-Use `references/deck.schema.json` as the manifest contract. Keep `deck.json` at the package root and list slides in presentation order.
-
-- Use local CSS, JavaScript, images, icons, fonts and approved chart runtimes whenever possible
-- Do not load external scripts
-- Do not call APIs, WebSocket servers or other network services
-- Do not create forms, popups or downloads
-- Keep external image and font hosts in `externalResources`
-- Use HTTPS for every allowed external resource
-- Keep speaker notes in separate Markdown files
-- Use only relative package paths with forward slashes
-- When Chart.js or ECharts is used, record the exact version, source URL, license and copied asset path in `assets/ATTRIBUTIONS.md`
-
-For charts, diagrams, tables and code, also verify the selected template's limits. Do not trade away readable text, honest scales or semantic structure to fit more content.
-
-## Delivery
-
-Before creating the ZIP, follow `references/validation-checklist.md`. Verify every declared file exists, every slide ID is unique, every path is safe, all required licenses are present and the manifest matches the schema.
+Las reglas completas de seguridad están en `references/security-rules.md`. Antes del ZIP sigue `references/validation-checklist.md`: verifica archivos declarados, IDs únicos, rutas seguras, licencias, manifiesto, contraste, límites de plantilla, iconos, recursos pendientes, notas, movimiento y exclusión de `_working/`.

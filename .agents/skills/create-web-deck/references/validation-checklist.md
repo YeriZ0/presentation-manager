@@ -1,85 +1,71 @@
-# Delivery checklist
+# Lista de verificación de entrega
 
-- [ ] The selected template came from `docs/templates/*/template.md` or the user requested a custom direction
-- [ ] Only the selected manifest, its `always` modules and required conditional modules were loaded
-- [ ] Every template module path is relative, safe and inside the selected template directory
-- [ ] Every slide has an approved structure ID and its referenced structure file was loaded
-- [ ] The selected template files were treated as read-only and no template structure, token or rule was added
-- [ ] Content that did not fit an existing structure was adapted, split or escalated instead of extending the template
-- [ ] The selected template's own acceptance criteria are satisfied
-- [ ] Source folder is `presentations/<slug>/`
-- [ ] ZIP output is `presentations/packages/<slug>.zip`
-- [ ] `deck.json` is at the source and ZIP root
-- [ ] `format` is `web-deck`
-- [ ] `version` is `1`
-- [ ] Every slide ID is unique
-- [ ] Every declared source and notes file exists
-- [ ] No path contains `..`, backslashes or an absolute prefix
-- [ ] Raw ZIP entry names use forward slashes, including directory entries
-- [ ] Every new slide has `index.html`, `styles.css` and `script.js`
-- [ ] All visible editable text is in HTML
-- [ ] No emoji characters exist in slide text, notes, titles, `alt`, `title` or ARIA labels
-- [ ] Every visible text element passes the rendered contrast audit
-- [ ] Relevant non-text graphics pass 3:1 contrast or have a justified decorative exemption
-- [ ] Data tables use `caption`, `thead`, `tbody` and scoped headers
-- [ ] Simple charts use inline SVG or semantic HTML unless a runtime library is required for the approved chart
-- [ ] Any Chart.js or ECharts runtime is local, pinned, used only when charts exist and copied once under `assets/vendor/`
-- [ ] Decks without charts contain no Chart.js, ECharts or other chart runtime files
-- [ ] Charts show a conclusion, units, period, source and a textual summary
-- [ ] Runtime charts retain a semantic data table or equivalent textual data alternative in HTML
-- [ ] Bar and column scales are honest and start at zero when encoding magnitude
-- [ ] Color is not the only signal for categories, states or series
-- [ ] New diagrams have a recognized type, declared reading direction and accessible relationship labels
-- [ ] Relational diagrams occupy the full slide body without a competing narrative column
-- [ ] Relational diagrams use limits appropriate to their type and no unnecessary connector crossings
-- [ ] New diagram nodes and edges have unique IDs, and every edge references declared endpoints
-- [ ] Relationship labels remain editable HTML associated with their edges
-- [ ] Relationship labels match connector colors and do not overlap lines, arrowheads or nodes
-- [ ] Equivalent connectors use uniform lengths, and small diagrams are centered instead of stretched to viewport edges
-- [ ] Optional node context uses ink-colored italic text without an underline or decorative bar
-- [ ] Linear processes use `process`; branching workflows, sequences, state changes and hierarchies use a typed `system-diagram`
-- [ ] Academic-sober thematic units use two to four peers in topic, icon and description order
-- [ ] Academic-sober thematic descriptions contain no more than 24 words
-- [ ] Academic-sober slides declare `data-template` and `data-slide-structure`
-- [ ] Academic-sober bodies declare centered vertical alignment and do not stack from the top
-- [ ] Academic-sober slides use no frame unless a graphite or accent frame was explicitly selected
-- [ ] Context above an academic-sober title uses sentence case, normal weight and italics
-- [ ] No academic-sober text uses uppercase transformation
-- [ ] Comparisons use two open options and visible central comparison text without bars
-- [ ] Processes use three to five steps on one horizontal axis with small, equally aligned copies of one approved arrow icon
-- [ ] Narrative elements use two to four open units without separator lines
-- [ ] Donut segments total 100 and share identifiers, values and colors with their legend entries
-- [ ] Donut segments use constant inner and outer radii
-- [ ] Code differentiates syntax tokens with accessible colors and non-color cues
-- [ ] Code marks at least three semantic token types with `data-code-token`
-- [ ] Code focus regions are associated with one explanatory annotation
-- [ ] Connector strokes and arrowheads pass 3:1 contrast against adjacent surfaces
-- [ ] Code snippets are escaped, inert and within the selected line and width limits
-- [ ] CSS and JavaScript use local relative paths
-- [ ] No external scripts, APIs, forms, popups or downloads exist
-- [ ] External image and font hosts are HTTPS and declared
-- [ ] Only approved icon SVGs were copied into the deck
-- [ ] Icon selections come from the curated catalog or were explicitly approved
-- [ ] `assets/icons/icons.css` exposes the selected icon sources with configurable size and color
-- [ ] Every icon represents a concrete object, action, state or concept
-- [ ] Equivalent peer items use icons consistently or omit them consistently
-- [ ] Categories, leads and introductory text do not use decorative icons
-- [ ] Letters in boxes are not used as icon substitutes
-- [ ] No icon was generated, traced, approximated, combined or redrawn by the AI
-- [ ] Custom icons are existing files supplied by the user
-- [ ] User-selected icon libraries use only copied local SVG assets and no runtime, CDN, component or webfont dependency
-- [ ] Alternative and user-supplied icons have valid provenance entries in `assets/icons/manifest.json`; library entries include version and user entries include a matching SHA-256
-- [ ] Phosphor license is included when Phosphor assets are used
-- [ ] `assets/ATTRIBUTIONS.md` records sources and licenses
-- [ ] Every alternative icon library includes its applicable license and copied asset paths
-- [ ] Chart runtime versions, source URLs, licenses and asset paths are recorded when used
-- [ ] Logos are exact supplied or verified assets, never simulations
-- [ ] Pending resources use the copied `image-broken.svg` in slide HTML
-- [ ] Pending resources use `data-resource-status="pending"`, descriptive `alt` text and visible `Recurso pendiente:` feedback
-- [ ] Notes are separate Markdown files
-- [ ] Motion respects `prefers-reduced-motion`
-- [ ] Animated slides use one idempotent `web-deck:activate` lifecycle
-- [ ] `DOMContentLoaded` activation is limited to standalone preview
-- [ ] The ZIP excludes `_working/` and all source documents
-- [ ] The ZIP does not contain an enclosing project folder
-- [ ] The package opens in Armadillo PP in Web
+## Antes de generar
+
+- [ ] Se explicó y resolvió el nombre obligatorio de trabajo, separado del título visible, y se comunicaron las carpetas de fuentes y estructura
+- [ ] Se resolvió la procedencia de subtítulos y temáticas: fuentes autorizadas, conversación pertinente o redacción del usuario
+- [ ] El resumen se revisó por secciones breves, cada una con confirmación y respuesta libre para ajustes, sin una pregunta global con todo el esquema
+- [ ] Las secciones del esquema contienen normalmente dos diapositivas y nunca más de tres; los textos largos se subdividieron según el presupuesto del flujo
+- [ ] Todas las secciones vigentes están confirmadas en su versión actual; se conservaron aprobaciones no afectadas y no se generó con ajustes pendientes
+- [ ] No se duplicó la opción libre nativa ni se volvió a solicitar una confirmación global al completar las secciones
+- [ ] No se consultaron otros decks como modelos sin autorización explícita para la tarea actual
+- [ ] Se cargaron las restricciones aplicables y la composición base se diseñó sin separadores decorativos antes de escribir HTML/CSS
+- [ ] La base de cualquier generador se revisó antes de propagarla; no se planificó una limpieza rutinaria de bordes después de generar
+
+## Antes de entregar
+
+- [ ] La plantilla seleccionada proviene de `docs/templates/*/template.md` o el usuario pidió una dirección personalizada
+- [ ] Solo se cargaron el manifiesto seleccionado, sus módulos `always` y los módulos condicionales necesarios
+- [ ] Todas las rutas de módulos son relativas, seguras y permanecen dentro de la plantilla
+- [ ] Cada diapositiva tiene un ID de estructura aprobado y se cargó su archivo
+- [ ] La plantilla seleccionada fue tratada como solo lectura
+- [ ] La creación, validación y empaquetado no requirieron Python
+- [ ] El contenido incompatible se adaptó, dividió o escaló; no se amplió la plantilla
+- [ ] Se cumplen los criterios de aceptación de la plantilla
+- [ ] La carpeta fuente es `presentations/<slug>/`
+- [ ] El ZIP está en `presentations/packages/<slug>.zip`
+- [ ] `deck.json` está en la fuente y en la raíz del ZIP
+- [ ] `format` es `web-deck` y `version` es `1`
+- [ ] Cada ID de diapositiva es único y todos los archivos declarados existen
+- [ ] Ninguna ruta contiene `..`, barras invertidas o prefijo absoluto
+- [ ] Las entradas ZIP usan barras diagonales
+- [ ] Cada diapositiva tiene `index.html`, `styles.css` y `script.js`
+- [ ] Todo texto editable está en HTML y no hay emojis en textos, notas, títulos, `alt`, `title` ni ARIA
+- [ ] Todo texto visible y gráfico relevante supera el contraste requerido
+- [ ] Las tablas usan `caption`, `thead`, `tbody` y encabezados con `scope`
+- [ ] Los gráficos usan SVG inline o un runtime local aprobado, versionado y con licencia
+- [ ] Los gráficos muestran conclusión, unidades, periodo, fuente y alternativa textual
+- [ ] Las escalas de barras y columnas son honestas y parten de cero
+- [ ] El color no es la única señal de categorías, estados o series
+- [ ] Los diagramas nuevos tienen tipo, dirección, etiquetas accesibles, nodos y aristas válidos
+- [ ] Las etiquetas de relaciones son HTML editable y no se superponen con líneas, puntas ni nodos
+- [ ] Los procesos lineales usan `process`; las relaciones usan `system-diagram`
+- [ ] Pilares, comparaciones, elementos narrativos y procesos incluyen un icono semántico por unidad, salvo omisión explícita con motivo y registro
+- [ ] Los iconos aprobados son visibles y tienen un activo cargado; un elemento vacío no cuenta como icono
+- [ ] En las cuatro estructuras de unidades abiertas, tema, icono y descripción están centrados en su columna, con texto centrado; se comprobaron también grupos sin iconos y selectores CSS coincidentes con el HTML final
+- [ ] Las comparaciones no usan `data-thematic-unit` y cada opción conserva título, icono y descripción salvo omisión explícita del grupo
+- [ ] Las diapositivas de `academic-sober` declaran `data-template`, `data-slide-structure` y centrado vertical
+- [ ] Las comparaciones tienen dos opciones abiertas y texto central sin barras
+- [ ] Ninguna estructura usa bordes, barras, `hr`, pseudoelementos o sombras decorativas; los límites funcionales respetan su estructura
+- [ ] Los pies no usan líneas como separadores
+- [ ] Las unidades temáticas y sus agrupaciones no están encerradas en tarjetas; `data-boundary="semantic"` no permite eludirlo
+- [ ] Los procesos tienen de tres a cinco pasos consecutivamente numerados en un eje horizontal, sin flechas ni capas de conectores
+- [ ] Los elementos narrativos tienen de dos a cuatro unidades sin separadores
+- [ ] Las donas declaran tipo y geometría, suman 100 y tienen correspondencia uno a uno de IDs, etiquetas, valores y colores con su leyenda
+- [ ] Los sectores cubren la dona sin huecos, solapamientos ni un tono extra de fondo
+- [ ] El centro de la dona muestra la categoría y porcentaje máximos derivados de los datos y comunica los empates explícitamente
+- [ ] El centro queda dentro del hueco; el diámetro visible, tipografías y separación de la leyenda cumplen la estructura
+- [ ] La alternativa textual tiene ocultación visual accesible efectiva o una composición visible y legible; no aparece una tabla sin estilo
+- [ ] El código está escapado, es inerte y cumple los límites de la plantilla
+- [ ] El código tiene de una a dieciséis líneas numeradas en HTML, con rango coherente, 22–28px, interlineado 1.35–1.55 y sin filas accidentales ni recortes
+- [ ] El contador de cada diapositiva coincide con el manifiesto y permanece visible, incluso en slides con código
+- [ ] CSS y JavaScript usan rutas locales relativas
+- [ ] No existen scripts externos, APIs, formularios, ventanas emergentes ni descargas
+- [ ] Hosts externos de imágenes y fuentes usan HTTPS y están declarados
+- [ ] Solo se copiaron iconos aprobados, con procedencia y licencias válidas
+- [ ] Los logos son activos exactos proporcionados u oficiales verificables
+- [ ] Los recursos pendientes usan `image-broken.svg`, `alt`, leyenda y `data-resource-status="pending"`
+- [ ] Las notas son archivos Markdown separados
+- [ ] El movimiento respeta `prefers-reduced-motion` y usa un ciclo idempotente `web-deck:activate`
+- [ ] El ZIP excluye `_working/`, documentos fuente y carpetas contenedoras
+- [ ] El paquete abre en Armadillo PP in Web

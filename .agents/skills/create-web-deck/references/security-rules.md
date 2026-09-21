@@ -1,16 +1,16 @@
-# Security rules
+# Reglas de seguridad
 
-- Slides run in a sandboxed iframe.
-- Network connections are blocked.
-- External scripts are blocked.
-- Use local assets whenever possible.
-- Declare HTTPS image and font hosts in the manifest.
-- Never include secrets in a slide or notes file.
-- Do not include emoji characters in slide content, notes or accessibility labels.
-- Do not fetch chart data, diagram definitions or code samples at runtime.
-- Displayed code must remain inert text and must not be inserted through `innerHTML` from untrusted input.
-- Do not load charting, diagramming or syntax-highlighting scripts from a CDN.
-- Chart.js and Apache ECharts may be used only as pinned local files under `assets/vendor/`.
-- Include only the chart runtime required by the deck; omit all chart runtimes when no chart exists.
-- Preserve the selected runtime license and record its source, version and path in `assets/ATTRIBUTIONS.md`.
-- Chart runtime code may render from data already embedded in the slide, but must not fetch or generate data from a network service.
+- Las diapositivas se ejecutan en un iframe aislado
+- Las conexiones de red están bloqueadas
+- Los scripts externos están bloqueados
+- Usa activos locales siempre que sea posible
+- Declara en el manifiesto los hosts HTTPS de imágenes y fuentes
+- Nunca incluyas secretos en diapositivas ni notas
+- No incluyas emojis en contenido, notas ni etiquetas de accesibilidad
+- No obtengas datos de gráficos, definiciones de diagramas ni ejemplos de código durante la ejecución
+- El código mostrado debe permanecer como texto inerte y no insertarse mediante `innerHTML` desde entrada no confiable
+- No cargues runtimes de gráficos, diagramas ni resaltado de sintaxis desde CDN
+- Chart.js y Apache ECharts solo pueden usarse como archivos locales versionados bajo `assets/vendor/`
+- Incluye únicamente el runtime requerido por el deck; omite todos si no hay gráficos
+- Conserva la licencia del runtime y registra origen, versión y ruta en `assets/ATTRIBUTIONS.md`
+- El runtime puede representar datos ya incluidos en la diapositiva, pero no obtener ni generar datos desde servicios de red
