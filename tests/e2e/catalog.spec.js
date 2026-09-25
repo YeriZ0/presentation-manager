@@ -32,10 +32,11 @@ test('renders the academic sober visual catalog directly', async ({ page }) => {
     );
     await expect(page.locator('[data-thematic-unit]')).toHaveCount(9);
     await expect(page.locator('[data-diagram]')).toHaveCount(7);
-    await expect(page.locator('[data-diagram-node]')).toHaveCount(37);
-    await expect(page.locator('[data-diagram-connectors]')).toHaveCount(7);
-    await expect(page.locator('[data-diagram-edge]')).toHaveCount(35);
-    await expect(page.locator('[data-diagram-label]')).toHaveCount(35);
+    await expect(page.locator('[data-diagram-engine="mermaid"]')).toHaveCount(
+        7,
+    );
+    await expect(page.locator('[data-diagram-output]')).toHaveCount(7);
+    await expect(page.locator('svg[data-diagram-static]')).toHaveCount(7);
     await expect(
         page.locator('[data-reading-direction="left-to-right"]'),
     ).toHaveCount(4);
@@ -62,9 +63,7 @@ test('renders the academic sober visual catalog directly', async ({ page }) => {
         .toBe(true);
 });
 
-test('diagram variants expose verifiable topology and accessible text', async ({
-    page,
-}) => {
+test.skip('legacy diagrams expose manual topology', async ({ page }) => {
     await page.goto('/catalog/academic-sober/');
 
     await expect
@@ -397,6 +396,108 @@ test('diagram variants expose verifiable topology and accessible text', async ({
             ),
         )
         .toBe(true);
+});
+
+test('diagram variants use compiled Mermaid SVG without a browser runtime', async ({
+    page,
+}) => {
+    await page.goto('/catalog/academic-sober/');
+
+    await expect
+        .poll(() =>
+            page.locator('[data-diagram]').evaluateAll((diagrams) => {
+                const types = diagrams.map(
+                    (diagram) => diagram.dataset.diagramType,
+                );
+                return (
+                    new Set(types).size === 7 &&
+                    [
+                        'architecture',
+                        'workflow',
+                        'sequence',
+                        'data-flow',
+                        'lifecycle',
+                        'hierarchy',
+                        'relationship-map',
+                    ].every((type) => types.includes(type)) &&
+                    diagrams.every((diagram) => {
+                        const slide = diagram.closest('[data-slide-structure]');
+                        const output = diagram.querySelector(
+                            '[data-diagram-output]',
+                        );
+                        const svg = output?.querySelector(
+                            'svg[data-diagram-static]',
+                        );
+                        const labelledBy =
+                            diagram.getAttribute('aria-labelledby');
+                        const describedBy =
+                            diagram.getAttribute('aria-describedby');
+                        const idsExist = [labelledBy, describedBy].every(
+                            (id) => id && document.getElementById(id),
+                        );
+                        return Boolean(
+                            slide?.dataset.slideStructure ===
+                                'system-diagram' &&
+                            diagram.dataset.diagramEngine === 'mermaid' &&
+                            output &&
+                            svg &&
+                            idsExist &&
+                            svg.getAttribute('role') === 'img' &&
+                            svg.getAttribute('preserveAspectRatio') ===
+                                'xMidYMid meet' &&
+                            svg.hasAttribute('viewBox') &&
+                            /^[a-f0-9]{64}$/.test(
+                                svg.dataset.sourceHash || '',
+                            ) &&
+                            !svg.querySelector(
+                                'script, foreignObject, iframe, object, embed, form, a',
+                            ) &&
+                            ![...svg.querySelectorAll('*')].some((element) =>
+                                [...element.attributes].some(
+                                    (attribute) =>
+                                        /^on/i.test(attribute.name) ||
+                                        /^(?:href|xlink:href)$/i.test(
+                                            attribute.name,
+                                        ),
+                                ),
+                            ),
+                        );
+                    })
+                );
+            }),
+        )
+        .toBe(true);
+
+    await expect
+        .poll(() =>
+            page.locator('[data-diagram]').evaluateAll((diagrams) =>
+                diagrams.every((diagram) => {
+                    const output = diagram.querySelector(
+                        '[data-diagram-output]',
+                    );
+                    const svg = output?.querySelector(
+                        'svg[data-diagram-static]',
+                    );
+                    if (!output || !svg) return false;
+                    const outputRect = output.getBoundingClientRect();
+                    const svgRect = svg.getBoundingClientRect();
+                    return (
+                        svgRect.width > 0 &&
+                        svgRect.height > 0 &&
+                        svgRect.left >= outputRect.left - 1 &&
+                        svgRect.right <= outputRect.right + 1 &&
+                        svgRect.top >= outputRect.top - 1 &&
+                        svgRect.bottom <= outputRect.bottom + 1
+                    );
+                }),
+            ),
+        )
+        .toBe(true);
+
+    expect(await page.evaluate(() => 'mermaid' in window)).toBe(false);
+    await expect(
+        page.locator('script[src*="mermaid"], script[data-mermaid]'),
+    ).toHaveCount(0);
 });
 
 test('uses open centered compositions without default frames', async ({
