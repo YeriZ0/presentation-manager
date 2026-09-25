@@ -170,7 +170,7 @@ Después de preparar recursos, comprobar que cada icono aprobado esté en el HTM
 
 Antes de escribir el primer HTML/CSS, resolver los módulos `always` y los condicionales necesarios y preparar una lista interna breve de restricciones aplicables. Diseñar la base de cabecera, cuerpo y pie con separación por espacio y sin barras decorativas. No copiar CSS de otro deck para limpiarlo después. Si se usa un generador de autoría, revisar su composición base antes de propagarla a las slides; no establecer una fase rutinaria de eliminación de bordes. Reutilizar dentro del trabajo las reglas ya cargadas, sin releer toda la plantilla por slide ni añadir una aprobación del usuario.
 
-Generar con las decisiones aprobadas, validar formato, seguridad, recursos, plantilla y empaquetado con las herramientas oficiales basadas en Node.js, y entregar rutas breves. Si surge una decisión de contenido aprobada que deba cambiar, preguntar solo por ese cambio. Distinguir verificaciones realizadas de comprobaciones pendientes. No requerir Python en ninguna etapa.
+Generar con las decisiones aprobadas. Para diagramas relacionales, escribir la fuente aprobada en `diagrams/`, declarar sus metadatos en `deck.json` y compilar el SVG estático con Mermaid antes de validar. Compartir el `.mmd`, pero no el runtime. Validar formato, seguridad, recursos, plantilla y empaquetado con las herramientas oficiales basadas en Node.js, y entregar rutas breves. Si surge una decisión de contenido aprobada que deba cambiar, preguntar solo por ese cambio. Distinguir verificaciones realizadas de comprobaciones pendientes. No requerir Python en ninguna etapa.
 
 La auditoría final detecta regresiones y problemas renderizados, no sustituye la aplicación inicial de las reglas. Corregir el origen concreto de un fallo sin regenerar contenido no afectado.
 
@@ -181,6 +181,8 @@ En `academic-sober`, la base de unidades abiertas centra tema, icono y descripci
 El usuario puede cambiar un dato en cualquier momento. Identificar el campo, pedir su nuevo valor y revisar solo las decisiones dependientes. Cambiar la cantidad de diapositivas exige revisar el esquema; cambiar el docente no exige volver a elegir plantilla. No renombrar automáticamente una carpeta existente porque cambió el título visible.
 
 En las revisiones por secciones, conservar lo aprobado y reabrir únicamente las secciones afectadas. Al revisar una presentación existente, dividir en secciones el alcance solicitado, sin exigir reaprobar toda su creación histórica.
+
+Cuando un ajuste modifique una fuente Mermaid `.mmd`, ejecutar inmediatamente `npm run compile:diagrams -- presentations/<slug>` antes de validar o empaquetar. Si la compilación falla, corregir la fuente Mermaid o su configuración cerrada; nunca editar el SVG estático.
 
 Para reanudar:
 

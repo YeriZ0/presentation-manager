@@ -17,6 +17,16 @@ Se permiten ajustes opticos de hasta 8px cuando una tipografia o un logo lo requ
 - Margen inferior: 40px a 72px segun el pie
 - Cabecera interna: 120px a 152px de alto como base, incluido el contexto opcional; ampliarla si el título de dos líneas lo exige y descontar esa altura del cuerpo
 
+## Disposicion base
+
+Para diapositivas estandar de `1920x1080`, usar estas coordenadas como base compartida:
+
+- Cabecera: inicia en `y=82px`, con margenes horizontales de `96px`
+- Cuerpo: inicia en `y=240px`, termina en `y=988px` y usa margenes horizontales de `120px`
+- Pie institucional: inicia en `y=1038px`, con margenes horizontales de `96px`
+- Mantener el inicio del cuerpo en `240px`; no aumentar el espacio entre cabecera y cuerpo sin una necesidad compositiva documentada
+- Si un titulo de dos lineas invade el cuerpo, sintetizarlo o ajustar su composicion antes de desplazar el cuerpo hacia abajo
+
 ## Proximidad
 
 - Etiqueta y valor: 8px a 12px

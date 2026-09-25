@@ -47,7 +47,11 @@ Para validar y empaquetar una presentacion existente sin incluir `_working/`:
 npm run package:deck -- presentations/<slug> presentations/packages/<slug>.zip
 ```
 
-El empaquetado requiere Chromium de Playwright para comprobar el contraste renderizado. Instálalo con `npx playwright install chromium`.
+Los diagramas relacionales se escriben como fuentes Mermaid bajo `diagrams/` y se compilan a SVG estático con `npm run compile:diagrams -- presentations/<slug>`. Las fuentes `.mmd` se incluyen en el ZIP para continuar la edición en otro dispositivo; el runtime de Mermaid no se empaqueta ni se ejecuta en las diapositivas.
+
+El catálogo `academic-sober` usa el mismo compilador. `npm run dev` y `npm run build` generan primero sus siete SVG desde `catalog/academic-sober/diagrams/`. Para regenerarlos sin iniciar Vite, usa `npm run compile:catalog-diagrams`.
+
+La compilación de diagramas y las auditorías usan, en orden, Chromium de Playwright, Google Chrome o Microsoft Edge. Si ninguno está disponible, instala Chromium con `npx playwright install chromium`.
 
 El núcleo de iconos Phosphor se consulta en `scripts/icon-catalog.json`. Usa `npm run vendor:icons -- presentations/<slug>` para copiar únicamente los iconos aprobados y generar su CSS configurable.
 

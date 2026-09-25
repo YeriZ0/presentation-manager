@@ -50,7 +50,8 @@ Fuente: [fundamentos de código](templates/academic-sober/foundations/code.md).
 - Diámetro visible de 320–560px, etiquetas de al menos 24px y valor central de al menos 28px en el lienzo de autoría.
 - Leyenda con filas legibles y campos separados; no dejar tamaños predeterminados del navegador ni estilos de clases que no existen en el HTML.
 - SVG, centro, leyenda y fuente pertenecen a la misma figura. Una tabla destinada a lectura asistida debe estar visualmente oculta mediante CSS efectivo y seguir accesible.
-- Los diagramas relacionales se rigen por su estructura de nodos, rutas y etiquetas; no se confunden con gráficos de porcentajes ni listas de pasos.
+- Los diagramas relacionales conservan una fuente Mermaid editable bajo `diagrams/` y un SVG estático inline compilado; no se confunden con gráficos de porcentajes ni listas de pasos.
+- El ZIP comparte `.mmd`, configuración, versión y hash para permitir continuar la edición, pero nunca incluye ni ejecuta el runtime de Mermaid.
 
 Fuente: [gráficas](templates/academic-sober/slides/graficas/chart.md) y [diagramas](templates/academic-sober/foundations/diagrams.md).
 

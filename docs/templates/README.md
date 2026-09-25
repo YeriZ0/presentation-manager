@@ -90,6 +90,8 @@ Una estructura debe indicar cuando usarla, cuando evitarla, limites propios, act
 
 Una estructura puede declarar un conjunto cerrado de variantes cuando todas conservan la misma composicion exterior, los mismos marcadores base y la misma unidad de carga selectiva. Las variantes no son IDs de estructura y no se agregan por separado al indice. Por ejemplo, `system-diagram` puede seleccionar un tipo relacional mediante `data-diagram-type` sin multiplicar archivos de estructura.
 
+El catálogo de `academic-sober` conserva fuentes Mermaid en `catalog/academic-sober/diagrams/`. El paso `compile:catalog-diagrams` genera SVG estático antes de Vite para comprobar las reglas reales sin ejecutar Mermaid en el navegador. Los archivos generados son temporales y no sustituyen los módulos normativos de la plantilla.
+
 ## Reglas
 
 - Usar un ID ASCII estable en kebab-case

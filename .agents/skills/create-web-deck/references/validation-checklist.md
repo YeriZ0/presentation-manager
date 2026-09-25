@@ -30,15 +30,17 @@
 - [ ] Ninguna ruta contiene `..`, barras invertidas o prefijo absoluto
 - [ ] Las entradas ZIP usan barras diagonales
 - [ ] Cada diapositiva tiene `index.html`, `styles.css` y `script.js`
-- [ ] Todo texto editable está en HTML y no hay emojis en textos, notas, títulos, `alt`, `title` ni ARIA
+- [ ] Todo texto editable está en HTML o, para diagramas, en la fuente `.mmd` compartida; no hay emojis en textos, notas, títulos, `alt`, `title` ni ARIA
 - [ ] Todo texto visible y gráfico relevante supera el contraste requerido
 - [ ] Las tablas usan `caption`, `thead`, `tbody` y encabezados con `scope`
 - [ ] Los gráficos usan SVG inline o un runtime local aprobado, versionado y con licencia
 - [ ] Los gráficos muestran conclusión, unidades, periodo, fuente y alternativa textual
 - [ ] Las escalas de barras y columnas son honestas y parten de cero
 - [ ] El color no es la única señal de categorías, estados o series
-- [ ] Los diagramas nuevos tienen tipo, dirección, etiquetas accesibles, nodos y aristas válidos
-- [ ] Las etiquetas de relaciones son HTML editable y no se superponen con líneas, puntas ni nodos
+- [ ] Cada diagrama nuevo declara motor, versión exacta, tipo, fuente bajo `diagrams/` y SHA-256 en `deck.json`
+- [ ] Cada `.mmd` incluye `accTitle` y `accDescr`, cumple los límites editoriales y no contiene configuración, estilos, enlaces ni eventos arbitrarios
+- [ ] `diagrams/config.json` registra la configuración cerrada usada al compilar
+- [ ] El SVG Mermaid está inline, saneado, actualizado y marcado con `data-diagram-static`; no fue editado manualmente
 - [ ] Los procesos lineales usan `process`; las relaciones usan `system-diagram`
 - [ ] Pilares, comparaciones, elementos narrativos y procesos incluyen un icono semántico por unidad, salvo omisión explícita con motivo y registro
 - [ ] Los iconos aprobados son visibles y tienen un activo cargado; un elemento vacío no cuenta como icono
@@ -67,5 +69,6 @@
 - [ ] Los recursos pendientes usan `image-broken.svg`, `alt`, leyenda y `data-resource-status="pending"`
 - [ ] Las notas son archivos Markdown separados
 - [ ] El movimiento respeta `prefers-reduced-motion` y usa un ciclo idempotente `web-deck:activate`
-- [ ] El ZIP excluye `_working/`, documentos fuente y carpetas contenedoras
+- [ ] El ZIP excluye `_working/`, fuentes generales y carpetas contenedoras, pero incluye las fuentes Mermaid aprobadas bajo `diagrams/`
+- [ ] El ZIP no incluye ni referencia el runtime de Mermaid
 - [ ] El paquete abre en Armadillo PP in Web

@@ -13,3 +13,5 @@ The player applies these controls:
 - Notes are never placed in the slide document.
 
 External resources are still a network dependency. Use local assets for reliable offline presentations.
+
+Mermaid is a development-only compiler. A package may contain inert `.mmd` sources under `diagrams/`, but the player does not expose them as Blob URLs or inject them into the slide DOM. The packaged slide contains a sanitized inline SVG. Compilation rejects embedded configuration, links, events, active HTML, `foreignObject` and external references, and no Mermaid runtime is allowed in the ZIP.

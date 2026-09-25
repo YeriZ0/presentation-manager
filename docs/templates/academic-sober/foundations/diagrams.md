@@ -27,16 +27,11 @@ Elegir primero la pregunta y después el tipo. No convertir toda colección de c
 - Usar `chart` para magnitudes, tendencias o composiciones cuantitativas
 - Dividir el contenido cuando una sola dirección de lectura no pueda explicar todas las relaciones
 
-## Contrato común
+## Integración
 
-- Declarar `data-diagram-type` con uno de los tipos documentados
-- Declarar `data-reading-direction="left-to-right"`, `top-to-bottom` o `radial`
-- Mantener todo texto visible y editable en HTML
-- Usar un SVG inline, situado detrás de los nodos, solamente para conectores y geometría funcional
-- Asignar un identificador ASCII único a cada `data-diagram-node`
-- Marcar cada ruta con `data-diagram-edge`, `data-from` y `data-to`
-- Etiquetar cada ruta en HTML y asociarla mediante `data-diagram-label` y `data-for-edge`
-- Conservar una descripción textual equivalente mediante `aria-describedby`
+La skill `create-web-deck` define el contrato Mermaid común: estructura, manifiesto, seguridad, compilación, SVG estático y empaquetado. Esta fundación define solamente la composición y lectura visual de `academic-sober`.
+
+- Mostrar la descripción textual equivalente como leyenda interpretativa visible al pie del cuerpo del diagrama, por encima del pie institucional; no duplicar el título de la diapositiva
 - No inventar relaciones, responsables, secuencias, estados ni causalidad que la fuente no sostenga
 
 ## Nodos
@@ -66,7 +61,7 @@ Elegir primero la pregunta y después el tipo. No convertir toda colección de c
 - Evitar cruces y limitar cada ruta ortogonal a dos dobleces
 - Conectar el perímetro de los nodos, no atravesar su contenido
 - Usar trazos de 3px a 4px y terminaciones consistentes
-- Declarar explícitamente unidades, geometría y estilo de las puntas según el contrato geométrico siguiente; comprobar su tamaño visual real
+- Dejar que Mermaid calcule rutas y puntas con la configuración cerrada de la plantilla; comprobar su tamaño visual real
 - Mantener al menos 80px entre cajas de nodos
 - Mantener 32px de separación entre una ruta y cualquier nodo no relacionado
 - Mantener longitudes equivalentes solo entre conectores con una función y jerarquía realmente equivalentes; no igualar arbitrariamente ramas principales, excepciones o retornos
@@ -76,21 +71,17 @@ Elegir primero la pregunta y después el tipo. No convertir toda colección de c
 - Limitar las etiquetas de relación a tres palabras, salvo mensajes o eventos técnicos que deban conservar su nombre exacto
 - Colocar cada etiqueta fuera del trazo y del segmento terminal; nunca cubrir la punta ni tocar un nodo
 - Usar en cada etiqueta el mismo color de su conector
+- Usar una superficie blanca con opacidad de relleno de 95% y opacidad general de 100% detrás de cada etiqueta de relación para cubrir visualmente el trazo y priorizar su legibilidad
 - Diferenciar relaciones mediante etiqueta, patrón o terminación, no solo mediante color
 - Mantener una ruta principal claramente más legible que las ramas secundarias
+- Normalizar las puntas de todos los conectores con la geometría de referencia de `sequence`, que conserva su visibilidad a escala de diapositiva
 
-## Contrato geométrico
+## Aplicación visual
 
-- Definir una única geometría de autoría para cajas HTML, rutas SVG y etiquetas; el `viewBox` corresponde al tamaño real del área del diagrama, no a un tamaño fijo ajeno a esa área
-- Si se combinan porcentajes y coordenadas absolutas, documentar y aplicar su conversión al mismo sistema; no escalar únicamente conectores mientras los nodos conservan otras dimensiones
-- Calcular anclajes sobre el perímetro real de cada forma, incluidos rombos; la ruta sale y entra por los lados elegidos con dirección coherente, sin huecos ni cruces por el contenido
-- Medir separación entre cajas y reservar antes el espacio de título, marca, leyenda y contador según `spacing.md`
-- Aplicar trazo y `marker-end` a `[data-diagram-edge]`, nunca indiscriminadamente a todos los `path`; las formas de `<defs>` tienen relleno y trazo propios sin heredar marcadores
-- Usar, como punto inicial, `markerUnits="userSpaceOnUse"`, `viewBox="0 0 7.2 7.2"`, `markerWidth="7.2"`, `markerHeight="7.2"`, `refX="7.2"`, `refY="3.6"` y `orient="auto"`, con la punta en `(7.2, 3.6)`, relleno del color del conector y `stroke="none"`
-- Ajustar ese punto inicial según escala y contraste renderizados; `markerWidth` no garantiza por sí solo el tamaño visible, y `strokeWidth` multiplica las unidades por el grosor del trazo si se elige ese modo
-- Asignar una posición independiente a cada etiqueta y comprobar colisiones frente a otras etiquetas, rutas, puntas y nodos
-- Evitar tramos compartidos ambiguos; mostrar una unión explícita solo si representa una convergencia sustentada por el contenido, preservando la dirección y el significado de cada relación
-- Comprobar conectores y marcadores con sus estilos CSS efectivos, además de los atributos SVG; la inspección estática no sustituye la revisión renderizada y visual a `1920x1080`
+- Aplicar colores, tipografía, espaciado, trazos y curvas desde la configuración cerrada de `academic-sober`
+- Ajustar el `viewBox` al contenido renderizado antes de insertarlo: `sequence` ocupa el cuerpo disponible sin reducirse por espacio residual y `hierarchy` reserva margen vertical suficiente para no desbordarse en `1920x1080`
+- El SVG estatico ocupa el ancho y alto del cuerpo de diagrama con `width: 100%`, `height: 100%` y `max-width: none`
+- Comprobar el resultado visual a `1920x1080`; corregir colisiones, densidad o recorridos modificando la fuente o dividiendo el contenido
 
 ## Reglas por tipo
 
@@ -121,6 +112,10 @@ Elegir primero la pregunta y después el tipo. No convertir toda colección de c
 - Mostrar el nombre de etapa como texto color tinta en cursiva, sin subrayado, separador ni barra inferior
 - Etiquetar todas las rutas con el dato, documento o resultado que circula
 - Distinguir transformaciones, almacenes y consumidores por nombre, no solo por forma
+- Cuando la cadena no quepa con texto legible en una sola fila, declarar filas explicitas mediante grupos Mermaid con direccion interna de izquierda a derecha; no esperar un ajuste automatico del motor
+- Mermaid no conserva una fila horizontal interna cuando el ultimo nodo se conecta directamente con un nodo de otra fila. En ese caso, no dibujar un conector entre filas: usar una relacion invisible `~~~` entre los grupos para fijar el orden vertical y numerar cada fila en su esquina superior izquierda (`01`, `02`, ...) para establecer una sola secuencia de lectura
+- Mantener las etapas ordenadas de izquierda a derecha dentro de cada fila y continuar la numeracion en la fila siguiente; no invertir ni reiniciar el flujo
+- Usar como maximo tres o cuatro etapas por fila y reservar la numeracion para la continuidad semantica cuando Mermaid no pueda dibujar el retorno entre filas
 
 ### Ciclo de vida
 
@@ -147,42 +142,27 @@ Elegir primero la pregunta y después el tipo. No convertir toda colección de c
 <h1 id="diagram-title">La validación produce resultados trazables</h1>
 <figure
     data-diagram
+    data-diagram-engine="mermaid"
     data-diagram-type="architecture"
     data-reading-direction="left-to-right"
     aria-labelledby="diagram-title"
     aria-describedby="diagram-description"
 >
-    <svg data-diagram-connectors aria-hidden="true">
-        <path
-            data-diagram-edge="prepare"
-            data-from="input"
-            data-to="process"
-        ></path>
-        <path
-            data-diagram-edge="validation"
-            data-from="process"
-            data-to="result"
-        ></path>
-    </svg>
-    <article data-diagram-node="input">Entrada</article>
-    <article data-diagram-node="process">Validación</article>
-    <article data-diagram-node="result">Resultado</article>
-    <span data-diagram-label data-for-edge="prepare">Prepara</span>
-    <span data-diagram-label data-for-edge="validation">Valida</span>
-    <figcaption id="diagram-description" class="visually-hidden">
+    <div data-diagram-output></div>
+    <figcaption id="diagram-description" class="diagram-caption">
         La entrada se valida antes de producir el resultado.
     </figcaption>
 </figure>
 ```
 
-Los diagramas existentes sin `data-diagram-type` ni identificadores conservan compatibilidad como diagramas generales. Toda diapositiva nueva debe usar el contrato tipado.
+El compilador reemplaza el contenido de `data-diagram-output` por el SVG estático, actualiza el hash y conserva el `.mmd` en el paquete. Los diagramas existentes conservan compatibilidad, pero toda diapositiva nueva debe usar el contrato Mermaid tipado.
 
 ## Accesibilidad
 
 - Mantener al menos 3:1 de contraste en nodos, conectores y terminaciones esenciales
 - Mantener 4.5:1 para texto normal y 3:1 para texto grande
 - Proporcionar una descripción textual equivalente de componentes, dirección y relaciones
-- Marcar el SVG de conectores como decorativo cuando la descripción textual ya comunique sus relaciones
+- Mantener título y descripción accesibles en Mermaid y una descripción HTML equivalente asociada a la figura
 - No depender solo del color, la posición o la forma para identificar una relación
 - Mantener el orden DOM coherente con la lectura principal
 

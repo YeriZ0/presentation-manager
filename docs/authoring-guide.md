@@ -21,6 +21,10 @@ presentations/
       sources/
       structure/
     deck.json
+    diagrams/
+      config.json
+      003/
+        main.mmd
     assets/
       icons/
         manifest.json
@@ -43,16 +47,17 @@ Durante la creación, comunique ambas rutas al usuario: `presentations/<slug>/_w
 
 1. Crea una carpeta para cada diapositiva
 2. Agrega `index.html`, `styles.css` y `script.js` en cada carpeta
-3. Conserva todo el texto visible directamente en el HTML
+3. Conserva el texto visible en HTML; el texto interno de diagramas permanece editable en su `.mmd`
 4. Usa identificadores cortos, unicos y estables
 5. Agrega las diapositivas a `deck.json` en orden de presentacion
 6. Guarda las notas en archivos Markdown separados
 7. Prueba todas las rutas desde la ubicacion del HTML
-8. Valida recursos, atribuciones y licencias
-9. Comprime el contenido de forma que `deck.json` quede en la raiz
-10. Guarda el ZIP en `presentations/packages/`
+8. Compila los diagramas Mermaid a SVG estático
+9. Valida recursos, atribuciones y licencias
+10. Comprime el contenido de forma que `deck.json` quede en la raiz
+11. Guarda el ZIP en `presentations/packages/`
 
-Para empaquetar una carpeta ya creada, ejecuta `npm run package:deck -- presentations/<slug> presentations/packages/<slug>.zip`. El comando valida `deck.json`, incluye solamente `deck.json`, `assets/`, `slides/` y `notes/`, y rechaza runtimes de graficas no utilizados o faltantes. No uses scripts Python ni empaquetadores alternativos que omitan estas validaciones.
+Para compilar diagramas durante la autoría, ejecuta `npm run compile:diagrams -- presentations/<slug>`. Para empaquetar una carpeta ya creada, ejecuta `npm run package:deck -- presentations/<slug> presentations/packages/<slug>.zip`. El empaquetador también compila los diagramas en memoria, valida `deck.json`, incluye solamente `deck.json`, `assets/`, `diagrams/`, `slides/` y `notes/`, y rechaza runtimes no utilizados, faltantes o Mermaid dentro del paquete. No uses scripts Python ni empaquetadores alternativos que omitan estas validaciones.
 
 La skill no permite emojis en diapositivas, notas, titulos, textos alternativos ni etiquetas ARIA. El empaquetador tambien ejecuta una auditoria renderizada de contraste: 4.5:1 para texto normal, 3:1 para texto grande y elementos graficos relevantes. Un fallo bloquea la creacion del ZIP.
 
@@ -308,7 +313,36 @@ Cada línea contiene `data-code-number` con `aria-hidden="true"` y `data-code-co
 
 En donas, mantener figura, leyenda y centro en un mismo `figure`, con una caja relativa para SVG y texto central. Aplicar CSS a los elementos reales, preferiblemente mediante sus marcadores. Verificar que el centro quepa dentro del hueco, la leyenda tenga campos separados y la alternativa `sr-only` tenga ocultación visual accesible efectiva. La guía resumida para usuarios es `docs/generation-requirements.md`.
 
-Una diapositiva con relaciones reserva todo el cuerpo al diagrama. Mantiene nodos, etiquetas y descripciones en HTML, y usa SVG solamente para conectores y geometría funcional. Las variantes autorizadas son `architecture`, `workflow`, `sequence`, `data-flow`, `lifecycle`, `hierarchy` y `relationship-map`:
+Una diapositiva con relaciones reserva todo el cuerpo al diagrama. Su fuente editable es Mermaid y el HTML contiene un SVG completo compilado. Las variantes autorizadas son `architecture`, `workflow`, `sequence`, `data-flow`, `lifecycle`, `hierarchy` y `relationship-map`.
+
+Fuente `diagrams/003/main.mmd`:
+
+```mermaid
+flowchart LR
+    accTitle: La validacion produce resultados trazables
+    accDescr: La entrada pasa por validacion antes de producir el resultado
+
+    input[Entrada] -->|Prepara| validation[Validacion]
+    validation -->|Publica| result[Resultado]
+```
+
+El manifiesto asocia la fuente, versión y hash:
+
+```json
+{
+    "id": "validation-flow",
+    "source": "slides/003/index.html",
+    "diagram": {
+        "engine": "mermaid",
+        "engineVersion": "11.17.2",
+        "type": "architecture",
+        "source": "diagrams/003/main.mmd",
+        "sourceHash": "sha256 calculado sobre los bytes exactos"
+    }
+}
+```
+
+El HTML proporciona el destino de compilación:
 
 ```html
 <body data-template="academic-sober" data-slide-structure="system-diagram">
@@ -317,29 +351,14 @@ Una diapositiva con relaciones reserva todo el cuerpo al diagrama. Mantiene nodo
         data-slide-body
         data-vertical-align="center"
         data-diagram
+        data-diagram-engine="mermaid"
         data-diagram-type="architecture"
         data-reading-direction="left-to-right"
         aria-labelledby="diagram-title"
         aria-describedby="diagram-description"
     >
-        <svg data-diagram-connectors aria-hidden="true">
-            <path
-                data-diagram-edge="prepare"
-                data-from="input"
-                data-to="validation"
-            ></path>
-            <path
-                data-diagram-edge="publish"
-                data-from="validation"
-                data-to="result"
-            ></path>
-        </svg>
-        <article data-diagram-node="input">Entrada</article>
-        <article data-diagram-node="validation">Validación</article>
-        <article data-diagram-node="result">Resultado</article>
-        <span data-diagram-label data-for-edge="prepare">Prepara</span>
-        <span data-diagram-label data-for-edge="publish">Publica</span>
-        <figcaption id="diagram-description" class="visually-hidden">
+        <div data-diagram-output></div>
+        <figcaption id="diagram-description" class="diagram-caption">
             La entrada pasa por validación antes de producir el resultado.
         </figcaption>
     </figure>
@@ -348,9 +367,9 @@ Una diapositiva con relaciones reserva todo el cuerpo al diagrama. Mantiene nodo
 
 Usa `process` para tres a cinco pasos lineales sin decisiones. Usa `system-diagram` para ramas, participantes, datos, estados, jerarquías o relaciones radiales. Usa `chart` cuando la pregunta dependa de magnitudes y `mixed-content` cuando el recurso visual no tenga relaciones complejas.
 
-Los diagramas admiten de tres a siete nodos; `workflow` requiere al menos cuatro y `sequence` admite de dos a seis participantes y de tres a diez mensajes. Cada relación nueva declara un ID, origen y destino. Los diagramas heredados sin tipo conservan compatibilidad, pero todo contenido nuevo debe declarar `data-diagram-type`.
+Los diagramas admiten de tres a siete nodos; `workflow` requiere al menos cuatro, una o dos decisiones, y `sequence` admite de dos a seis participantes y de tres a diez mensajes. El `.mmd` incluye `accTitle` y `accDescr`, no contiene configuración embebida, enlaces, eventos ni estilos arbitrarios. Los diagramas heredados conservan compatibilidad, pero todo contenido nuevo debe usar Mermaid y declarar `data-diagram-type`.
 
-Centra el conjunto cuando use pocos nodos y escalona los elementos cuando una fila produzca conectores extensos. Las relaciones equivalentes mantienen longitudes uniformes, puntas compactas y etiquetas del mismo color que el trazo, siempre separadas de la línea, la punta y los nodos. Una mención superior opcional usa texto color tinta en cursiva, sin subrayado ni barra decorativa.
+Centra el conjunto cuando use pocos nodos y divide el contenido cuando Mermaid no pueda producir una ruta dominante legible. El SVG generado no se edita manualmente: cualquier corrección se hace en el `.mmd` o en la configuración cerrada de la plantilla y luego se recompila. Una mención superior opcional usa texto color tinta en cursiva, sin subrayado ni barra decorativa.
 
 Phosphor es la fuente de iconos predeterminada. El usuario puede seleccionar otra biblioteca si sus activos se copian como SVG locales, su licencia es compatible y no necesita scripts, CDN, webfonts ni componentes durante la reproducción. Los iconos alternativos y los aportados por el usuario se registran en `assets/icons/manifest.json`; estos últimos incluyen su SHA-256. La skill nunca genera, redibuja ni aproxima iconos.
 

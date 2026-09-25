@@ -63,6 +63,7 @@ La plantilla admite institucion, facultad o carrera, materia, docente, titulo, s
 - Iconos semánticos por defecto en esas unidades; una omisión sigue `foundations/iconography.md`
 - Composiciones variadas dentro de una identidad consistente
 - Cuerpos centrados verticalmente entre cabecera y pie
+- En diapositivas estandar de `1920x1080`, el cuerpo inicia en `y=240px`; aplicar esta disposicion antes de crear ajustes particulares
 - Pilares, comparaciones, elementos narrativos y pasos con tema, icono y descripción centrados horizontalmente en cada columna, incluido el texto, desde el CSS inicial según `foundations/hierarchy.md`
 - Contexto superior en color tinta, peso normal y cursiva, nunca en mayúsculas forzadas
 - Ninguna estructura usa barras, separadores ni subrayados decorativos; aplicar la regla global de `foundations/hierarchy.md`

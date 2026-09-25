@@ -64,11 +64,12 @@ presentations/
       structure/
     deck.json
     assets/
+    diagrams/
     slides/
     notes/
 ```
 
-Comprueba `presentations/<slug>/` y `presentations/packages/<slug>.zip` antes de crear o reemplazar. Pide confirmación para reemplazar, crear una nueva versión o cancelar. Comunica que `presentations/<slug>/_working/sources/` recibe fuentes y recursos, y que `presentations/<slug>/_working/structure/` recibe estructuras, guiones y esquemas. Ambas carpetas quedan fuera del ZIP. Usa `scripts/package-deck.mjs` para validar y empaquetar, incluyendo únicamente `deck.json`, `assets/`, `slides/` y `notes/`. Nunca incluyas `_working/` ni una carpeta contenedora del proyecto. Las entradas ZIP deben usar barras diagonales; en Windows no uses `Compress-Archive`.
+Comprueba `presentations/<slug>/` y `presentations/packages/<slug>.zip` antes de crear o reemplazar. Pide confirmación para reemplazar, crear una nueva versión o cancelar. Comunica que `presentations/<slug>/_working/sources/` recibe fuentes y recursos, y que `presentations/<slug>/_working/structure/` recibe estructuras, guiones y esquemas. Ambas carpetas quedan fuera del ZIP. Las fuentes Mermaid aprobadas se promueven a `diagrams/` y sí se comparten. Usa `scripts/package-deck.mjs` para compilar, validar y empaquetar, incluyendo únicamente `deck.json`, `assets/`, `diagrams/`, `slides/` y `notes/`. Nunca incluyas `_working/` ni una carpeta contenedora del proyecto. Las entradas ZIP deben usar barras diagonales; en Windows no uses `Compress-Archive`.
 
 ## Estructura obligatoria de las diapositivas
 
@@ -80,7 +81,7 @@ slides/001/styles.css
 slides/001/script.js
 ```
 
-- Coloca todo texto visible y editable directamente en `index.html`, en orden de lectura
+- Coloca todo texto visible y editable directamente en `index.html`, salvo el texto interno de un diagrama Mermaid, cuya fuente editable permanece en `diagrams/*.mmd`
 - Enlaza CSS y JavaScript con rutas relativas; carga el script con `defer`
 - No generes texto visible desde JavaScript ni desde `content` de CSS
 - Limita JavaScript al comportamiento y activación de animaciones
@@ -88,8 +89,9 @@ slides/001/script.js
 - Usa documentos HTML semánticos completos y viewport `1920x1080` salvo solicitud compatible distinta
 - Respeta `prefers-reduced-motion`
 - Usa `caption`, `thead`, `tbody` y encabezados con `scope` en tablas
-- Usa SVG inline para gráficos sencillos y conectores de diagramas
-- Usa Chart.js o Apache ECharts solo como activos locales versionados cuando el esquema aprobado incluya gráficos; no uses CDN, D3, Mermaid ni runtimes innecesarios
+- Usa SVG inline para gráficos sencillos y para la salida estática compilada de Mermaid
+- Usa Chart.js o Apache ECharts solo como activos locales versionados cuando el esquema aprobado incluya gráficos; no uses CDN, D3 ni runtimes innecesarios
+- Usa Mermaid únicamente como compilador de desarrollo: comparte la fuente `.mmd`, pero nunca copies, importes ni ejecutes Mermaid dentro de una diapositiva
 - Mantén datos, etiquetas, unidades, periodos, fuentes y resumen textual en HTML
 - Conserva una tabla semántica o alternativa textual cuando uses un runtime
 - Trata el código mostrado como texto escapado e inerte; nunca lo evalúes ni lo importes
@@ -188,7 +190,13 @@ Elementos narrativos usan `data-narrative-copy`, `data-narrative-elements` y de 
 
 El código usa de una a dieciséis filas visibles, cada una con `data-code-number` escrito en HTML y `aria-hidden="true"`, y `data-code-content` para los tokens. El rango `data-code-start`/`data-code-end` del `pre` coincide con `data-code-range`. Usar 22–28px e interlineado inicial 1.35, sin saltos literales que dupliquen filas en `<pre>`. La nota y el contador de diapositiva deben caber completos. Las donas también se verifican por tamaño físico, centro dentro del hueco, leyenda legible y ocultación accesible efectiva; tener los marcadores no basta.
 
-Los diagramas relacionales usan `figure[data-diagram]`, dirección de lectura, tipo reconocido, nodos y conectores con IDs ASCII únicos, `data-from`, `data-to`, etiquetas HTML con `data-diagram-label` y `data-for-edge`, y `aria-describedby`. El diagrama ocupa el cuerpo sin columna narrativa competidora. Usa `process` para secuencias lineales de tres a cinco pasos y `system-diagram` para relaciones, ramas, estados, jerarquías o participantes. Usa de tres a siete nodos; `sequence` admite de dos a seis participantes y de tres a diez mensajes. Centra diagramas pequeños, escalona nodos cuando acorte conectores, conserva etiquetas fuera de líneas, puntas y nodos, y usa contexto superior en cursiva color tinta sin barra decorativa. No añadas Mermaid, D3, runtimes ni descubrimiento de topología en tiempo de ejecución.
+## Diagramas Mermaid
+
+Usa Mermaid para todo diagrama relacional, sin depender de la plantilla visual seleccionada. La fuente editable aprobada vive bajo `diagrams/`, incluye `accTitle` y `accDescr`, y se comparte en el ZIP. Cada diapositiva declara un objeto `diagram` en `deck.json` con motor, version exacta, tipo, ruta y SHA-256; su HTML usa `figure[data-diagram][data-diagram-engine="mermaid"]`, tipo, direccion de lectura, `aria-labelledby`, `aria-describedby` y un unico destino `data-diagram-output`.
+
+Mermaid es solo un compilador de desarrollo. El SVG completo, saneado y estatico se inserta inline con `data-diagram-static`; el ZIP contiene la fuente `.mmd` y `diagrams/config.json`, pero nunca el runtime, D3, CDN ni descubrimiento de topologia durante la reproduccion. No edites el SVG: modifica la fuente o la configuracion cerrada y recompila. Rechaza configuracion embebida, enlaces, eventos, HTML activo, estilos arbitrarios y referencias externas. Mantiene `viewBox`, `preserveAspectRatio="xMidYMid meet"`, titulo y descripcion accesibles, y elimina dimensiones o `max-width` intrinsecos de Mermaid antes de ajustar el SVG al area disponible.
+
+Despues de modificar cualquier `.mmd` de una presentacion existente, ejecuta inmediatamente `npm run compile:diagrams -- presentations/<slug>`. Hazlo antes de validar o empaquetar, aun cuando el empaquetador vuelva a compilar en memoria. El comando actualiza el SVG inline y el hash; si falla, corrige la fuente Mermaid, no el SVG generado.
 
 ## Integridad de marca
 
@@ -209,6 +217,6 @@ Si no existe el marcador fuente, informa del problema y no inventes uno. No modi
 
 ## Manifiesto, seguridad y entrega
 
-Usa `references/deck.schema.json` como contrato de `deck.json`, con el manifiesto en la raíz del paquete y las diapositivas en orden. Usa activos locales, no cargues scripts externos, no llames APIs, WebSockets ni servicios de red, no crees formularios, ventanas emergentes ni descargas, declara hosts de imágenes y fuentes HTTPS en `externalResources`, conserva notas en Markdown y usa rutas relativas con barras diagonales. Cuando uses Chart.js o ECharts, copia una sola versión exacta a `assets/vendor/<library>/`, registra versión, URL, licencia y ruta en `assets/ATTRIBUTIONS.md`, y omite todos los runtimes si no hay gráficos. Verifica límites de plantilla en gráficos, tablas, diagramas y código sin sacrificar legibilidad, escalas honestas ni estructura semántica. Valida el HTML final después de cualquier transformación o inyección de iconos; ninguna transformación puede eliminar texto aprobado.
+Usa `references/deck.schema.json` como contrato de `deck.json`, con el manifiesto en la raíz del paquete y las diapositivas en orden. Usa activos locales, no cargues scripts externos, no llames APIs, WebSockets ni servicios de red, no crees formularios, ventanas emergentes ni descargas, declara hosts de imágenes y fuentes HTTPS en `externalResources`, conserva notas en Markdown y usa rutas relativas con barras diagonales. Cuando uses Chart.js o ECharts, copia una sola versión exacta a `assets/vendor/<library>/`, registra versión, URL, licencia y ruta en `assets/ATTRIBUTIONS.md`, y omite todos los runtimes si no hay gráficos. Mermaid permanece como dependencia de desarrollo con versión exacta; el paquete contiene `.mmd`, `diagrams/config.json` y SVG estático, nunca el runtime. Verifica límites de plantilla en gráficos, tablas, diagramas y código sin sacrificar legibilidad, escalas honestas ni estructura semántica. Valida el HTML final después de cualquier transformación o inyección de iconos; ninguna transformación puede eliminar texto aprobado.
 
 Las reglas completas de seguridad están en `references/security-rules.md`. Antes del ZIP sigue `references/validation-checklist.md`: verifica archivos declarados, IDs únicos, rutas seguras, licencias, manifiesto, contraste, límites de plantilla, iconos, recursos pendientes, notas, movimiento y exclusión de `_working/`.
