@@ -1,0 +1,7 @@
+flowchart LR
+    accTitle: Arquitectura de validacion y auditoria
+    accDescr: La entrada pasa al procesamiento, que publica un resultado y registra la operacion en auditoria
+
+    input["Entrada<br/>Datos verificados"] -->|valida| process["Procesamiento<br/>Reglas declaradas"]
+    process -->|publica| result["Resultado<br/>Salida trazable"]
+    process -.->|registra| audit["Auditoria<br/>Registro y control"]

@@ -10,6 +10,7 @@ export function validateDeck(deck, files) {
     }
 
     const ids = new Set();
+    const diagramSources = new Set();
     for (const slide of deck.slides) {
         if (ids.has(slide.id))
             throw new Error(`El ID de diapositiva esta duplicado: ${slide.id}`);
@@ -26,12 +27,163 @@ export function validateDeck(deck, files) {
                     `Falta el archivo de anotaciones: ${slide.notes}`,
                 );
         }
+        if (slide.diagram) {
+            validateDiagram(slide, files, diagramSources);
+        } else {
+            const html = decodedText(files.get(slide.source));
+            if (/data-diagram-engine\s*=\s*["']mermaid["']/i.test(html)) {
+                throw new Error(
+                    `La diapositiva Mermaid no declara diagram en deck.json: ${slide.source}`,
+                );
+            }
+        }
     }
+
+    const packagedSources = [...files.keys()].filter((path) =>
+        /^diagrams\/.*\.mmd$/i.test(path),
+    );
+    for (const path of files.keys()) {
+        if (/\.mmd$/i.test(path) && !/^diagrams\//.test(path)) {
+            throw new Error(
+                `La fuente Mermaid debe estar en diagrams/: ${path}`,
+            );
+        }
+    }
+    for (const path of packagedSources) {
+        if (!diagramSources.has(path)) {
+            throw new Error(`Fuente Mermaid no declarada: ${path}`);
+        }
+    }
+    if (diagramSources.size > 0 && !files.has('diagrams/config.json')) {
+        throw new Error('Los diagramas Mermaid requieren diagrams/config.json');
+    }
+    if (diagramSources.size > 0) validateDiagramConfig(deck, files);
+
+    assertNoMermaidRuntime(files);
 
     validateChartAssets(files);
     validateIconAssets(files);
 
     return deck;
+}
+
+function validateDiagramConfig(deck, files) {
+    let value;
+    try {
+        value = JSON.parse(decodedText(files.get('diagrams/config.json')));
+    } catch {
+        throw new Error('diagrams/config.json no contiene JSON valido');
+    }
+    const versions = new Set(
+        deck.slides
+            .map((slide) => slide.diagram?.engineVersion)
+            .filter(Boolean),
+    );
+    if (
+        value?.engine !== 'mermaid' ||
+        versions.size !== 1 ||
+        !versions.has(value.engineVersion) ||
+        value?.config?.securityLevel !== 'strict' ||
+        value?.config?.htmlLabels !== false ||
+        value?.config?.startOnLoad !== false
+    ) {
+        throw new Error('diagrams/config.json no coincide con el manifiesto');
+    }
+}
+
+function validateDiagram(slide, files, diagramSources) {
+    const diagram = slide.diagram;
+    assertSafePath(diagram.source);
+    if (!/^diagrams\/.*\.mmd$/.test(diagram.source)) {
+        throw new Error(`Fuente Mermaid fuera de diagrams/: ${diagram.source}`);
+    }
+    const sourceBytes = files.get(diagram.source);
+    if (!sourceBytes) {
+        throw new Error(`Falta la fuente Mermaid: ${diagram.source}`);
+    }
+    if (diagramSources.has(diagram.source)) {
+        throw new Error(`Fuente Mermaid reutilizada: ${diagram.source}`);
+    }
+    diagramSources.add(diagram.source);
+    if (sha256Hex(sourceBytes) !== diagram.sourceHash) {
+        throw new Error(`El hash Mermaid no coincide: ${diagram.source}`);
+    }
+    assertInertMermaidSource(decodedText(sourceBytes), diagram.source);
+
+    const html = decodedText(files.get(slide.source));
+    const figures = html.match(
+        /<figure\b[^>]*\bdata-diagram(?:\s|=|>)[\s\S]*?<\/figure\s*>/gi,
+    );
+    if (!figures || figures.length !== 1) {
+        throw new Error(
+            `La diapositiva requiere un solo diagrama: ${slide.source}`,
+        );
+    }
+    const figure = figures[0];
+    if (
+        !/data-diagram-engine\s*=\s*["']mermaid["']/i.test(figure) ||
+        !new RegExp(
+            `data-diagram-type\\s*=\\s*["']${escapeRegExp(diagram.type)}["']`,
+            'i',
+        ).test(figure) ||
+        !/<svg\b[^>]*\bdata-diagram-static(?:\s|=|>)/i.test(figure)
+    ) {
+        throw new Error(
+            `La diapositiva no contiene el SVG Mermaid declarado: ${slide.source}`,
+        );
+    }
+    if (
+        !new RegExp(
+            `data-source-hash\\s*=\\s*["']${diagram.sourceHash}["']`,
+            'i',
+        ).test(figure)
+    ) {
+        throw new Error(`El SVG Mermaid esta desactualizado: ${slide.source}`);
+    }
+}
+
+function assertInertMermaidSource(source, path) {
+    if (!/^\s*accTitle\s*:\s*\S.+$/m.test(source)) {
+        throw new Error(`Mermaid requiere accTitle: ${path}`);
+    }
+    if (!/^\s*accDescr(?:\s*:|\s*\{)/m.test(source)) {
+        throw new Error(`Mermaid requiere accDescr: ${path}`);
+    }
+    if (
+        /%%\s*\{\s*init\s*:/i.test(source) ||
+        /^\s*click\s+/im.test(source) ||
+        /\b(?:href|javascript:)\b/i.test(source) ||
+        /<\/?(?:script|iframe|object|embed|form|img|a)\b/i.test(source) ||
+        /^\s*(?:style|classDef)\s+/im.test(source)
+    ) {
+        throw new Error(
+            `La fuente Mermaid contiene configuracion no permitida: ${path}`,
+        );
+    }
+}
+
+function assertNoMermaidRuntime(files) {
+    for (const [path, bytes] of files) {
+        if (/^assets\/.*mermaid.*\.(?:js|mjs)$/i.test(path)) {
+            throw new Error(`No se permite empaquetar Mermaid: ${path}`);
+        }
+        if (!/\.(?:html|js|mjs)$/i.test(path)) continue;
+        const source = new TextDecoder().decode(bytes);
+        if (
+            /(?:src\s*=|from\s+|import\s*\()["'][^"']*mermaid[^"']*["']/i.test(
+                source,
+            ) ||
+            /\bmermaid\s*\.\s*(?:initialize|run|render)\s*\(/i.test(source)
+        ) {
+            throw new Error(
+                `Mermaid solo puede ejecutarse al compilar: ${path}`,
+            );
+        }
+    }
+}
+
+function escapeRegExp(value) {
+    return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
 export function assertSafePath(path) {

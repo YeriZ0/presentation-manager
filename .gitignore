@@ -30,6 +30,7 @@ pnpm-workspace.yaml
 
 # Presentaciones locales y artefactos generados
 presentations/
+catalog/academic-sober/generated/
 
 # Logs
 npm-debug.log*

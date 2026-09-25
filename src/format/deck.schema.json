@@ -62,7 +62,44 @@
                     },
                     "title": { "type": "string", "maxLength": 160 },
                     "source": { "type": "string", "minLength": 1 },
-                    "notes": { "type": "string", "minLength": 1 }
+                    "notes": { "type": "string", "minLength": 1 },
+                    "diagram": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                            "engine",
+                            "engineVersion",
+                            "type",
+                            "source",
+                            "sourceHash"
+                        ],
+                        "properties": {
+                            "engine": { "const": "mermaid" },
+                            "engineVersion": {
+                                "type": "string",
+                                "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+                            },
+                            "type": {
+                                "enum": [
+                                    "architecture",
+                                    "workflow",
+                                    "sequence",
+                                    "data-flow",
+                                    "lifecycle",
+                                    "hierarchy",
+                                    "relationship-map"
+                                ]
+                            },
+                            "source": {
+                                "type": "string",
+                                "pattern": "^diagrams/(?:[a-zA-Z0-9._-]+/)*[a-zA-Z0-9._-]+\\.mmd$"
+                            },
+                            "sourceHash": {
+                                "type": "string",
+                                "pattern": "^[a-f0-9]{64}$"
+                            }
+                        }
+                    }
                 }
             }
         }

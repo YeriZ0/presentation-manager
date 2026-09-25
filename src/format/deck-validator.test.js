@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { createHash } from 'node:crypto';
 import { assertSafePath, validateDeck } from './deck-validator.js';
 
 const validDeck = {
@@ -244,6 +245,76 @@ describe('validateDeck', () => {
 
         expect(() => validateDeck(validDeck, files)).toThrow(
             'assets/icons/icons.css',
+        );
+    });
+
+    it('accepts an inert Mermaid source with a compiled inline SVG', () => {
+        const source = new TextEncoder().encode(
+            'flowchart LR\naccTitle: Flujo\naccDescr: Flujo accesible\nA[Uno] --> B[Dos]\nB --> C[Tres]\nC --> A\n',
+        );
+        const sourceHash = createHash('sha256').update(source).digest('hex');
+        const deck = {
+            ...validDeck,
+            slides: [
+                {
+                    id: 'intro',
+                    source: 'slides/001/index.html',
+                    diagram: {
+                        engine: 'mermaid',
+                        engineVersion: '11.17.2',
+                        type: 'architecture',
+                        source: 'diagrams/001/main.mmd',
+                        sourceHash,
+                    },
+                },
+            ],
+        };
+        const files = new Map([
+            [
+                'slides/001/index.html',
+                new TextEncoder().encode(
+                    `<figure data-diagram data-diagram-engine="mermaid" data-diagram-type="architecture"><div data-diagram-output data-source-hash="${sourceHash}"><svg data-diagram-static></svg></div></figure>`,
+                ),
+            ],
+            ['diagrams/001/main.mmd', source],
+            [
+                'diagrams/config.json',
+                new TextEncoder().encode(
+                    JSON.stringify({
+                        engine: 'mermaid',
+                        engineVersion: '11.17.2',
+                        config: {
+                            startOnLoad: false,
+                            securityLevel: 'strict',
+                            htmlLabels: false,
+                        },
+                    }),
+                ),
+            ],
+        ]);
+
+        expect(validateDeck(deck, files)).toBe(deck);
+    });
+
+    it('rejects Mermaid source outside diagrams', () => {
+        const files = new Map([
+            ...validFiles,
+            ['assets/source.mmd', new TextEncoder().encode('flowchart LR')],
+        ]);
+
+        expect(() => validateDeck(validDeck, files)).toThrow(
+            'debe estar en diagrams/',
+        );
+    });
+
+    it('rejects a packaged Mermaid runtime', () => {
+        const files = new Map([
+            ...validFiles,
+            ['assets/vendor/mermaid/mermaid.js', new Uint8Array()],
+        ]);
+
+        expect(() => validateDeck(validDeck, files)).toThrow(
+            'No se permite empaquetar Mermaid',
         );
     });
 });

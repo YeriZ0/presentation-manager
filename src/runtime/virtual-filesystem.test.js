@@ -84,4 +84,40 @@ describe('createVirtualFilesystem', () => {
         expect(html).not.toContain('="blob:');
         runtime.revoke();
     });
+
+    it('keeps packaged Mermaid sources private and inert', async () => {
+        const diagramDeck = {
+            ...deck,
+            slides: [
+                {
+                    ...deck.slides[0],
+                    diagram: {
+                        engine: 'mermaid',
+                        engineVersion: '11.17.2',
+                        type: 'workflow',
+                        source: 'diagrams/intro.mmd',
+                        sourceHash: '0'.repeat(64),
+                    },
+                },
+            ],
+        };
+        const files = new Map([
+            [
+                'slides/intro/index.html',
+                strToU8(
+                    '<html><head></head><body><svg data-diagram-static></svg></body></html>',
+                ),
+            ],
+            ['diagrams/intro.mmd', strToU8('PRIVATE_MERMAID_SOURCE')],
+            ['diagrams/config.json', strToU8('{}')],
+            ['deck.json', strToU8('{}')],
+        ]);
+        const runtime = createVirtualFilesystem(diagramDeck, files);
+        const response = await fetch(runtime.getSlideUrl('intro'));
+        const html = await response.text();
+
+        expect(html).toContain('data-diagram-static');
+        expect(html).not.toContain('PRIVATE_MERMAID_SOURCE');
+        runtime.revoke();
+    });
 });

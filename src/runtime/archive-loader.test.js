@@ -1,5 +1,6 @@
 import { strToU8, zipSync } from 'fflate';
 import { describe, expect, it } from 'vitest';
+import { createHash } from 'node:crypto';
 import { loadArchive } from './archive-loader.js';
 
 function createArchive(entries, name = 'deck.zip') {
@@ -54,5 +55,48 @@ describe('loadArchive', () => {
                 }),
             ),
         ).rejects.toThrow('Tipo de archivo no permitido');
+    });
+
+    it('loads inert Mermaid source included in the package', async () => {
+        const source =
+            'flowchart LR\naccTitle: Flujo\naccDescr: Flujo accesible\nA --> B\nB --> C\nC --> A\n';
+        const sourceHash = createHash('sha256').update(source).digest('hex');
+        const diagramManifest = JSON.stringify({
+            format: 'web-deck',
+            version: 1,
+            title: 'Archive test',
+            viewport: { width: 1920, height: 1080 },
+            slides: [
+                {
+                    id: 'intro',
+                    source: 'slides/intro.html',
+                    diagram: {
+                        engine: 'mermaid',
+                        engineVersion: '11.17.2',
+                        type: 'architecture',
+                        source: 'diagrams/intro.mmd',
+                        sourceHash,
+                    },
+                },
+            ],
+        });
+        const result = await loadArchive(
+            createArchive({
+                'deck.json': diagramManifest,
+                'slides/intro.html': `<figure data-diagram data-diagram-engine="mermaid" data-diagram-type="architecture"><div data-diagram-output data-source-hash="${sourceHash}"><svg data-diagram-static></svg></div></figure>`,
+                'diagrams/intro.mmd': source,
+                'diagrams/config.json': JSON.stringify({
+                    engine: 'mermaid',
+                    engineVersion: '11.17.2',
+                    config: {
+                        startOnLoad: false,
+                        securityLevel: 'strict',
+                        htmlLabels: false,
+                    },
+                }),
+            }),
+        );
+
+        expect(result.files.has('diagrams/intro.mmd')).toBe(true);
     });
 });

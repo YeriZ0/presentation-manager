@@ -12,8 +12,8 @@ import {
 import { dirname, extname, relative, resolve } from 'node:path';
 import process from 'node:process';
 import { zipSync } from 'fflate';
-import { auditDeckContrast } from './contrast-audit.mjs';
 import { validateAuthoringPolicy } from './lib/deck-authoring-validator.mjs';
+import { compileMermaidDiagrams } from './lib/mermaid-compiler.mjs';
 import { validateDeck } from '../src/format/deck-validator.js';
 
 const [sourceArg, outputArg] = process.argv.slice(2);
@@ -27,6 +27,7 @@ const allowedExtensions = new Set([
     '.js',
     '.json',
     '.md',
+    '.mmd',
     '.mjs',
     '.otf',
     '.png',
@@ -56,7 +57,7 @@ for (const path of collectFiles(sourceRoot)) {
     const relativePath = relative(sourceRoot, path).replaceAll('\\', '/');
     if (
         relativePath !== 'deck.json' &&
-        !/^(assets|slides|notes)\//.test(relativePath)
+        !/^(assets|diagrams|slides|notes)\//.test(relativePath)
     ) {
         continue;
     }
@@ -77,9 +78,12 @@ try {
 }
 
 assertChartReferences(files);
+await compileMermaidDiagrams(deck, files);
 validateAuthoringPolicy(
     files,
-    readFileSync(new URL('../public/resources/image-broken.svg', import.meta.url)),
+    readFileSync(
+        new URL('../public/resources/image-broken.svg', import.meta.url),
+    ),
 );
 validateDeck(deck, files);
 // Nota: auditDeckContrast contiene validaciones de layout y contraste muy estrictas que actualmente fallan incluso para decks de referencia; se omite para permitir empaquetado tras validar formato y política de autoría

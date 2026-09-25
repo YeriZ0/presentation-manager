@@ -9,6 +9,7 @@ const TEXT_EXTENSIONS = new Set([
     '.json',
     '.mjs',
     '.md',
+    '.mmd',
 ]);
 const IMAGE_ATTRIBUTES = /\b(?:src|href|poster)\s*=\s*(["'])(.*?)\1/gi;
 const CSS_URL = /url\(\s*(["']?)([^)'"\s]+)\1\s*\)/gi;
@@ -65,7 +66,7 @@ export function validateAuthoringPolicy(files, placeholderBytes) {
 function isAuthoredPath(path) {
     return (
         path === 'deck.json' ||
-        (/^(slides|notes)\//.test(path) &&
+        (/^(slides|notes|diagrams)\//.test(path) &&
             TEXT_EXTENSIONS.has(posix.extname(path).toLowerCase()))
     );
 }
@@ -462,6 +463,11 @@ function assertOrderedPeers(peers, topicMarker, descriptionMarker, path) {
 }
 
 function assertSystemDiagram(source, path) {
+    if (/data-diagram-engine\s*=\s*["']mermaid["']/i.test(source)) {
+        assertMermaidDiagram(source, path);
+        return;
+    }
+
     const diagramTags = tagsWithMarker(source, 'data-diagram');
     const diagrams = pairedElementsWithMarker(
         source,
@@ -543,6 +549,77 @@ function assertSystemDiagram(source, path) {
     if (!labelledBy) {
         throw new Error(`system-diagram requiere un titulo asociado: ${path}`);
     }
+    for (const id of `${labelledBy} ${describedBy}`.trim().split(/\s+/)) {
+        if (
+            !tagsWithMarker(source, 'id').some(
+                (tag) => attribute(tag, 'id') === id,
+            )
+        ) {
+            throw new Error(`No existe el texto asociado ${id} en ${path}`);
+        }
+    }
+}
+
+function assertMermaidDiagram(source, path) {
+    const diagrams = pairedElementsWithMarker(source, 'figure', 'data-diagram');
+    if (diagrams.length !== 1) {
+        throw new Error(
+            `system-diagram Mermaid requiere un solo figure data-diagram: ${path}`,
+        );
+    }
+    const [{ openingTag, content }] = diagrams;
+    const type = attribute(openingTag, 'data-diagram-type');
+    const direction = attribute(openingTag, 'data-reading-direction');
+    if (!DIAGRAM_TYPES.has(type)) {
+        throw new Error(`Tipo de diagrama desconocido: ${type} en ${path}`);
+    }
+    if (!DIAGRAM_DIRECTIONS[type].has(direction)) {
+        throw new Error(
+            `Dirección ${direction} incompatible con ${type}: ${path}`,
+        );
+    }
+    if (
+        attribute(openingTag, 'data-diagram-engine') !== 'mermaid' ||
+        !attribute(openingTag, 'aria-labelledby') ||
+        !attribute(openingTag, 'aria-describedby')
+    ) {
+        throw new Error(
+            `El diagrama Mermaid requiere motor, titulo y descripcion asociados: ${path}`,
+        );
+    }
+    const outputs = pairedElementsWithMarker(
+        content,
+        'div',
+        'data-diagram-output',
+    );
+    if (
+        outputs.length !== 1 ||
+        !/<svg\b[^>]*\bdata-diagram-static(?:\s|=|>)/i.test(
+            outputs[0].content,
+        ) ||
+        !/<svg\b[^>]*\bdata-engine\s*=\s*["']mermaid["']/i.test(
+            outputs[0].content,
+        ) ||
+        !/data-source-hash\s*=\s*["'][a-f0-9]{64}["']/i.test(
+            outputs[0].openingTag,
+        )
+    ) {
+        throw new Error(
+            `El diagrama Mermaid requiere un SVG estatico compilado: ${path}`,
+        );
+    }
+    if (
+        /<(?:script|foreignObject|iframe|object|embed|form|a)\b/i.test(
+            outputs[0].content,
+        ) ||
+        /\s(?:on[a-z]+|href|xlink:href)\s*=\s*["']/i.test(outputs[0].content)
+    ) {
+        throw new Error(
+            `El SVG Mermaid contiene contenido no permitido: ${path}`,
+        );
+    }
+    const labelledBy = attribute(openingTag, 'aria-labelledby');
+    const describedBy = attribute(openingTag, 'aria-describedby');
     for (const id of `${labelledBy} ${describedBy}`.trim().split(/\s+/)) {
         if (
             !tagsWithMarker(source, 'id').some(

@@ -4,11 +4,15 @@
     "version": "0.1.0",
     "type": "module",
     "scripts": {
+        "predev": "npm run compile:catalog-diagrams",
         "dev": "vite",
+        "prebuild": "npm run compile:catalog-diagrams",
         "build": "vite build",
         "lint": "eslint .",
         "vendor:chart": "node scripts/vendor-chart-runtime.mjs",
         "vendor:icons": "node scripts/vendor-icons.mjs",
+        "compile:catalog-diagrams": "node scripts/compile-catalog-diagrams.mjs",
+        "compile:diagrams": "node scripts/compile-diagrams.mjs",
         "package:deck": "node scripts/package-deck.mjs",
         "format": "prettier --write .",
         "format:check": "prettier --check .",
@@ -34,6 +38,7 @@
         "eslint-plugin-react-hooks": "^6.1.1",
         "eslint-plugin-react-refresh": "^0.4.20",
         "globals": "^16.3.0",
+        "mermaid": "11.17.2",
         "prettier": "^3.6.2",
         "vite": "^7.1.5",
         "vitest": "^5.0.1"

@@ -1,0 +1,14 @@
+flowchart TB
+    accTitle: Flujo de evidencia desde la captura hasta el informe
+    accDescr: Las respuestas se registran, normalizan, conservan y resumen en un informe trazable
+
+    subgraph upper_row["01 · Captura y normalizacion"]
+        direction LR
+        surveys["Origen<br/>Encuestas originales"] -->|formularios| record["Captura<br/>Campos validados"] -->|registros| normalize["Normalizacion<br/>Criterios declarados"]
+    end
+    subgraph lower_row["02 · Conserva y comunica"]
+        direction LR
+        repository["Conserva<br/>Version trazable"] -->|resumen| report["Comunica<br/>Hallazgos revisados"]
+    end
+
+    upper_row ~~~ lower_row

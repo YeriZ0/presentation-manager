@@ -1,0 +1,9 @@
+flowchart LR
+    accTitle: Workflow de revision academica
+    accDescr: La solicitud se revisa y decide; si cumple se aprueba y si requiere ajustes vuelve a revision
+
+    request["Solicitud<br/>Entrega registrada"] -->|envia| review["Revision<br/>Criterios comunes"]
+    review -->|evalua| decision{"Decision<br/>Evidencia suficiente"}
+    decision -->|cumple| approved["Aprobacion<br/>Resultado comunicado"]
+    decision -->|requiere ajustes| revision["Ajustes<br/>Observaciones concretas"]
+    revision -->|reingresa| review

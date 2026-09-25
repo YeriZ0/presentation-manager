@@ -1,0 +1,19 @@
+stateDiagram-v2
+    accTitle: Ciclo de vida de un manuscrito
+    accDescr: El manuscrito pasa de borrador a revision y puede volver a ajustes antes de aprobarse, publicarse y archivarse
+
+    [*] --> Draft
+    Draft --> Review: enviar
+    Review --> Approved: aceptar
+    Review --> Revision: corregir
+    Revision --> Review: reenviar
+    Approved --> Published: publicar
+    Published --> Archived: cerrar
+    Archived --> [*]
+
+    state "Borrador" as Draft
+    state "En revision" as Review
+    state "En ajustes" as Revision
+    state "Aprobado" as Approved
+    state "Publicado" as Published
+    state "Archivado" as Archived

@@ -43,10 +43,16 @@ export function createVirtualFilesystem(deck, files) {
     const privatePaths = new Set([
         'deck.json',
         ...deck.slides.map((slide) => slide.notes).filter(Boolean),
+        ...deck.slides.map((slide) => slide.diagram?.source).filter(Boolean),
+        'diagrams/config.json',
     ]);
 
     for (const [path, bytes] of files) {
-        if (privatePaths.has(path) || hasExtension(path, '.html', '.css')) {
+        if (
+            privatePaths.has(path) ||
+            path.startsWith('diagrams/') ||
+            hasExtension(path, '.html', '.css')
+        ) {
             continue;
         }
         urls.set(path, createFileUrl(path, bytes));

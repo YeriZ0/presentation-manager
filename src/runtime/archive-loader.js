@@ -15,6 +15,7 @@ const ALLOWED_EXTENSIONS = new Set([
     '.js',
     '.json',
     '.md',
+    '.mmd',
     '.mjs',
     '.otf',
     '.png',

@@ -1,0 +1,15 @@
+sequenceDiagram
+    accTitle: Secuencia de consulta de resultados
+    accDescr: El estudiante consulta al portal, que solicita los resultados a la API y al repositorio antes de presentarlos
+
+    participant Student as Estudiante
+    participant Portal
+    participant API
+    participant Repository as Repositorio
+
+    Student->>Portal: abre resultados
+    Portal->>API: GET /resultados
+    API->>Repository: consulta vigente
+    Repository-->>API: registros
+    API-->>Portal: 200 JSON
+    Portal-->>Student: presenta
