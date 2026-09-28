@@ -9,11 +9,14 @@ La diapositiva presenta el proyecto, la identidad académica y sus integrantes.
 - Omitir cabecera interna y pie convencional; conservar el contador de `../../foundations/deck-consistency.md`
 - Colocar el logo confirmado como ancla superior centrada
 - Construir una sola pila centrada debajo del logo
-- Mostrar la institución inmediatamente después del logo y antes de la temática
-- Mostrar categoría, título y subtítulo antes de la ficha académica
-- Agrupar materia y docente por proximidad
-- Mostrar equipo e integrantes en una lista vertical limpia
-- Incluir la fecha, si está confirmada, dentro de la ficha académica y antes de los estudiantes, que cierran la pila
+- Mostrar facultad o carrera inmediatamente después del logo cuando esté confirmada; en su ausencia, mostrar la institución
+- Mostrar la institución después de la facultad o carrera, cuando ambas estén confirmadas, y antes de la temática
+- Mostrar título y subtítulo antes de la ficha académica
+- Agrupar materia y docente en líneas contiguas, con jerarquía equivalente o inmediatamente descendente; no anteponer etiquetas aisladas como `Docente:`
+- Para trabajos individuales y equipos de hasta tres integrantes, mostrar los nombres completos en lista vertical al final de la portada
+- Para equipos de más de tres integrantes, omitir los nombres de la portada y reservar la lista completa para el cierre
+- Mostrar equipo, grupo, cohorte o fecha solo cuando estén confirmados. Tratar estas etiquetas como metadatos secundarios, salvo que el encargo establezca otra jerarquía
+- Incluir la fecha, si está confirmada, dentro de la ficha académica y antes de los integrantes cuando estos correspondan a la portada
 - Desplazar el centro optico ligeramente hacia abajo
 
 ## Texto y nombres
@@ -25,7 +28,14 @@ La diapositiva presenta el proyecto, la identidad académica y sus integrantes.
 - Sintetizar el subtítulo antes de reducir los datos académicos
 - Conservar los nombres completos y su ortografía proporcionada
 - Colocar un integrante por línea, sin separarlos con comas
-- Reducir de forma moderada el tamaño de la lista cuando existan más de cuatro integrantes
+- No comprimir, recortar ni reducir una lista de más de tres integrantes para conservarla en portada: moverla al cierre
+
+## Marcado
+
+- Marcar el logo institucional con `data-brand-logo`
+- Marcar facultad o carrera, materia y docente con `data-cover-faculty`, `data-cover-course` y `data-cover-teacher` cuando existan
+- Marcar cada integrante de portada con `data-cover-participant`
+- Marcar grupo, cohorte, fecha u otra referencia secundaria con `data-cover-secondary`
 
 ## Espaciado específico
 
@@ -44,6 +54,7 @@ Se permiten hasta dos ilustraciones laterales cuando representen el tema con pre
 
 - Ficha academica en cuatro tarjetas horizontales
 - Logo pequeño aislado en una esquina
+- Logo con ancho y alto forzados que alteren su relación de aspecto
 - Icono decorativo entre logo y título
 - Bloques con alineaciones diferentes
 - Materia repetida en categoría y ficha académica

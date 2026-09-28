@@ -370,3 +370,112 @@ export function auditSlideCounter({ slideId, index, total }) {
               },
           ];
 }
+
+export function auditAcademicSoberIdentity(slideId) {
+    if (document.body.dataset.template !== 'academic-sober') return [];
+    const failures = [];
+    const fail = (selector, message) =>
+        failures.push({ slide: slideId, selector, message });
+
+    for (const logo of document.querySelectorAll('[data-brand-logo]')) {
+        if (
+            logo.tagName.toLowerCase() !== 'img' ||
+            !logo.complete ||
+            !logo.naturalWidth ||
+            !logo.naturalHeight
+        ) {
+            fail('[data-brand-logo]', 'el logo debe cargar como imagen local');
+            continue;
+        }
+        const rect = logo.getBoundingClientRect();
+        if (
+            !rect.width ||
+            !rect.height ||
+            Math.abs(
+                rect.width / rect.height - logo.naturalWidth / logo.naturalHeight,
+            ) > 0.01
+        ) {
+            fail(
+                '[data-brand-logo]',
+                'el logo debe conservar su relación de aspecto intrínseca',
+            );
+        }
+    }
+
+    if (document.body.dataset.slideStructure === 'cover') {
+        const course = document.querySelector('[data-cover-course]');
+        const teacher = document.querySelector('[data-cover-teacher]');
+        if (course && teacher) {
+            const courseRect = course.getBoundingClientRect();
+            const teacherRect = teacher.getBoundingClientRect();
+            const courseStyle = getComputedStyle(course);
+            const teacherStyle = getComputedStyle(teacher);
+            if (
+                teacherRect.top < courseRect.bottom ||
+                teacherRect.top - courseRect.bottom > 24 ||
+                Math.abs(
+                    courseRect.left + courseRect.width / 2 -
+                        (teacherRect.left + teacherRect.width / 2),
+                ) > 8
+            ) {
+                fail(
+                    '[data-cover-course], [data-cover-teacher]',
+                    'materia y docente deben formar un bloque vertical próximo',
+                );
+            }
+            if (
+                Number.parseFloat(courseStyle.fontSize) <
+                    Number.parseFloat(teacherStyle.fontSize) ||
+                Number(courseStyle.fontWeight) < Number(teacherStyle.fontWeight)
+            ) {
+                fail(
+                    '[data-cover-course], [data-cover-teacher]',
+                    'la materia no puede tener menor jerarquía que el docente',
+                );
+            }
+        }
+        for (const secondary of document.querySelectorAll(
+            '[data-cover-secondary]',
+        )) {
+            if (!course || !teacher) continue;
+            const style = getComputedStyle(secondary);
+            if (
+                Number.parseFloat(style.fontSize) >=
+                    Math.min(
+                        Number.parseFloat(getComputedStyle(course).fontSize),
+                        Number.parseFloat(getComputedStyle(teacher).fontSize),
+                    ) ||
+                Number(style.fontWeight) > Number(getComputedStyle(teacher).fontWeight)
+            ) {
+                fail(
+                    '[data-cover-secondary]',
+                    'los metadatos secundarios no pueden dominar materia o docente',
+                );
+            }
+        }
+    }
+
+    for (const bridge of document.querySelectorAll('[data-narrative-bridge]')) {
+        const narrative = bridge.closest('[data-narrative]');
+        const elements = narrative?.querySelector('[data-narrative-elements]');
+        const style = getComputedStyle(bridge);
+        const rect = bridge.getBoundingClientRect();
+        const elementsRect = elements?.getBoundingClientRect();
+        const lineHeight = Number.parseFloat(style.lineHeight) ||
+            Number.parseFloat(style.fontSize) * 1.2;
+        if (
+            !narrative ||
+            !elementsRect ||
+            style.fontStyle !== 'italic' ||
+            Number(style.fontWeight) > 500 ||
+            rect.height > lineHeight * 2.1 ||
+            rect.bottom > elementsRect.top
+        ) {
+            fail(
+                '[data-narrative-bridge]',
+                'el nexo debe ser breve, cursivo, de peso normal y quedar sobre los elementos',
+            );
+        }
+    }
+    return failures;
+}

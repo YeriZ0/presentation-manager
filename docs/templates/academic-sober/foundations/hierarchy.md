@@ -8,7 +8,7 @@
 4. Descripcion o detalle
 5. Pie e identidad secundaria
 
-Portada y cierre usan una pila central sin cabecera interna. La portada mantiene logo → institución → temática → ficha académica → estudiantes. El cierre mantiene logo → institución → mensaje final → estudiantes. La identidad precede a los estudiantes, que constituyen el último grupo de la pila. Consultar las estructuras correspondientes para los campos opcionales y `deck-consistency.md` para marca y contador.
+Portada y cierre usan una pila central sin cabecera interna. La portada mantiene logo → facultad o carrera, cuando exista → institución → temática → ficha académica → integrantes cuando correspondan. El cierre mantiene logo → institución → mensaje final → estudiantes. La identidad precede a los estudiantes, que constituyen el último grupo de la pila. Consultar las estructuras correspondientes para los campos opcionales y `deck-consistency.md` para marca y contador.
 
 El contexto superior no es un rótulo editorial ni una ceja en mayúsculas. Usar peso normal, cursiva y formato de oración. Omitirlo cuando no añada información al título.
 

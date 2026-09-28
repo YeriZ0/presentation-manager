@@ -23,6 +23,50 @@ describe('validateAuthoringPolicy', () => {
         );
     });
 
+    it('rejects a brand logo with distorted intrinsic dimensions', () => {
+        const files = deckPolicyFiles([
+            {
+                source: 'slides/001/index.html',
+                html: '<body data-template="academic-sober" data-slide-structure="cover"><img data-brand-logo src="../../assets/logo.png" width="300" height="100"></body>',
+            },
+        ]);
+        files.set('assets/logo.png', pngBytes(474, 474));
+
+        expect(() => validateAuthoringPolicy(files, placeholder)).toThrow(
+            'relación de aspecto',
+        );
+    });
+
+    it('rejects participant names in cover for teams larger than three', () => {
+        const files = deckPolicyFiles([
+            {
+                source: 'slides/001/index.html',
+                html: '<body data-template="academic-sober" data-slide-structure="cover"><li data-cover-participant>Uno</li></body>',
+            },
+            {
+                source: 'slides/002/index.html',
+                html: '<body data-template="academic-sober" data-slide-structure="closing"><li data-closing-participant>Uno</li><li data-closing-participant>Dos</li><li data-closing-participant>Tres</li><li data-closing-participant>Cuatro</li></body>',
+            },
+        ]);
+
+        expect(() => validateAuthoringPolicy(files, placeholder)).toThrow(
+            'no puede listar integrantes',
+        );
+    });
+
+    it('requires visible editorial sequence for four internal slides', () => {
+        const files = deckPolicyFiles(
+            Array.from({ length: 4 }, (_, index) => ({
+                source: `slides/00${index + 1}/index.html`,
+                html: `<body data-template="academic-sober" data-slide-structure="table"><main data-slide-body data-vertical-align="center"><h1>Contexto ${index + 1}</h1></main></body>`,
+            })),
+        );
+
+        expect(() => validateAuthoringPolicy(files, placeholder)).toThrow(
+            'progresión editorial visible',
+        );
+    });
+
     it('requires the canonical pending-resource feedback', () => {
         const files = new Map([
             ...baseFiles,
@@ -873,4 +917,27 @@ function authoredHtml(source) {
     return new Map([
         ['slides/001/index.html', new TextEncoder().encode(source)],
     ]);
+}
+
+function deckPolicyFiles(slides) {
+    const files = new Map();
+    files.set(
+        'deck.json',
+        new TextEncoder().encode(
+            JSON.stringify({ format: 'web-deck', version: 1, slides }),
+        ),
+    );
+    for (const slide of slides) {
+        files.set(slide.source, new TextEncoder().encode(slide.html));
+    }
+    return files;
+}
+
+function pngBytes(width, height) {
+    const bytes = new Uint8Array(24);
+    bytes.set([137, 80, 78, 71, 13, 10, 26, 10]);
+    const view = new DataView(bytes.buffer);
+    view.setUint32(16, width);
+    view.setUint32(20, height);
+    return bytes;
 }

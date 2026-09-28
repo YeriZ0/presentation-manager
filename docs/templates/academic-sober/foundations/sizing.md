@@ -25,8 +25,8 @@ No reducir contenido principal por debajo de 24px. Sintetizar o dividir antes de
 
 ## Recursos visuales
 
-- Logo protagonista: maximo 520px de ancho y 180px de alto
-- Logo de cabecera: 80px a 112px de alto
+- Logo protagonista: maximo 520px de ancho y 180px de alto, sin deformar su relación de aspecto
+- Logo de cabecera: 80px a 112px de alto, sin deformar su relación de aspecto
 - Icono protagonista: 96px a 144px
 - Icono de unidad tematica: 96px a 128px
 - Icono de elemento narrativo: 72px a 104px
@@ -42,6 +42,8 @@ No reducir contenido principal por debajo de 24px. Sintetizar o dividir antes de
 - Codigo: 22px a 28px con interlineado de 1.35 a 1.55
 
 Los elementos equivalentes deben compartir dimensiones y alineacion optica.
+
+Todo logo debe conservar su relación de aspecto intrínseca. En CSS, definir solo una dimensión física y dejar la otra en `auto`; en HTML, los atributos `width` y `height` deben mantener la proporción original del activo. No usar `object-fit` para recortar, estirar o aplastar una marca.
 
 Para código, comenzar con interlineado `1.35`; aumentarlo dentro del rango solo si el bloque completo cabe. El código tiene un mínimo específico de 22px; el texto principal conserva su mínimo de 24px. No usar el tamaño de icono auxiliar como valor predeterminado de pilares o elementos narrativos. El logo de cabecera conserva su proporción y ocupa el espacio superior derecho reservado según `deck-consistency.md`.
 

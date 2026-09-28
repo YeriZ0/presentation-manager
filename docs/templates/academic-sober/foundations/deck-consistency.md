@@ -11,6 +11,13 @@
 - Omitir el pie convencional no elimina el contador; reservarle espacio sin añadir líneas decorativas
 - Marcar el texto del contador con `data-slide-counter`; comprobar su visibilidad frente al manifiesto, incluidos recortes por ancestros con desbordamiento oculto
 
+## Progresión editorial
+
+- En presentaciones expositivas con más de tres diapositivas internas, anteponer a cada título interno una secuencia visible derivada del orden definitivo, por ejemplo `01 · Contexto`
+- La portada y el cierre no usan esta secuencia editorial
+- La secuencia editorial no sustituye el contador persistente ni se genera con JavaScript
+- Elegir estructuras consecutivas por su relación con el contenido y alternar composiciones cuando cambie la función comunicativa: explicación, comparación, proceso, tabla, diagrama o síntesis
+
 ## Identidad institucional
 
 - Confirmar al inicio la institución, el recurso auténtico y su uso; mantener esa decisión durante todo el conjunto

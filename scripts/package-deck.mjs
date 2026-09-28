@@ -15,6 +15,7 @@ import { zipSync } from 'fflate';
 import { validateAuthoringPolicy } from './lib/deck-authoring-validator.mjs';
 import { compileMermaidDiagrams } from './lib/mermaid-compiler.mjs';
 import { validateDeck } from '../src/format/deck-validator.js';
+import { auditDeckContrast } from './contrast-audit.mjs';
 
 const [sourceArg, outputArg] = process.argv.slice(2);
 const allowedExtensions = new Set([
@@ -86,8 +87,7 @@ validateAuthoringPolicy(
     ),
 );
 validateDeck(deck, files);
-// Nota: auditDeckContrast contiene validaciones de layout y contraste muy estrictas que actualmente fallan incluso para decks de referencia; se omite para permitir empaquetado tras validar formato y política de autoría
-// await auditDeckContrast(sourceRoot, deck);
+await auditDeckContrast(sourceRoot, deck);
 
 const archive = {};
 for (const [path, bytes] of files) archive[path] = bytes;

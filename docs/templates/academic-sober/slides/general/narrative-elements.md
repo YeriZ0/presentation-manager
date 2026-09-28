@@ -9,6 +9,7 @@ Una idea requiere una explicación narrativa breve y una descomposición simult�
 - Descontar el espacio entre zonas y repartir el ancho restante en proporción 40:60, según `../../foundations/spacing.md`; no sumar `40% + 60% + gap`
 - Mantener una descripción de hasta 70 palabras en la zona izquierda
 - Distribuir los elementos en una sola fila de columnas abiertas equivalentes; tres elementos requieren tres columnas a la derecha de la explicación
+- Se permite un nexo breve sobre la fila de elementos cuando explique su relación. Debe tener hasta dos líneas, peso normal, cursiva y jerarquía menor que los elementos; no forma parte del párrafo narrativo
 - Dentro de cada columna, apilar verticalmente tema → icono → descripción, centrados sobre un eje horizontal común
 - Mantener bandas alineadas entre elementos y las separaciones de `../../foundations/spacing.md`; la explicación introductoria conserva su alineación independiente a la izquierda
 - Separar ambas zonas con espacio negativo, no con barras, líneas o contenedores
@@ -19,6 +20,7 @@ Una idea requiere una explicación narrativa breve y una descomposición simult�
 - Marcar el contenedor con `data-narrative`
 - Marcar la explicación con `data-narrative-copy`
 - Marcar el grupo con `data-narrative-elements`
+- Marcar el nexo opcional con `data-narrative-bridge`
 - Marcar cada `article` con `data-narrative-element`
 - Usar `data-element-topic` y `data-element-description`
 - Incluir `.deck-icon` en cada elemento por defecto; una omisión sigue `../../foundations/iconography.md`
@@ -50,3 +52,4 @@ Explicacion narrativa     Tema 1        Tema 2        Tema 3
 - Convertir cada elemento en una tarjeta cerrada
 - Repetir la explicación en los elementos de la derecha
 - Usar iconos decorativos en el texto introductorio
+- Usar el nexo como título, conclusión dominante o sustituto de la explicación narrativa

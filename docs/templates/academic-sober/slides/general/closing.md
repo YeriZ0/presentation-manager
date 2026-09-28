@@ -11,7 +11,7 @@ La presentación termina con preguntas, agradecimiento o una síntesis breve.
 - Mantener el orden logo confirmado → institución → mensaje final → estudiantes
 - Usar el logo como ancla superior centrada, congruente con la portada
 - Mostrar un mensaje principal de una o dos líneas después de la institución
-- Colocar integrantes como lista vertical secundaria y último grupo de la pila
+- Colocar integrantes como lista vertical secundaria y último grupo de la pila. Cuando se omitieron de portada por superar tres integrantes, esta lista es obligatoria
 - Conservar el contador de `../../foundations/deck-consistency.md` aunque se omita el pie convencional
 
 ## Contenido
@@ -21,6 +21,11 @@ Repetir equipo e institución. No repetir materia, docente, fecha ni toda la fic
 Una invitación breve a preguntas puede formar parte del mensaje final o acompañarlo antes de los estudiantes. Colocar las fuentes en una diapositiva de referencias anterior, sin intercalarlas en la pila del cierre. Aplicar la decisión de identidad del conjunto si se confirmó omitir el logo.
 
 Conservar los nombres completos y la ortografía proporcionada. Colocar un integrante por línea, sin abreviarlos ni agruparlos en una frase separada por comas.
+
+## Marcado
+
+- Marcar el logo institucional con `data-brand-logo`
+- Marcar cada integrante con `data-closing-participant`
 
 ## Espaciado específico
 

@@ -61,6 +61,7 @@ export function validateAuthoringPolicy(files, placeholderBytes) {
             assertAcademicSoberStructure(source, path);
         }
     }
+    assertDeckEditorialPolicy(files);
 }
 
 function isAuthoredPath(path) {
@@ -69,6 +70,102 @@ function isAuthoredPath(path) {
         (/^(slides|notes|diagrams)\//.test(path) &&
             TEXT_EXTENSIONS.has(posix.extname(path).toLowerCase()))
     );
+}
+
+function assertDeckEditorialPolicy(files) {
+    const deckBytes = files.get('deck.json');
+    if (!deckBytes) return;
+
+    let deck;
+    try {
+        deck = JSON.parse(new TextDecoder().decode(deckBytes));
+    } catch {
+        return;
+    }
+    if (!Array.isArray(deck.slides)) return;
+
+    const slides = deck.slides.map((slide) => ({
+        ...slide,
+        sourceText: new TextDecoder().decode(files.get(slide.source) || []),
+    }));
+    const structureOf = (slide) =>
+        slide.sourceText.match(/<body\b[^>]*\bdata-slide-structure\s*=\s*["']([^"']+)["']/i)?.[1];
+    const internal = slides.filter((slide) => {
+        const structure = structureOf(slide);
+        return structure && structure !== 'cover' && structure !== 'closing';
+    });
+    if (internal.length > 3) {
+        for (const slide of internal) {
+            const title = slide.sourceText.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/i)?.[1]
+                .replace(/<[^>]+>/g, ' ')
+                .replace(/\s+/g, ' ')
+                .trim();
+            if (!/^\d{2,}\s*·\s+\S/.test(title || '')) {
+                throw new Error(
+                    `La diapositiva interna requiere progresión editorial visible: ${slide.source}`,
+                );
+            }
+        }
+    }
+
+    const cover = slides.find((slide) => structureOf(slide) === 'cover');
+    const closing = slides.find((slide) => structureOf(slide) === 'closing');
+    if (cover && closing) {
+        const coverCount = countMarker(
+            cover.sourceText,
+            'data-cover-participant',
+        );
+        const closingCount = countMarker(
+            closing.sourceText,
+            'data-closing-participant',
+        );
+        if (closingCount > 3 && coverCount !== 0) {
+            throw new Error(
+                'La portada no puede listar integrantes cuando el equipo supera tres personas',
+            );
+        }
+        if (
+            closingCount > 0 &&
+            closingCount <= 3 &&
+            coverCount !== closingCount
+        ) {
+            throw new Error(
+                'La portada debe listar todos los integrantes cuando el equipo tiene hasta tres personas',
+            );
+        }
+    }
+
+    for (const [path, bytes] of files) {
+        if (!path.endsWith('.html')) continue;
+        const source = new TextDecoder().decode(bytes);
+        for (const tag of source.match(/<img\b[^>]*\bdata-brand-logo(?:\s|=|>)[^>]*>/gi) || []) {
+            const src = attribute(tag, 'src');
+            const width = Number(attribute(tag, 'width'));
+            const height = Number(attribute(tag, 'height'));
+            if (!src || !Number.isFinite(width) || !Number.isFinite(height)) {
+                throw new Error(`El logo requiere src, width y height: ${path}`);
+            }
+            const resolved = posix.normalize(posix.join(posix.dirname(path), src));
+            const dimensions = pngDimensions(files.get(resolved));
+            if (!dimensions) continue;
+            if (Math.abs(width / height - dimensions.width / dimensions.height) > 0.005) {
+                throw new Error(`El logo altera su relación de aspecto: ${path}`);
+            }
+        }
+    }
+}
+
+function countMarker(source, marker) {
+    return (source.match(new RegExp(`\\b${marker}(?:\\s|=|>)`, 'gi')) || [])
+        .length;
+}
+
+function pngDimensions(bytes) {
+    if (!bytes || bytes.length < 24) return null;
+    const signature = [137, 80, 78, 71, 13, 10, 26, 10];
+    if (!signature.every((value, index) => bytes[index] === value)) return null;
+    const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+    return { width: view.getUint32(16), height: view.getUint32(20) };
 }
 
 function assertLocalReferences(path, source, files) {

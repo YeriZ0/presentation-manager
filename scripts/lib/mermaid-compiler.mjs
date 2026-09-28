@@ -230,7 +230,7 @@ async function launchBrowser() {
         }
     }
     throw new Error(
-        `No se pudo iniciar un navegador para compilar Mermaid. Instala Chromium con "npx playwright install chromium". ${errors.join(' | ')}`,
+        `No se pudo iniciar un navegador para compilar Mermaid. Instala Google Chrome o Microsoft Edge. ${errors.join(' | ')}`,
     );
 }
 

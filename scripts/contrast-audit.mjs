@@ -9,6 +9,7 @@ import {
 } from './lib/academic-sober-visual-audit.mjs';
 import {
     auditCodeLayouts,
+    auditAcademicSoberIdentity,
     auditThematicIcons,
     auditThematicAlignment,
     auditSlideCounter,
@@ -17,10 +18,10 @@ import {
 export async function auditDeckContrast(sourceRoot, deck) {
     let browser;
     try {
-        browser = await chromium.launch({ headless: true });
+        browser = await launchBrowser();
     } catch {
         throw new Error(
-            'No se pudo iniciar Chromium para auditar contraste. Ejecuta: npx playwright install chromium',
+            'No se pudo iniciar un navegador para auditar contraste. Instala Google Chrome o Microsoft Edge.',
         );
     }
 
@@ -63,6 +64,9 @@ export async function auditDeckContrast(sourceRoot, deck) {
             );
             failures.push(...(await page.evaluate(auditCodeLayouts, slide.id)));
             failures.push(
+                ...(await page.evaluate(auditAcademicSoberIdentity, slide.id)),
+            );
+            failures.push(
                 ...(await page.evaluate(auditSlideCounter, {
                     slideId: slide.id,
                     index,
@@ -86,6 +90,22 @@ export async function auditDeckContrast(sourceRoot, deck) {
                 .join('\n')}`,
         );
     }
+}
+
+async function launchBrowser() {
+    const attempts = [
+        ['Chromium de Playwright', { headless: true }],
+        ['Google Chrome', { channel: 'chrome', headless: true }],
+        ['Microsoft Edge', { channel: 'msedge', headless: true }],
+    ];
+    for (const [, options] of attempts) {
+        try {
+            return await chromium.launch(options);
+        } catch {
+            continue;
+        }
+    }
+    throw new Error('No se pudo iniciar un navegador compatible');
 }
 
 function auditVisibleContrast(slideId) {
