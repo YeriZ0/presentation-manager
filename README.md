@@ -26,13 +26,6 @@ npm run lint
 npm run build
 ```
 
-Las pruebas E2E estan declaradas en `tests/e2e`. Para ejecutarlas manualmente:
-
-```powershell
-npx playwright install chromium
-npm run test:e2e
-```
-
 ## Presentaciones
 
 Importa un ZIP que contenga `deck.json` en la raiz. Consulta `docs/presentation-format.md` y `examples/valid-basic` para conocer únicamente la estructura técnica del formato.
@@ -51,9 +44,9 @@ Los diagramas relacionales se escriben como fuentes Mermaid bajo `diagrams/` y s
 
 El catálogo `academic-sober` usa el mismo compilador. `npm run dev` y `npm run build` generan primero sus siete SVG desde `catalog/academic-sober/diagrams/`. Para regenerarlos sin iniciar Vite, usa `npm run compile:catalog-diagrams`.
 
-La compilación de diagramas y las auditorías usan, en orden, Chromium de Playwright, Google Chrome o Microsoft Edge. Si ninguno está disponible, instala Chromium con `npx playwright install chromium`.
+La compilacion de diagramas usa Chromium de Playwright si ya esta disponible, Google Chrome o Microsoft Edge. Si no hay un navegador compatible, instala Chrome o Edge.
 
-El núcleo de iconos Phosphor se consulta en `scripts/icon-catalog.json`. Usa `npm run vendor:icons -- presentations/<slug>` para copiar únicamente los iconos aprobados y generar su CSS configurable.
+El núcleo de iconos Phosphor se consulta en `scripts/icon-catalog.json`. Usa `npm run vendor:icons -- presentations/<slug>` para copiar únicamente los iconos declarados en el contenido editorial y generar su CSS configurable.
 
 La skill portable para crear presentaciones se encuentra en `.agents/skills/create-web-deck`.
 
@@ -66,11 +59,11 @@ El punto de entrada para agentes compatibles es `AGENTS.md`. Cuando la solicitud
 - Trabajar con una presentación: reproducir, importar, crear, revisar, validar o empaquetar
 - Crear o mantener una plantilla: crear, revisar o ajustar sus reglas visuales
 
-El cuestionario de creación agrupa preguntas independientes por secciones y tiene su fuente normativa en `.agents/skills/create-web-deck/references/creation-workflow.md`. Las preguntas de texto libre indican `Escriba en otro` cuando corresponde. Para aportar material, use `presentations/<slug>/_working/sources/` para fuentes y recursos, y `presentations/<slug>/_working/structure/` para estructuras, guiones y esquemas; ninguna carpeta se incluye en el ZIP. Para mantener plantillas, consulta `docs/template-authoring-guide.md`; no se modifica una plantilla durante la creación de un deck.
+El cuestionario de creación agrupa solo preguntas independientes pendientes y tiene su fuente normativa en `.agents/skills/create-web-deck/references/creation-workflow.md`. Las preguntas de texto libre indican `Escriba en otro` cuando corresponde. Para aportar material, use `presentations/<slug>/_working/sources/` para fuentes y recursos, y `presentations/<slug>/_working/structure/` para estructuras, guiones, esquemas y `slide-content.md`; ninguna carpeta se incluye en el ZIP. Para mantener plantillas, consulta `docs/template-authoring-guide.md`; no se modifica una plantilla durante la creación de un deck.
 
 Al iniciar una creación se solicita un nombre de trabajo obligatorio para preparar esas carpetas; puede ser provisional y distinto del título visible. El usuario puede pedir que el agente proponga subtítulos y temáticas desde las fuentes autorizadas o desde la conversación, o definirlos personalmente. Las restricciones visuales se aplican desde la primera composición, antes de la validación final.
 
-Los resúmenes se confirman por secciones breves: normalmente dos diapositivas por sección, con confirmación propia y respuesta libre para ajustes. El agente conserva las secciones aprobadas, vuelve a mostrar solo las modificadas y continúa al finalizar, sin otra confirmación global que repita toda la presentación.
+El agente genera `presentations/<slug>/_working/structure/slide-content.md` como fuente editorial directa. El archivo presenta una diapositiva por bloque, su estructura, textos, iconos, recursos locales, datos de tablas y graficas, notas y fuentes Mermaid cuando corresponda. El usuario lo edita directamente y el agente lo relee antes de generar el deck.
 
 La creación, validación y empaquetado de presentaciones no requiere Python. Use las herramientas oficiales del proyecto basadas en Node.js y el empaquetador `scripts/package-deck.mjs`.
 

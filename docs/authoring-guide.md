@@ -20,6 +20,7 @@ presentations/
     _working/
       sources/
       structure/
+        slide-content.md
     deck.json
     diagrams/
       config.json
@@ -41,9 +42,9 @@ presentations/
       001.md
 ```
 
-`_working/sources/` guarda documentos de referencia y `_working/structure/` guarda esquemas aportados por el usuario. Esta carpeta es de trabajo y nunca se incluye en el ZIP final.
+`_working/sources/` guarda documentos de referencia y `_working/structure/` guarda esquemas aportados por el usuario y `slide-content.md`. Este archivo es la fuente editorial directa: contiene una diapositiva por bloque, su estructura, textos, iconos, recursos, datos y notas. La carpeta es de trabajo y nunca se incluye en el ZIP final.
 
-Durante la creación, comunique ambas rutas al usuario: `presentations/<slug>/_working/sources/` recibe documentos, imágenes y recursos fuente; `presentations/<slug>/_working/structure/` recibe guiones, estructuras de diapositivas y esquemas. La creación, validación y empaquetado no requiere Python.
+Durante la creación, comunique ambas rutas al usuario: `presentations/<slug>/_working/sources/` recibe documentos, imágenes y recursos fuente; `presentations/<slug>/_working/structure/` recibe guiones, estructuras de diapositivas, esquemas y `slide-content.md`. El usuario revisa y edita este ultimo archivo antes de la generacion. La creación, validación y empaquetado no requiere Python.
 
 1. Crea una carpeta para cada diapositiva
 2. Agrega `index.html`, `styles.css` y `script.js` en cada carpeta
@@ -184,7 +185,7 @@ Los datos, etiquetas, unidades, periodos, fuentes y alternativas textuales perma
 
 ## Iconos
 
-Phosphor Icons es la fuente predeterminada de la skill. `scripts/icon-catalog.json` contiene un nucleo curado de iconos generales por roles semanticos. Registra las selecciones aprobadas en `_working/icons.json` y ejecuta:
+Phosphor Icons es la fuente predeterminada de la skill. `scripts/icon-catalog.json` contiene un nucleo curado de iconos generales por roles semanticos. Declara las selecciones en `structure/slide-content.md`; el agente deriva `_working/icons.json` para el copiador y ejecuta:
 
 ```powershell
 npm run vendor:icons -- presentations/<slug>

@@ -2,23 +2,23 @@
 
 Este documento resume lo que se solicita al usuario y lo que debe producir el agente. Las reglas normativas son `AGENTS.md`, la skill `create-web-deck`, su [flujo de creación](../.agents/skills/create-web-deck/references/creation-workflow.md) y la plantilla seleccionada. No es necesario que el usuario conozca los atributos técnicos para responder.
 
-## Información y aprobaciones
+## Informacion y revision
 
 1. Un nombre de trabajo obligatorio para crear las carpetas de fuentes y esquemas. Puede diferir del título visible.
 2. Una plantilla y un punto de partida: tema, documentos o esquema. La reanudación reutiliza el trabajo existente.
 3. Los datos de identidad y alcance que no se hayan aportado ya. Los campos opcionales pueden omitirse.
 4. Una decisión editorial: textos propuestos desde fuentes autorizadas, desde la conversación pertinente o definidos personalmente.
-5. Aprobación de un esquema legible y de los recursos propuestos, incluidos los iconos recomendados. Otras presentaciones solo se consultan cuando el usuario lo autoriza expresamente para esa tarea.
+5. Revision directa de `presentations/<slug>/_working/structure/slide-content.md`. Otras presentaciones solo se consultan cuando el usuario lo autoriza expresamente para esa tarea.
 
-Las decisiones se recogen con la herramienta de preguntas. Los resúmenes se revisan por secciones pequeñas, no en un modal con toda la presentación:
+Las decisiones que faltan se recogen con la herramienta de preguntas. El contenido editorial no se confirma en modales: el agente crea `slide-content.md` y el usuario lo consulta y edita directamente.
 
-- Identidad y subtítulo, bloques temáticos del esquema, diseño y recursos se revisan por separado cuando necesitan aprobación.
-- Cada sección del esquema contiene habitualmente dos diapositivas y como máximo tres; se reduce a una si el texto no cabe cómodamente. Se conservan números globales, títulos, descripciones breves y saltos de línea.
-- Cada sección permite **Confirmar sección** o **escribir ajustes** en la respuesta libre nativa. Se confirma solo lo mostrado; los cambios se aplican y se vuelve a presentar únicamente esa sección.
-- Las secciones ya aprobadas se conservan. Si un cambio afecta a otra, se reabre solo la parte dependiente.
-- Al terminar se informa el progreso completo y se continúa; no aparece otra confirmación gigante con todo el resumen.
+- El archivo contiene una diapositiva por bloque, en su orden final, con nombre e ID de estructura, textos visibles, iconos, recursos y notas.
+- Las tablas contienen encabezados y celdas; las graficas incluyen datos, unidad, periodo, fuente, conclusion y alternativa textual.
+- Los diagramas relacionales incluyen tipo, direccion, pie y fuente Mermaid completa, junto con su ruta final bajo `diagrams/`.
+- Las imagenes, logos, capturas e ilustraciones indican estado, ruta final bajo `assets/`, texto alternativo y pie visible.
+- El usuario puede reordenar, agregar, eliminar o editar bloques directamente. Antes de generar, el agente relee el archivo y consulta solamente campos incompletos, conflictos, permisos o recursos pendientes.
 
-El flujo establece un presupuesto breve de texto y líneas y registra versiones y aprobaciones en `_working/creation-state.json`. El usuario no necesita modificar ese archivo ni cambiar el tamaño de su consola. Si el cliente no conserva los saltos, se muestra únicamente la sección actual como lista breve en el chat y una confirmación corta en el modal. `Escriba en otro` es una indicación en el enunciado, nunca una opción que duplique la respuesta libre nativa.
+El formato completo se define en `.agents/skills/create-web-deck/references/slide-content-format.md`. `_working/creation-state.json` conserva solo estado operativo, como fuentes autorizadas, pendientes y la huella de la ultima lectura; no contiene una segunda copia editable del contenido.
 
 ## Resultado esperado con academic-sober
 
@@ -61,4 +61,4 @@ El agente carga primero las restricciones y prepara una composición conforme; n
 
 La validación debe detectar omisiones silenciosas de iconos, recuadros temáticos, código espaciado o recortado, numeración ausente, centros de dona desplazados y alternativas accesibles sin estilo. Si un control falla, corregir su causa sin reducir tipografías, ocultar contenido, saltarse validadores ni afirmar que una comprobación pendiente ya se realizó.
 
-El empaquetador oficial utiliza Node.js, los validadores locales y Playwright con Chromium. Los cambios de instrucciones de un agente requieren una sesión que vuelva a cargarlas; en OpenCode, cerrar y reiniciar después de actualizar la skill o `AGENTS.md`.
+El empaquetador oficial utiliza Node.js y validadores locales. Los diagramas Mermaid requieren un navegador compatible ya instalado. Los cambios de instrucciones de un agente requieren una sesión que vuelva a cargarlas; en OpenCode, cerrar y reiniciar después de actualizar la skill o `AGENTS.md`.

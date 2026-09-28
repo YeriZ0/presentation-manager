@@ -3,22 +3,22 @@ import { normalizeIconSelection } from './icon-selection.mjs';
 
 const catalog = { roles: { code: 'code' }, weights: ['regular', 'bold'] };
 describe('icon selection', () => {
-    it('accepts approved safe names outside the curated subset', () => {
+    it('accepts verified safe names outside the curated subset', () => {
         expect(
             normalizeIconSelection(
-                [{ name: 'brackets-curly', approved: true }],
+                [{ name: 'brackets-curly', verified: true }],
                 catalog,
             )[0].name,
         ).toBe('brackets-curly');
         expect(() =>
             normalizeIconSelection([{ name: 'brackets-curly' }], catalog),
-        ).toThrow('approved');
+        ).toThrow('verified');
     });
     it.each(['../code', 'code"}', '__proto__', 'a/b'])(
         'rejects unsafe names or CSS roles: %s',
         (name) => {
             expect(() =>
-                normalizeIconSelection([{ name, approved: true }], catalog),
+                normalizeIconSelection([{ name, verified: true }], catalog),
             ).toThrow();
             expect(() =>
                 normalizeIconSelection([{ name: 'code', role: name }], catalog),

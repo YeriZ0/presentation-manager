@@ -4,10 +4,10 @@
 
 - [ ] Se explicó y resolvió el nombre obligatorio de trabajo, separado del título visible, y se comunicaron las carpetas de fuentes y estructura
 - [ ] Se resolvió la procedencia de subtítulos y temáticas: fuentes autorizadas, conversación pertinente o redacción del usuario
-- [ ] El resumen se revisó por secciones breves, cada una con confirmación y respuesta libre para ajustes, sin una pregunta global con todo el esquema
-- [ ] Las secciones del esquema contienen normalmente dos diapositivas y nunca más de tres; los textos largos se subdividieron según el presupuesto del flujo
-- [ ] Todas las secciones vigentes están confirmadas en su versión actual; se conservaron aprobaciones no afectadas y no se generó con ajustes pendientes
-- [ ] No se duplicó la opción libre nativa ni se volvió a solicitar una confirmación global al completar las secciones
+- [ ] Existe `presentations/<slug>/_working/structure/slide-content.md` y se comunico su ubicacion al usuario
+- [ ] El archivo editorial contiene metadatos, una diapositiva por bloque y todos los textos, recursos, datos, iconos y notas aplicables
+- [ ] Cada recurso declara su ruta final local, y cada diagrama relacional declara su ruta Mermaid y fuente completa
+- [ ] Se releyo y valido la version actual de `slide-content.md`; no contiene campos vacios ni marcadores pendientes antes de generar
 - [ ] No se consultaron otros decks como modelos sin autorización explícita para la tarea actual
 - [ ] Se cargaron las restricciones aplicables y la composición base se diseñó sin separadores decorativos antes de escribir HTML/CSS
 - [ ] La base de cualquier generador se revisó antes de propagarla; no se planificó una limpieza rutinaria de bordes después de generar
@@ -17,7 +17,7 @@
 - [ ] La plantilla seleccionada proviene de `docs/templates/*/template.md` o el usuario pidió una dirección personalizada
 - [ ] Solo se cargaron el manifiesto seleccionado, sus módulos `always` y los módulos condicionales necesarios
 - [ ] Todas las rutas de módulos son relativas, seguras y permanecen dentro de la plantilla
-- [ ] Cada diapositiva tiene un ID de estructura aprobado y se cargó su archivo
+- [ ] Cada diapositiva tiene un ID de estructura declarado y valido en `slide-content.md`, y se cargó su archivo
 - [ ] La plantilla seleccionada fue tratada como solo lectura
 - [ ] La creación, validación y empaquetado no requirieron Python
 - [ ] El contenido incompatible se adaptó, dividió o escaló; no se amplió la plantilla
@@ -31,6 +31,7 @@
 - [ ] Las entradas ZIP usan barras diagonales
 - [ ] Cada diapositiva tiene `index.html`, `styles.css` y `script.js`
 - [ ] Todo texto editable está en HTML o, para diagramas, en la fuente `.mmd` compartida; no hay emojis en textos, notas, títulos, `alt`, `title` ni ARIA
+- [ ] El texto visible conserva la ortografía del idioma de la presentación; ASCII se limita a identificadores, rutas y código cuando corresponde
 - [ ] Todo texto visible y gráfico relevante supera el contraste requerido
 - [ ] Las tablas usan `caption`, `thead`, `tbody` y encabezados con `scope`
 - [ ] Los gráficos usan SVG inline o un runtime local aprobado, versionado y con licencia
@@ -43,7 +44,7 @@
 - [ ] El SVG Mermaid está inline, saneado, actualizado y marcado con `data-diagram-static`; no fue editado manualmente
 - [ ] Los procesos lineales usan `process`; las relaciones usan `system-diagram`
 - [ ] Pilares, comparaciones, elementos narrativos y procesos incluyen un icono semántico por unidad, salvo omisión explícita con motivo y registro
-- [ ] Los iconos aprobados son visibles y tienen un activo cargado; un elemento vacío no cuenta como icono
+- [ ] Los iconos declarados son visibles y tienen un activo cargado; un elemento vacío no cuenta como icono
 - [ ] En las cuatro estructuras de unidades abiertas, tema, icono y descripción están centrados en su columna, con texto centrado; se comprobaron también grupos sin iconos y selectores CSS coincidentes con el HTML final
 - [ ] Las comparaciones no usan `data-thematic-unit` y cada opción conserva título, icono y descripción salvo omisión explícita del grupo
 - [ ] Las diapositivas de `academic-sober` declaran `data-template`, `data-slide-structure` y centrado vertical
@@ -64,11 +65,16 @@
 - [ ] CSS y JavaScript usan rutas locales relativas
 - [ ] No existen scripts externos, APIs, formularios, ventanas emergentes ni descargas
 - [ ] Hosts externos de imágenes y fuentes usan HTTPS y están declarados
-- [ ] Solo se copiaron iconos aprobados, con procedencia y licencias válidas
+- [ ] Solo se copiaron iconos declarados, con procedencia y licencias válidas
 - [ ] Los logos son activos exactos proporcionados u oficiales verificables
+- [ ] Todo logo conserva su relación de aspecto intrínseca: CSS define una sola dimensión y los atributos HTML no contradicen las dimensiones reales del activo
 - [ ] Los recursos pendientes usan `image-broken.svg`, `alt`, leyenda y `data-resource-status="pending"`
 - [ ] Las notas son archivos Markdown separados
 - [ ] El movimiento respeta `prefers-reduced-motion` y usa un ciclo idempotente `web-deck:activate`
-- [ ] El ZIP excluye `_working/`, fuentes generales y carpetas contenedoras, pero incluye las fuentes Mermaid aprobadas bajo `diagrams/`
+- [ ] El ZIP excluye `_working/`, fuentes generales y carpetas contenedoras, pero incluye las fuentes Mermaid declaradas bajo `diagrams/`
 - [ ] El ZIP no incluye ni referencia el runtime de Mermaid
 - [ ] El paquete abre en Armadillo PP in Web
+- [ ] La portada muestra facultad o carrera antes de institución cuando ambas existen, mantiene materia y docente como bloque próximo y solo incluye integrantes si el trabajo es individual o tiene hasta tres integrantes
+- [ ] La lista completa de integrantes aparece en el cierre cuando el equipo supera tres integrantes
+- [ ] Las presentaciones expositivas con más de tres diapositivas internas muestran secuencia editorial visible en títulos, además del contador persistente
+- [ ] Un `data-narrative-bridge`, si existe, es breve, en cursiva, de peso normal y queda sobre los elementos sin competir con ellos

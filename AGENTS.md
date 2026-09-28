@@ -12,7 +12,7 @@ Si la solicitud identifica la actividad, entra directamente en ese flujo y no mu
 ## Preguntas
 
 - Usa `question` o el equivalente disponible para cada solicitud de información, selección o aprobación
-- Agrupa datos independientes de una misma sección cuando la herramienta lo permita; para confirmar resúmenes, una sección breve por llamada
+- Agrupa datos independientes de una misma sección cuando la herramienta lo permita
 - Reutiliza información que el usuario ya proporcionó o que se extrajo de documentos
 - Ofrece opciones para decisiones cerradas y respuesta libre para títulos y nombres
 - Incluye `Omitir`, `No aplica` o `No tengo ese recurso` cuando corresponda
@@ -20,9 +20,8 @@ Si la solicitud identifica la actividad, entra directamente en ese flujo y no mu
 - Pide confirmación antes de reemplazar contenido existente
 - En preguntas de texto libre, indica `Escriba en otro` cuando corresponda
 - Esa indicación va en el enunciado: no agregues una opción de respuesta libre si la herramienta ya la proporciona
-- Presenta esquemas con una diapositiva por bloque y saltos de línea explícitos; nunca como una enumeración dentro de un párrafo
-- Divide los resúmenes en secciones pequeñas, cada una con confirmación propia y respuesta libre para ajustes; conserva las secciones aprobadas y no vuelvas a mostrar el resumen completo para una aprobación global
-- Comunica las carpetas `presentations/<slug>/_working/sources/` y `presentations/<slug>/_working/structure/`, explicando que la primera contiene fuentes y recursos y la segunda estructuras, guiones y esquemas
+- Para una presentacion nueva o reanudada, usa `presentations/<slug>/_working/structure/slide-content.md` como fuente editorial directa: contiene una diapositiva por bloque, sus estructuras, textos, iconos y recursos locales
+- Comunica las carpetas `presentations/<slug>/_working/sources/` y `presentations/<slug>/_working/structure/`, explicando que la primera contiene fuentes y recursos y la segunda estructuras, guiones, esquemas y `slide-content.md`
 - No solicites ni requieras Python para crear, validar o empaquetar presentaciones
 - Al iniciar una creación, pide un nombre de trabajo obligatorio y explica que crea la carpeta de fuentes y recursos; puede ser distinto del título visible
 - Permite delegar subtítulos y temáticas a partir de fuentes autorizadas o de la conversación pertinente, según el flujo

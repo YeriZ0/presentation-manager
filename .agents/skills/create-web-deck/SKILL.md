@@ -34,7 +34,7 @@ Usa el manifiesto progresivamente:
 
 1. Lee `structureIndex` al preparar el esquema
 2. Asigna un ID de estructura a cada diapositiva propuesta
-3. Tras aprobar el esquema, carga solo las estructuras distintas utilizadas
+3. Tras validar `slide-content.md`, carga solo las estructuras distintas declaradas
 4. Carga un módulo `conditional` solo cuando su tema esté presente
 5. No escanees ni concatentes todos los Markdown de la plantilla
 
@@ -46,9 +46,9 @@ Aplica los fundamentos y estructuras antes de escribir HTML/CSS: prepara una com
 
 ## Cuestionario
 
-Sigue íntegramente `references/creation-workflow.md`. No repitas sus preguntas en esta skill ni vuelvas a preguntar datos ya aportados. Toda aprobación, selección o dato debe solicitarse con `question` o su equivalente cuando esté disponible.
+Sigue íntegramente `references/creation-workflow.md`. No repitas sus preguntas en esta skill ni vuelvas a preguntar datos ya aportados. Toda aprobación, selección o dato que no pueda resolverse al editar el archivo editorial debe solicitarse con `question` o su equivalente cuando esté disponible.
 
-Confirma los resúmenes mediante secciones breves e independientes, con una pregunta por sección, confirmación o ajustes escritos y conservación de lo ya aprobado. No presentes el esquema completo en un modal ni solicites una aprobación global al terminar. Los límites de tamaño y el registro de versiones están definidos en el flujo.
+Genera y mantiene `presentations/<slug>/_working/structure/slide-content.md` como fuente editorial unica. El usuario revisa y edita directamente ese archivo; no presentes el esquema ni los iconos en confirmaciones iterativas de chat. Relee y valida el archivo antes de generar, y pregunta solo por campos pendientes, conflictos, permisos, bibliotecas alternativas o reemplazos.
 
 ## Salida
 
@@ -62,6 +62,7 @@ presentations/
     _working/
       sources/
       structure/
+        slide-content.md
     deck.json
     assets/
     diagrams/
@@ -69,7 +70,7 @@ presentations/
     notes/
 ```
 
-Comprueba `presentations/<slug>/` y `presentations/packages/<slug>.zip` antes de crear o reemplazar. Pide confirmación para reemplazar, crear una nueva versión o cancelar. Comunica que `presentations/<slug>/_working/sources/` recibe fuentes y recursos, y que `presentations/<slug>/_working/structure/` recibe estructuras, guiones y esquemas. Ambas carpetas quedan fuera del ZIP. Las fuentes Mermaid aprobadas se promueven a `diagrams/` y sí se comparten. Usa `scripts/package-deck.mjs` para compilar, validar y empaquetar, incluyendo únicamente `deck.json`, `assets/`, `diagrams/`, `slides/` y `notes/`. Nunca incluyas `_working/` ni una carpeta contenedora del proyecto. Las entradas ZIP deben usar barras diagonales; en Windows no uses `Compress-Archive`.
+Comprueba `presentations/<slug>/` y `presentations/packages/<slug>.zip` antes de crear o reemplazar. Pide confirmación para reemplazar, crear una nueva versión o cancelar. Comunica que `presentations/<slug>/_working/sources/` recibe fuentes y recursos, y que `presentations/<slug>/_working/structure/` recibe estructuras, guiones, esquemas y el archivo editorial `slide-content.md`. Ambas carpetas quedan fuera del ZIP. Las fuentes Mermaid declaradas en el archivo editorial se promueven a `diagrams/` y sí se comparten. Usa `scripts/package-deck.mjs` para compilar, validar y empaquetar, incluyendo únicamente `deck.json`, `assets/`, `diagrams/`, `slides/` y `notes/`. Nunca incluyas `_working/` ni una carpeta contenedora del proyecto. Las entradas ZIP deben usar barras diagonales; en Windows no uses `Compress-Archive`.
 
 ## Estructura obligatoria de las diapositivas
 
@@ -82,6 +83,7 @@ slides/001/script.js
 ```
 
 - Coloca todo texto visible y editable directamente en `index.html`, salvo el texto interno de un diagrama Mermaid, cuya fuente editable permanece en `diagrams/*.mmd`
+- Escribe el texto visible en el idioma de la presentación y conserva su ortografía natural, incluidas tildes y eñes. ASCII se reserva para identificadores, rutas, comandos y código cuando corresponda
 - Enlaza CSS y JavaScript con rutas relativas; carga el script con `defer`
 - No generes texto visible desde JavaScript ni desde `content` de CSS
 - Limita JavaScript al comportamiento y activación de animaciones
@@ -90,7 +92,7 @@ slides/001/script.js
 - Respeta `prefers-reduced-motion`
 - Usa `caption`, `thead`, `tbody` y encabezados con `scope` en tablas
 - Usa SVG inline para gráficos sencillos y para la salida estática compilada de Mermaid
-- Usa Chart.js o Apache ECharts solo como activos locales versionados cuando el esquema aprobado incluya gráficos; no uses CDN, D3 ni runtimes innecesarios
+- Usa Chart.js o Apache ECharts solo como activos locales versionados cuando `slide-content.md` declare gráficos que lo requieran; no uses CDN, D3 ni runtimes innecesarios
 - Usa Mermaid únicamente como compilador de desarrollo: comparte la fuente `.mmd`, pero nunca copies, importes ni ejecutes Mermaid dentro de una diapositiva
 - Mantén datos, etiquetas, unidades, periodos, fuentes y resumen textual en HTML
 - Conserva una tabla semántica o alternativa textual cuando uses un runtime
@@ -154,21 +156,20 @@ Usa Phosphor por defecto. La fuente local es `node_modules/@phosphor-icons/core/
 3. Excluye categorías, leads y textos introductorios decorativos
 4. En las unidades temáticas de `academic-sober`, incluye un icono semántico por defecto en cada par; omite el grupo únicamente según la decisión explícita documentada en iconografía
 5. Propón nombres restantes y verifica que existan localmente
-6. Presenta concepto, rol, nombre, peso y razón semántica
-7. Solicita aprobación o cambios
-8. Registra la selección en `_working/icons.json`
-9. Ejecuta `npm run vendor:icons -- presentations/<slug>`
-10. Referencia `assets/icons/icons.css` y clases o `data-icon` en el HTML
+6. Declara concepto, rol, nombre, peso y razón semántica dentro de la diapositiva correspondiente en `slide-content.md`
+7. Deriva `_working/icons.json` desde esas declaraciones con `verified: true` para los nombres fuera del catalogo curado
+8. Ejecuta `npm run vendor:icons -- presentations/<slug>`
+9. Referencia `assets/icons/icons.css` y clases o `data-icon` en el HTML
 
 El peso predeterminado es `regular`; también se admiten `bold` y `duotone`. No uses letras en cajas ni fuerces iconos sin relación semántica. Nunca generes, dibujes, traces, combines, aproximes ni reconstruyas iconos. Los conectores, flechas, ejes y marcas funcionales no son iconos.
 
-Carga iconografía cuando el esquema incluya pilares, comparaciones, elementos narrativos o procesos, antes de decidir sus recursos. La biblioteca predeterminada no sustituye la obligación de incluir los iconos de esas estructuras. Una omisión aprobada se marca en `body` con `data-icons="none"` y `data-icon-omission="user-request|no-semantic-match"`, eligiendo un solo valor; registrar también el motivo y la decisión en `_working/`.
+Carga iconografía cuando `slide-content.md` incluya pilares, comparaciones, elementos narrativos o procesos, antes de decidir sus recursos. La biblioteca predeterminada no sustituye la obligación de incluir los iconos de esas estructuras. Una omisión declarada se marca en `body` con `data-icons="none"` y `data-icon-omission="user-request|no-semantic-match"`, eligiendo un solo valor; registrar tambien el motivo en la diapositiva correspondiente del archivo editorial.
 
-El copiador admite nombres Phosphor locales seguros fuera del catálogo curado cuando la entrada de selección declara `approved: true`. Verificar su existencia y aprobación antes de copiar; nunca omitir silenciosamente un icono por un error del copiador.
+El copiador admite nombres Phosphor locales seguros fuera del catálogo curado cuando la entrada derivada declara `verified: true`. Verificar su existencia y declaracion antes de copiar; nunca omitir silenciosamente un icono por un error del copiador.
 
 Si Phosphor no está disponible, usa el repositorio oficial solo si existe acceso web; si no, marca el recurso como pendiente. Nunca uses CDN, webfont, script externo ni API de iconos en tiempo de ejecución.
 
-Al usar Phosphor, copia la licencia MIT a `assets/licenses/phosphor-icons.txt`, registra fuente, versión y activos usados en `assets/ATTRIBUTIONS.md`, copia solo los SVG aprobados y configura `--icon-size` y `--icon-color`.
+Al usar Phosphor, copia la licencia MIT a `assets/licenses/phosphor-icons.txt`, registra fuente, versión y activos usados en `assets/ATTRIBUTIONS.md`, copia solo los SVG declarados y configura `--icon-size` y `--icon-color`.
 
 Las bibliotecas alternativas solo se usan después de selección explícita. Ofrece Phosphor, Lucide, Tabler Icons, Heroicons, Fluent UI System Icons, Bootstrap Icons, una fuente aportada por el usuario o ningún icono. Copia únicamente SVG estáticos locales, su licencia y atribuciones; registra cada activo en `assets/icons/manifest.json` con biblioteca, versión, licencia y URL HTTPS, y usa una biblioteca por diapositiva. Los iconos del usuario se guardan en `assets/icons/user/` con `source: "user"`, `providedByUser: true`, ruta empaquetada y SHA-256. Verifica que cada activo funcione sin runtime de biblioteca.
 
@@ -192,7 +193,7 @@ El código usa de una a dieciséis filas visibles, cada una con `data-code-numbe
 
 ## Diagramas Mermaid
 
-Usa Mermaid para todo diagrama relacional, sin depender de la plantilla visual seleccionada. La fuente editable aprobada vive bajo `diagrams/`, incluye `accTitle` y `accDescr`, y se comparte en el ZIP. Cada diapositiva declara un objeto `diagram` en `deck.json` con motor, version exacta, tipo, ruta y SHA-256; su HTML usa `figure[data-diagram][data-diagram-engine="mermaid"]`, tipo, direccion de lectura, `aria-labelledby`, `aria-describedby` y un unico destino `data-diagram-output`.
+Usa Mermaid para todo diagrama relacional, sin depender de la plantilla visual seleccionada. La fuente editable declarada en `slide-content.md` vive bajo `diagrams/`, incluye `accTitle` y `accDescr`, y se comparte en el ZIP. Cada diapositiva declara un objeto `diagram` en `deck.json` con motor, version exacta, tipo, ruta y SHA-256; su HTML usa `figure[data-diagram][data-diagram-engine="mermaid"]`, tipo, direccion de lectura, `aria-labelledby`, `aria-describedby` y un unico destino `data-diagram-output`.
 
 Mermaid es solo un compilador de desarrollo. El SVG completo, saneado y estatico se inserta inline con `data-diagram-static`; el ZIP contiene la fuente `.mmd` y `diagrams/config.json`, pero nunca el runtime, D3, CDN ni descubrimiento de topologia durante la reproduccion. No edites el SVG: modifica la fuente o la configuracion cerrada y recompila. Rechaza configuracion embebida, enlaces, eventos, HTML activo, estilos arbitrarios y referencias externas. Mantiene `viewBox`, `preserveAspectRatio="xMidYMid meet"`, titulo y descripcion accesibles, y elimina dimensiones o `max-width` intrinsecos de Mermaid antes de ajustar el SVG al area disponible.
 
@@ -201,6 +202,8 @@ Despues de modificar cualquier `.mmd` de una presentacion existente, ejecuta inm
 ## Integridad de marca
 
 Nunca inventes, aproximes, traces, redibujes ni simules logos. Usa un activo proporcionado o una fuente oficial verificable. No sustituyas una marca por un icono, no la recolorees, recortes, deformes ni reorganices contra sus reglas. Registra origen, licencia y guía de marca en `assets/ATTRIBUTIONS.md`. Si no se puede confirmar autenticidad o permiso, marca el logo como pendiente.
+
+Todo logo debe mantener su relación de aspecto intrínseca. En CSS, establecer una sola dimensión y dejar la otra en `auto`; en HTML, no declarar pares `width` y `height` incompatibles con el activo. Verificar visualmente portada, cierre y cabeceras internas antes de empaquetar.
 
 ## Recursos visuales pendientes
 
@@ -217,6 +220,6 @@ Si no existe el marcador fuente, informa del problema y no inventes uno. No modi
 
 ## Manifiesto, seguridad y entrega
 
-Usa `references/deck.schema.json` como contrato de `deck.json`, con el manifiesto en la raíz del paquete y las diapositivas en orden. Usa activos locales, no cargues scripts externos, no llames APIs, WebSockets ni servicios de red, no crees formularios, ventanas emergentes ni descargas, declara hosts de imágenes y fuentes HTTPS en `externalResources`, conserva notas en Markdown y usa rutas relativas con barras diagonales. Cuando uses Chart.js o ECharts, copia una sola versión exacta a `assets/vendor/<library>/`, registra versión, URL, licencia y ruta en `assets/ATTRIBUTIONS.md`, y omite todos los runtimes si no hay gráficos. Mermaid permanece como dependencia de desarrollo con versión exacta; el paquete contiene `.mmd`, `diagrams/config.json` y SVG estático, nunca el runtime. Verifica límites de plantilla en gráficos, tablas, diagramas y código sin sacrificar legibilidad, escalas honestas ni estructura semántica. Valida el HTML final después de cualquier transformación o inyección de iconos; ninguna transformación puede eliminar texto aprobado.
+Usa `references/deck.schema.json` como contrato de `deck.json`, con el manifiesto en la raíz del paquete y las diapositivas en orden. Usa activos locales, no cargues scripts externos, no llames APIs, WebSockets ni servicios de red, no crees formularios, ventanas emergentes ni descargas, declara hosts de imágenes y fuentes HTTPS en `externalResources`, conserva notas en Markdown y usa rutas relativas con barras diagonales. Cuando uses Chart.js o ECharts, copia una sola versión exacta a `assets/vendor/<library>/`, registra versión, URL, licencia y ruta en `assets/ATTRIBUTIONS.md`, y omite todos los runtimes si no hay gráficos. Mermaid permanece como dependencia de desarrollo con versión exacta; el paquete contiene `.mmd`, `diagrams/config.json` y SVG estático, nunca el runtime. Verifica límites de plantilla en gráficos, tablas, diagramas y código sin sacrificar legibilidad, escalas honestas ni estructura semántica. Valida el HTML final después de cualquier transformación o inyección de iconos; ninguna transformación puede eliminar texto declarado en `slide-content.md`.
 
 Las reglas completas de seguridad están en `references/security-rules.md`. Antes del ZIP sigue `references/validation-checklist.md`: verifica archivos declarados, IDs únicos, rutas seguras, licencias, manifiesto, contraste, límites de plantilla, iconos, recursos pendientes, notas, movimiento y exclusión de `_working/`.

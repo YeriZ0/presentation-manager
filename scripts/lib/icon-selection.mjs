@@ -14,10 +14,10 @@ export function normalizeIconSelection(rawIcons, catalog) {
             throw new Error('Nombre o rol de icono no válido');
         if (
             !Object.values(catalog.roles).includes(name) &&
-            icon.approved !== true
+            icon.verified !== true
         ) {
             throw new Error(
-                `El icono fuera del catálogo requiere approved: true: ${name}`,
+                `El icono fuera del catalogo requiere verified: true: ${name}`,
             );
         }
         if (!catalog.weights.includes(weight))

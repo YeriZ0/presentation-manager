@@ -28,7 +28,7 @@ const selection = existsSync(selectionPath)
     : { icons: [] };
 const icons = normalizeIconSelection(selection.icons || [], catalog);
 if (icons.length === 0) {
-    throw new Error('No hay iconos aprobados en la seleccion');
+    throw new Error('No hay iconos declarados en la seleccion');
 }
 const destination = resolve(root, 'assets/icons');
 const iconDestination = resolve(destination, 'phosphor');

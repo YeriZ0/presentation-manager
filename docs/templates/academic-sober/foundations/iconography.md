@@ -43,7 +43,7 @@ Los conectores, flechas, líneas de vida, ejes y formas funcionales de diagramas
 
 ## Omisión explícita
 
-La falta de una petición de iconos no es una omisión autorizada. Proponer recursos aunque se haya elegido el diseño recomendado y registrar su aprobación con la propuesta de contenido.
+La falta de una petición de iconos no es una omisión autorizada. Proponer recursos aunque se haya elegido el diseño recomendado y declararlos junto al contenido de su diapositiva en `structure/slide-content.md`.
 
 Si el usuario solicita no usarlos, o no existe correspondencia semántica después de revisar candidatos y acordar una adaptación, omitirlos en todo el grupo equivalente. Declarar en `body` `data-icons="none"` junto con `data-icon-omission="user-request"` o `data-icon-omission="no-semantic-match"`. Registrar el motivo y la decisión en `_working/`; los atributos permiten verificar la declaración, no demuestran por sí solos consentimiento.
 
@@ -62,19 +62,19 @@ data-trend | trend-up | regular | evolución o mejora
 concept | lightbulb | regular | idea o hallazgo
 ```
 
-Las estructuras pueden recomendar roles; la skill confirma el nombre exacto, la biblioteca y la licencia antes de copiar el activo seleccionado durante el empaquetado.
+Las estructuras pueden recomendar roles; la skill verifica el nombre exacto, la biblioteca y la licencia declarados antes de copiar el activo durante el empaquetado.
 
 Los procesos lineales comunican continuidad mediante números, no mediante un rol de flecha. No seleccionar ni copiar activos para conectores de `process`; los iconos de los pasos representan su contenido, no el paso al siguiente elemento.
 
 ## Mapeo requerido
 
-Antes de copiar activos, registrar:
+Antes de copiar activos, declarar en `slide-content.md`:
 
 ```text
 Concepto | Biblioteca o usuario | Nombre o archivo | Peso | Razón semántica
 ```
 
-Verificar el archivo exacto antes de aprobarlo. Copiar solo los iconos utilizados. Un archivo personalizado debe existir antes de la generación y quedar registrado como aportado por el usuario, junto con su SHA-256, en `assets/icons/manifest.json`.
+Verificar el archivo exacto antes de derivar la seleccion tecnica. Copiar solo los iconos utilizados. Un archivo personalizado debe existir antes de la generación y quedar registrado como aportado por el usuario, junto con su SHA-256, en `assets/icons/manifest.json`.
 
 ## Accesibilidad
 
