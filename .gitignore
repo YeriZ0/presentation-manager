@@ -12,8 +12,6 @@ out/
 
 # Testing & Reports
 coverage/
-playwright-report/
-test-results/
 .nyc_output
 
 # Env - NUNCA commitear secretos (security)

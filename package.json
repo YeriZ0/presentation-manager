@@ -16,8 +16,7 @@
         "package:deck": "node scripts/package-deck.mjs",
         "format": "prettier --write .",
         "format:check": "prettier --check .",
-        "test": "vitest run",
-        "test:e2e": "playwright test"
+        "test": "vitest run"
     },
     "dependencies": {
         "ajv": "^8.17.1",
