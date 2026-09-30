@@ -65,9 +65,13 @@ export function auditAcademicDecorations(slideId) {
         const canvas = element.closest('[data-template="academic-sober"]');
         const canvasBackground = getComputedStyle(canvas).backgroundColor;
         const background = style.backgroundColor;
+        const semanticIcon = element.matches(
+            '.deck-icon[data-contrast-role="icon"]',
+        );
         if (
             openContent &&
             !frame &&
+            !semanticIcon &&
             background !== 'transparent' &&
             background !== 'rgba(0, 0, 0, 0)' &&
             background !== canvasBackground &&
