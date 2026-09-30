@@ -4,6 +4,8 @@ Armadillo PP in Web accepts a ZIP with this structure:
 
 ```text
 deck.json
+slide-content.md
+structure/
 diagrams/001/main.mmd
 diagrams/config.json
 slides/001/index.html

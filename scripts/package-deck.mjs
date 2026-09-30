@@ -54,8 +54,29 @@ if (existsSync(outputPath)) {
 }
 
 const files = new Map();
+const structurePrefix = '_working/structure/';
+const slideContentPath = resolve(
+    sourceRoot,
+    '_working',
+    'structure',
+    'slide-content.md',
+);
+if (
+    !existsSync(slideContentPath) ||
+    !lstatSync(slideContentPath).isFile()
+) {
+    throw new Error(
+        'Falta _working/structure/slide-content.md en la carpeta origen',
+    );
+}
+
 for (const path of collectFiles(sourceRoot)) {
     const relativePath = relative(sourceRoot, path).replaceAll('\\', '/');
+    if (relativePath.startsWith(structurePrefix)) {
+        const packagePath = `structure/${relativePath.slice(structurePrefix.length)}`;
+        files.set(packagePath, readFileSync(path));
+        continue;
+    }
     if (
         relativePath !== 'deck.json' &&
         !/^(assets|diagrams|slides|notes)\//.test(relativePath)
@@ -67,6 +88,7 @@ for (const path of collectFiles(sourceRoot)) {
     }
     files.set(relativePath, readFileSync(path));
 }
+files.set('slide-content.md', readFileSync(slideContentPath));
 
 const deckBytes = files.get('deck.json');
 if (!deckBytes) throw new Error('Falta deck.json en la carpeta origen');

@@ -19,7 +19,7 @@ Este documento es la única fuente normativa para las preguntas, decisiones y tr
 
 Si la herramienta interactiva no está disponible, indicarlo una sola vez y continuar con solicitudes breves agrupadas por sección. No simular un modal. La navegación con flechas y la etiqueta efectiva del campo libre dependen de la interfaz interactiva disponible y no deben prometerse sin comprobarlas.
 
-El contenido editorial no se revisa en modales ni se confirma por bloques de chat. El agente lo escribe y actualiza en `presentations/<slug>/_working/structure/slide-content.md`; el usuario lo revisa y modifica directamente. Ese archivo es la fuente editorial unica y sigue el contrato de `slide-content-format.md`.
+El contenido editorial no se copia al chat ni se confirma diapositiva por diapositiva en mensajes. El agente lo escribe y actualiza en `presentations/<slug>/_working/structure/slide-content.md`; el usuario lo revisa y modifica directamente. Antes de generar o reemplazar HTML/CSS/JS, el agente comunica la ruta y espera a que el usuario indique que el contenido está listo. Ese archivo es la fuente editorial unica y sigue el contrato de `slide-content-format.md`.
 
 ## Modalidades
 
@@ -46,29 +46,31 @@ No ofrecer `Omitir` ni `No aplica`, ni avanzar con un nombre vacío. Si el usuar
 
 Derivar del nombre un slug ASCII en minúsculas con guiones, mostrar `presentations/<slug>/` y permitir corregirlo sin exigir términos técnicos. Rechazar rutas absolutas, barras invertidas, segmentos de recorrido, `packages`, nombres de dispositivo de Windows y valores vacíos después de normalizar.
 
-Comprobar `presentations/<slug>/` y `presentations/packages/<slug>.zip`. Ante una colisión, preguntar si se desea reemplazar, crear una nueva versión o cancelar. Crear `_working/sources/` y `_working/structure/` solamente después de resolver la ubicación. Comunicar ambas rutas completas: `sources/` recibe documentos, imágenes y recursos fuente; `structure/` recibe guiones, estructuras, esquemas y `slide-content.md`. Ambas quedan fuera del ZIP.
+Comprobar `presentations/<slug>/` y `presentations/packages/<slug>.zip`. Ante una colisión, preguntar si se desea reemplazar, crear una nueva versión o cancelar. Crear `_working/sources/` y `_working/structure/` solamente después de resolver la ubicación. Comunicar ambas rutas completas: `sources/` recibe documentos, recursos y esquemas originales aportados por el usuario; `structure/` recibe estructuras, guiones y materiales editoriales generados, incluido `slide-content.md`. Indicar que coloque ahí el material antes de continuar. El ZIP excluye `sources/`, pero incluye todos los archivos de `structure/` bajo `structure/` y copia además el archivo editorial como `slide-content.md` en la raíz.
 
 El nombre de trabajo y el slug organizan los archivos. El título visible puede resolverse después de leer fuentes y debe estar definido en `slide-content.md` antes de generar `deck.json` y la portada. Cambiar el título no renombra la carpeta.
 
 ### 2. Punto de partida
 
-Para una presentación nueva, preguntar:
+Después de crear las carpetas, indicar dónde colocar el material disponible para preparar la presentación y preguntar:
 
-`¿Cómo desea crear la presentación?`
+`¿Cómo desea comenzar?`
 
-- A partir de un tema
-- A partir de documentos
-- A partir de un esquema
+- `Ya coloqué el material`
+- `Crear a partir de un tema`
+- `Crear a partir de un esquema`
+
+La primera opción indica que ya hay documentos, recursos o esquemas originales bajo `sources/`; leer el material disponible y reutilizar sus datos. La segunda abre una pregunta de texto libre, sin opciones cerradas: `Describa el tema de la presentación y qué ideas desea desarrollar en el conjunto de diapositivas.` La tercera indica dónde colocar el esquema original bajo `sources/` y esperar a que el usuario avise que está disponible antes de leerlo. No abrir el cuestionario de creación hasta recibir el material que corresponda a la opción elegida.
 
 No iniciar el cuestionario de creación para reproducir, validar o empaquetar una presentación ya existente.
 
 ### 3. Plantilla
 
-Descubrir solo los manifiestos `docs/templates/*/template.md`. Mostrar nombre y resumen, pedir la selección y cargar únicamente el manifiesto seleccionado y sus módulos `always`. También puede elegirse una dirección visual personalizada sin convertirla en una plantilla reutilizable.
+Descubrir solo los manifiestos `docs/templates/*/template.md`. Mostrar nombre y resumen, pedir la selección y cargar únicamente el manifiesto seleccionado y sus módulos `always`. La plantilla seleccionada define las reglas visuales y no se ofrecen opciones para personalizar o sustituirlas. Si no hay plantillas disponibles, informar al usuario y detener la generación hasta contar con una plantilla.
 
 ### 4. Material
 
-En las ramas de documentos o esquema, indicar cómo aportar los archivos según las capacidades del entorno. Aceptar material ya presente, leerlo antes de preguntar datos que pueda contener y reutilizar los datos extraídos. Si hay discrepancias, preguntar únicamente por el dato conflictivo. No usar Python como solución de lectura o conversión.
+En las ramas de material o esquema, indicar cómo aportar los archivos bajo `_working/sources/`. Aceptar material ya presente, leerlo antes de preguntar datos que pueda contener y reutilizar los datos extraídos. Si hay discrepancias, preguntar únicamente por el dato conflictivo. No usar Python como solución de lectura o conversión.
 
 Material ya presente significa fuentes asignadas a este trabajo o indicadas explícitamente por el usuario, no cualquier deck del repositorio. No abrir ni copiar otras presentaciones como referencia visual, temática o de implementación sin autorización para la tarea actual. La autorización debe distinguir contenido y diseño; no heredar permisos de conversaciones anteriores. La detección de colisiones y la reanudación de un deck no autorizan explorar otros como modelos. Las atribuciones históricas de una plantilla tampoco obligan a reabrir sus referencias.
 
@@ -78,7 +80,7 @@ Antes de completar textos editoriales, preguntar cómo desea definir subtítulos
 - Que el agente los proponga desde la conversación pertinente a este trabajo
 - Definirlos personalmente
 
-La decisión cubre el subtítulo de portada, los contextos opcionales y las propuestas temáticas del archivo editorial. Permitir omitir subtítulos o contextos, pero no dejar sin resolver el tema principal. Si se delega, proponer también el título visible cuando falte y escribir los textos propuestos directamente en `slide-content.md`; no preguntar por cada texto de forma redundante. Si se eligen fuentes que aún no existen, pedirlas o consultar si se cambia de modo. No inventar estadísticas, estudios ni fuentes para respaldar textos propuestos. Conservar las reglas de brevedad y evitar categorías que repitan el título.
+La decisión cubre el subtítulo de portada, los contextos opcionales y las propuestas temáticas del archivo editorial. Si el usuario eligió crear a partir de un tema, tratar su descripción como la fuente de conversación autorizada y no volver a preguntarle por esa procedencia. Permitir omitir subtítulos o contextos, pero no dejar sin resolver el tema principal. Si se delega, proponer también el título visible cuando falte y escribir los textos propuestos directamente en `slide-content.md`; no preguntar por cada texto de forma redundante. Si se eligen fuentes que aún no existen, pedirlas o consultar si se cambia de modo. No inventar estadísticas, estudios ni fuentes para respaldar textos propuestos. Conservar las reglas de brevedad y evitar categorías que repitan el título.
 
 ### 5. Identidad
 
@@ -98,19 +100,13 @@ Si las temáticas se delegaron, proponerlas desde el origen elegido y escribirla
 
 Antes de solicitar un logo, revisar `public/logos/` y los recursos ya aportados. Para cada logo o imagen remota, preguntar si se descarga al paquete o se conserva la URL HTTPS. Registrar los hosts remotos en `externalResources`.
 
-Antes de los detalles visuales, preguntar:
-
-`¿Desea usar el diseño recomendado de la plantilla o personalizarlo?`
-
-Con el diseño recomendado, aplicar los valores documentados y preguntar solo decisiones necesarias. Con personalización, agrupar las opciones independientes permitidas, como acento, tipografía, fondo y densidad.
-
 ### 7. Contenido editorial
 
 Leer `structureIndex` y crear `presentations/<slug>/_working/structure/slide-content.md` con el formato de `slide-content-format.md`. El archivo debe contener la presentacion completa, con una diapositiva ordenada por bloque. No presentar el esquema completo ni partes de este para que el usuario las confirme en el chat.
 
 Escribir en cada bloque el nombre visible y el ID de estructura, todos los textos visibles, la identidad aplicable, las listas, tablas, datos de graficas, codigo, notas, iconos, pies, recursos y rutas locales. Para diagramas relacionales, incluir la fuente Mermaid completa y su ruta final. Las rutas de recursos indican el destino empaquetado bajo `assets/`; cuando exista, anotar tambien su origen bajo `_working/sources/`.
 
-Comunicar la ruta del archivo y solicitar mediante `question` que el usuario lo revise y edite directamente. La pregunta solo debe ofrecer continuar cuando el contenido este listo o solicitar ayuda puntual; no debe copiar el contenido editorial al chat ni pedir una confirmacion por diapositiva. Si el usuario edita el archivo, releerlo por completo. Si comunica cambios por chat, aplicar solo los cambios indicados al archivo, conservar el resto y volver a comunicar su ruta.
+Comunicar la ruta del archivo y solicitar mediante `question` que el usuario lo revise y edite directamente. Indicar que la generación espera hasta que confirme que el archivo está listo. La pregunta debe permitir marcarlo listo, pedir ayuda o señalar cambios; no debe copiar el contenido editorial al chat ni pedir una confirmación por cada diapositiva. Si el usuario edita el archivo, releerlo por completo. Si comunica cambios por chat, aplicar solo los cambios indicados al archivo, conservar el resto y volver a comunicar su ruta y solicitar que indique cuando esté listo.
 
 Antes de generar, validar que el archivo sigue el formato, no contiene campos vacios ni marcadores pendientes, usa estructuras permitidas, tiene numeracion unica y declara todos los recursos e iconos exigidos. Preguntar solo por conflictos, contenido incompleto, una omision sin motivo, permisos, biblioteca alternativa o un reemplazo de contenido existente. No generar hasta resolverlos.
 
@@ -135,6 +131,30 @@ Generar desde la version validada de `slide-content.md`. Para diagramas relacion
 La auditoría final detecta regresiones y problemas renderizados, no sustituye la aplicación inicial de las reglas. Corregir el origen concreto de un fallo sin regenerar contenido no afectado.
 
 En `academic-sober`, la base de unidades abiertas centra tema, icono y descripción, tanto cajas como texto, en pilares, comparaciones, narrativa y procesos. Anclar el CSS a sus marcadores `data-*` obligatorios. Revisar que cualquier clase auxiliar exista en el HTML final; insertar iconos o modificar el marcado no puede desconectar los selectores de alineación. El centrado vertical del cuerpo no demuestra el centrado horizontal de cada columna.
+
+## Agregar una diapositiva a una presentación existente
+
+Seguir este flujo cuando el usuario solicite crear, agregar o insertar una diapositiva en un deck existente. No iniciar el cuestionario de una presentación nueva ni pedir otro nombre de trabajo.
+
+1. Identificar el deck al que se refiere la solicitud usando el contexto actual. Si no es inequívoco, preguntar cuál presentación desea modificar; si hay varias candidatas conocidas, ofrecerlas para selección. No explorar otros decks como referencias.
+2. Leer el `deck.json`, el `slide-content.md` vigente y los archivos necesarios del deck seleccionado. Si falta el archivo editorial, reconstruirlo desde el deck y comunicar que se creó para mantener futuras revisiones. Consultar la plantilla asociada solo para las estructuras y reglas que afecten a la nueva diapositiva.
+3. Reutilizar la información ya disponible. Preguntar únicamente por datos necesarios que no puedan resolverse, como el objetivo o el contenido que debe comunicar la diapositiva, el material fuente o la posición si el orden no es deducible. Agrupar preguntas independientes y usar `question`.
+4. Elegir una estructura ya permitida por la plantilla. No solicitar al usuario IDs, rutas ni nombres técnicos. Si ninguna estructura se ajusta al contenido, consultar cómo adaptarlo; no ampliar ni modificar la plantilla.
+5. Añadir un único bloque editorial a `presentations/<slug>/_working/structure/slide-content.md`, en la posición acordada. Conservar sin cambios los demás bloques y resolver a partir del deck el ID, número y rutas de los artefactos nuevos. Incluir textos visibles, recursos, iconos, datos, notas y fuentes diagramáticas que correspondan.
+6. Antes de escribir o reemplazar archivos de la diapositiva, detenerse y pedir revisión del archivo editorial. Comunicar la ruta completa y explicar que contiene el contenido exacto que se generará y que al empaquetar se incluirá una copia en la raíz del ZIP. Usar una pregunta como:
+
+    `Preparé el contenido editorial de la nueva diapositiva en presentations/<slug>/_working/structure/slide-content.md. Revíselo y edítelo directamente si lo desea. ¿Cómo desea continuar?`
+
+   Opciones:
+   - `El contenido está listo; generar la diapositiva`
+   - `Quiero hacer cambios o necesito ayuda`
+
+   No generar HTML/CSS/JS ni el ZIP antes de que el usuario indique que está listo. No exigir una aprobación adicional por diapositiva en el chat si el usuario ya dio esa indicación inequívoca.
+7. Si pide cambios, actualizar solo el bloque afectado, conservar el resto del archivo y comunicar de nuevo la ruta. Si lo editó directamente, releer el archivo completo. Repetir la pausa de revisión hasta que indique que está listo.
+8. Tras esa indicación, releer y validar `slide-content.md`: verificar el orden, la estructura permitida, todos los campos requeridos, recursos, iconos y coherencia con el deck. Resolver con el usuario únicamente los conflictos o campos incompletos; cualquier cambio resultante vuelve a la revisión editorial.
+9. Generar la diapositiva y actualizar `deck.json` desde el archivo editorial validado. Antes de reemplazar un artefacto existente o alterar diapositivas ya creadas, pedir confirmación. Mantener intacto el resto del deck salvo cambios de manifiesto estrictamente necesarios para el orden.
+10. Validar el deck actualizado, compilar de inmediato los diagramas Mermaid afectados y generar el ZIP con el empaquetador oficial. Verificar que la raíz del ZIP contenga tanto `deck.json` como la copia actual de `slide-content.md`.
+11. Informar la diapositiva añadida, las rutas de los artefactos, la ubicación del ZIP y las validaciones realizadas; indicar cualquier comprobación pendiente.
 
 ## Correcciones y reanudación
 

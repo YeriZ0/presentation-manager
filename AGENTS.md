@@ -21,7 +21,7 @@ Si la solicitud identifica la actividad, entra directamente en ese flujo y no mu
 - En preguntas de texto libre, indica `Escriba en otro` cuando corresponda
 - Esa indicación va en el enunciado: no agregues una opción de respuesta libre si la herramienta ya la proporciona
 - Para una presentacion nueva o reanudada, usa `presentations/<slug>/_working/structure/slide-content.md` como fuente editorial directa: contiene una diapositiva por bloque, sus estructuras, textos, iconos y recursos locales
-- Comunica las carpetas `presentations/<slug>/_working/sources/` y `presentations/<slug>/_working/structure/`, explicando que la primera contiene fuentes y recursos y la segunda estructuras, guiones, esquemas y `slide-content.md`
+- Comunica las carpetas `presentations/<slug>/_working/sources/` y `presentations/<slug>/_working/structure/`, explicando que la primera recibe fuentes, recursos y esquemas originales del usuario, y la segunda estructuras y materiales editoriales generados, incluido `slide-content.md`
 - No solicites ni requieras Python para crear, validar o empaquetar presentaciones
 - Al iniciar una creación, pide un nombre de trabajo obligatorio y explica que crea la carpeta de fuentes y recursos; puede ser distinto del título visible
 - Permite delegar subtítulos y temáticas a partir de fuentes autorizadas o de la conversación pertinente, según el flujo

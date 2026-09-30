@@ -7,14 +7,15 @@
 - [ ] Existe `presentations/<slug>/_working/structure/slide-content.md` y se comunico su ubicacion al usuario
 - [ ] El archivo editorial contiene metadatos, una diapositiva por bloque y todos los textos, recursos, datos, iconos y notas aplicables
 - [ ] Cada recurso declara su ruta final local, y cada diagrama relacional declara su ruta Mermaid y fuente completa
-- [ ] Se releyo y valido la version actual de `slide-content.md`; no contiene campos vacios ni marcadores pendientes antes de generar
+- [ ] El usuario recibió la ruta de `slide-content.md`, tuvo oportunidad de revisarlo y señaló que está listo antes de generar o reemplazar diapositivas
+- [ ] Se releyó y validó la versión actual de `slide-content.md` después de esa indicación; no contiene campos vacíos ni marcadores pendientes antes de generar
 - [ ] No se consultaron otros decks como modelos sin autorización explícita para la tarea actual
 - [ ] Se cargaron las restricciones aplicables y la composición base se diseñó sin separadores decorativos antes de escribir HTML/CSS
 - [ ] La base de cualquier generador se revisó antes de propagarla; no se planificó una limpieza rutinaria de bordes después de generar
 
 ## Antes de entregar
 
-- [ ] La plantilla seleccionada proviene de `docs/templates/*/template.md` o el usuario pidió una dirección personalizada
+- [ ] La plantilla seleccionada proviene de `docs/templates/*/template.md` y sus reglas visuales se aplicaron sin personalizaciones
 - [ ] Solo se cargaron el manifiesto seleccionado, sus módulos `always` y los módulos condicionales necesarios
 - [ ] Todas las rutas de módulos son relativas, seguras y permanecen dentro de la plantilla
 - [ ] Cada diapositiva tiene un ID de estructura declarado y valido en `slide-content.md`, y se cargó su archivo
@@ -25,6 +26,7 @@
 - [ ] La carpeta fuente es `presentations/<slug>/`
 - [ ] El ZIP está en `presentations/packages/<slug>.zip`
 - [ ] `deck.json` está en la fuente y en la raíz del ZIP
+- [ ] `slide-content.md` coincide con `_working/structure/slide-content.md` y está en la raíz del ZIP
 - [ ] `format` es `web-deck` y `version` es `1`
 - [ ] Cada ID de diapositiva es único y todos los archivos declarados existen
 - [ ] Ninguna ruta contiene `..`, barras invertidas o prefijo absoluto
@@ -71,7 +73,7 @@
 - [ ] Los recursos pendientes usan `image-broken.svg`, `alt`, leyenda y `data-resource-status="pending"`
 - [ ] Las notas son archivos Markdown separados
 - [ ] El movimiento respeta `prefers-reduced-motion` y usa un ciclo idempotente `web-deck:activate`
-- [ ] El ZIP excluye `_working/`, fuentes generales y carpetas contenedoras, pero incluye las fuentes Mermaid declaradas bajo `diagrams/`
+- [ ] El ZIP excluye `_working/` y `sources/`, incluye todos los archivos de `_working/structure/` bajo `structure/` y `slide-content.md` en la raíz, además de las fuentes Mermaid bajo `diagrams/`
 - [ ] El ZIP no incluye ni referencia el runtime de Mermaid
 - [ ] El paquete abre en Armadillo PP in Web
 - [ ] La portada muestra facultad o carrera antes de institución cuando ambas existen, mantiene materia y docente como bloque próximo y solo incluye integrantes si el trabajo es individual o tiene hasta tres integrantes

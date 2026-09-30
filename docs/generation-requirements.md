@@ -17,6 +17,8 @@ Las decisiones que faltan se recogen con la herramienta de preguntas. El conteni
 - Los diagramas relacionales incluyen tipo, direccion, pie y fuente Mermaid completa, junto con su ruta final bajo `diagrams/`.
 - Las imagenes, logos, capturas e ilustraciones indican estado, ruta final bajo `assets/`, texto alternativo y pie visible.
 - El usuario puede reordenar, agregar, eliminar o editar bloques directamente. Antes de generar, el agente relee el archivo y consulta solamente campos incompletos, conflictos, permisos o recursos pendientes.
+- Al empaquetar, se incluye el contenido completo de `_working/structure/` bajo `structure/`, una copia de `slide-content.md` en la raíz y se excluye `_working/sources/`.
+- Los esquemas originales aportados para iniciar el trabajo permanecen en `_working/sources/`; `structure/` se reserva para los materiales editoriales generados que se compartirán en el ZIP.
 
 El formato completo se define en `.agents/skills/create-web-deck/references/slide-content-format.md`. `_working/creation-state.json` conserva solo estado operativo, como fuentes autorizadas, pendientes y la huella de la ultima lectura; no contiene una segunda copia editable del contenido.
 

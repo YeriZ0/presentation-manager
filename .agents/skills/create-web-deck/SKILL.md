@@ -11,11 +11,13 @@ La creación, validación y entrega no requiere Python. No solicites su instalac
 
 ## Modalidad de trabajo y plantilla
 
-Al iniciar una presentación nueva, resuelve primero el nombre obligatorio de trabajo y la carpeta de fuentes según el flujo. El nombre de carpeta no exige un título visible definitivo. Después pregunta si se trabajará:
+Al iniciar una presentación nueva, resuelve primero el nombre obligatorio de trabajo, crea las carpetas y comunica dónde colocar fuentes, recursos y esquemas. Después pregunta cómo comenzar:
 
-- A partir de un tema
-- A partir de documentos fuente
-- A partir de un esquema de diapositivas
+- Ya coloqué el material
+- Crear a partir de un tema
+- Crear a partir de un esquema
+
+Si se elige el tema, solicita en un campo de texto libre que el usuario describa el tema y las ideas que desea desarrollar en el conjunto de diapositivas. Si se elige el esquema, indica que lo coloque en `_working/sources/` y espera su aviso antes de leerlo.
 
 Si se solicita continuar o revisar una presentación existente, seguir la rama de reanudación sin pedir otro nombre de trabajo ni crear otra carpeta. Resolver esa elección antes de preparar carpetas cuando la intención sea ambigua.
 
@@ -23,12 +25,12 @@ Después descubre los manifiestos `docs/templates/*/template.md`:
 
 - Lee solo cada manifiesto para obtener ID, nombre visible y resumen
 - Presenta cada plantilla por nombre y resumen
-- Permite seleccionar una plantilla o solicitar una dirección visual personalizada
+- Permite seleccionar una plantilla
 - Tras la confirmación, carga solo el manifiesto seleccionado y sus módulos `always`
 - Resuelve cada ruta relativa a la carpeta de la plantilla
 - Rechaza rutas absolutas, barras invertidas, segmentos de recorrido y rutas fuera de la plantilla
 - Mantén en esta skill las reglas de formato, seguridad, activos y salida; las plantillas definen decisiones visuales
-- Si no existe la carpeta de plantillas, continúa con una dirección visual personalizada
+- Si no hay plantillas disponibles, informa al usuario y detén la generación hasta contar con una plantilla
 
 Usa el manifiesto progresivamente:
 
@@ -70,7 +72,7 @@ presentations/
     notes/
 ```
 
-Comprueba `presentations/<slug>/` y `presentations/packages/<slug>.zip` antes de crear o reemplazar. Pide confirmación para reemplazar, crear una nueva versión o cancelar. Comunica que `presentations/<slug>/_working/sources/` recibe fuentes y recursos, y que `presentations/<slug>/_working/structure/` recibe estructuras, guiones, esquemas y el archivo editorial `slide-content.md`. Ambas carpetas quedan fuera del ZIP. Las fuentes Mermaid declaradas en el archivo editorial se promueven a `diagrams/` y sí se comparten. Usa `scripts/package-deck.mjs` para compilar, validar y empaquetar, incluyendo únicamente `deck.json`, `assets/`, `diagrams/`, `slides/` y `notes/`. Nunca incluyas `_working/` ni una carpeta contenedora del proyecto. Las entradas ZIP deben usar barras diagonales; en Windows no uses `Compress-Archive`.
+Comprueba `presentations/<slug>/` y `presentations/packages/<slug>.zip` antes de crear o reemplazar. Pide confirmación para reemplazar, crear una nueva versión o cancelar. Comunica que `presentations/<slug>/_working/sources/` recibe fuentes, recursos y esquemas originales, y que `presentations/<slug>/_working/structure/` recibe estructuras y materiales editoriales generados, incluido `slide-content.md`. El empaquetador excluye `sources/`, incluye todos los archivos de `structure/` bajo `structure/` y copia `slide-content.md` a la raíz del ZIP. Las fuentes Mermaid declaradas en el archivo editorial se promueven a `diagrams/` y también se comparten. Usa `scripts/package-deck.mjs` para compilar, validar y empaquetar `deck.json`, `structure/`, `slide-content.md`, `assets/`, `diagrams/`, `slides/` y `notes/`. Nunca incluyas una carpeta contenedora del proyecto. Las entradas ZIP deben usar barras diagonales; en Windows no uses `Compress-Archive`.
 
 ## Estructura obligatoria de las diapositivas
 

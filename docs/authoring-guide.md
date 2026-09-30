@@ -42,9 +42,9 @@ presentations/
       001.md
 ```
 
-`_working/sources/` guarda documentos de referencia y `_working/structure/` guarda esquemas aportados por el usuario y `slide-content.md`. Este archivo es la fuente editorial directa: contiene una diapositiva por bloque, su estructura, textos, iconos, recursos, datos y notas. La carpeta es de trabajo y nunca se incluye en el ZIP final.
+`_working/sources/` guarda documentos de referencia, recursos y esquemas originales; `_working/structure/` guarda estructuras, guiones y materiales editoriales generados, incluido `slide-content.md`. Este archivo es la fuente editorial directa: contiene una diapositiva por bloque, su estructura, textos, iconos, recursos, datos y notas. El ZIP excluye `sources/`, incluye todos los archivos de `structure/` bajo `structure/` y añade una copia de `slide-content.md` en la raíz.
 
-Durante la creación, comunique ambas rutas al usuario: `presentations/<slug>/_working/sources/` recibe documentos, imágenes y recursos fuente; `presentations/<slug>/_working/structure/` recibe guiones, estructuras de diapositivas, esquemas y `slide-content.md`. El usuario revisa y edita este ultimo archivo antes de la generacion. La creación, validación y empaquetado no requiere Python.
+Durante la creación, comunique ambas rutas al usuario: `presentations/<slug>/_working/sources/` recibe documentos, imágenes, recursos y esquemas originales; `presentations/<slug>/_working/structure/` recibe guiones, estructuras generadas y `slide-content.md`. El usuario revisa y edita este ultimo archivo antes de la generacion. La creación, validación y empaquetado no requiere Python.
 
 1. Crea una carpeta para cada diapositiva
 2. Agrega `index.html`, `styles.css` y `script.js` en cada carpeta
@@ -58,7 +58,7 @@ Durante la creación, comunique ambas rutas al usuario: `presentations/<slug>/_w
 10. Comprime el contenido de forma que `deck.json` quede en la raiz
 11. Guarda el ZIP en `presentations/packages/`
 
-Para compilar diagramas durante la autoría, ejecuta `npm run compile:diagrams -- presentations/<slug>`. Para empaquetar una carpeta ya creada, ejecuta `npm run package:deck -- presentations/<slug> presentations/packages/<slug>.zip`. El empaquetador también compila los diagramas en memoria, valida `deck.json`, incluye solamente `deck.json`, `assets/`, `diagrams/`, `slides/` y `notes/`, y rechaza runtimes no utilizados, faltantes o Mermaid dentro del paquete. No uses scripts Python ni empaquetadores alternativos que omitan estas validaciones.
+Para compilar diagramas durante la autoría, ejecuta `npm run compile:diagrams -- presentations/<slug>`. Para empaquetar una carpeta ya creada, ejecuta `npm run package:deck -- presentations/<slug> presentations/packages/<slug>.zip`. El empaquetador también compila los diagramas en memoria, valida `deck.json`, exige `_working/structure/slide-content.md`, incluye todos los archivos de `structure/` bajo `structure/`, copia `slide-content.md` a la raíz e incluye `deck.json`, `assets/`, `diagrams/`, `slides/` y `notes/`. Excluye `_working/sources/` y rechaza runtimes no utilizados, faltantes o Mermaid dentro del paquete. No uses scripts Python ni empaquetadores alternativos que omitan estas validaciones.
 
 La skill no permite emojis en diapositivas, notas, titulos, textos alternativos ni etiquetas ARIA. El empaquetador tambien ejecuta una auditoria renderizada de contraste: 4.5:1 para texto normal, 3:1 para texto grande y elementos graficos relevantes. Un fallo bloquea la creacion del ZIP.
 

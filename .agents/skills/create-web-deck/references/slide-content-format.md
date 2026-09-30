@@ -2,7 +2,7 @@
 
 `presentations/<slug>/_working/structure/slide-content.md` es la fuente editorial unica de una presentacion. El agente lo crea despues de resolver el material inicial, la plantilla y los datos necesarios. El usuario puede editarlo directamente antes de la generacion.
 
-El archivo queda fuera del ZIP. No sustituye `deck.json`, los archivos HTML, las notas ni las fuentes Mermaid: el agente deriva esos artefactos desde su contenido validado.
+El original de trabajo permanece en `_working/structure/`. El ZIP incluye todos los archivos de esa carpeta bajo `structure/` y copia el archivo editorial como `slide-content.md` en la raíz para conservar la definición y los materiales que determinan la estructura y el contenido. `sources/` permanece fuera del ZIP. El archivo editorial no sustituye `deck.json`, los archivos HTML, las notas ni las fuentes Mermaid: el agente deriva esos artefactos desde su contenido validado.
 
 ## Reglas
 

@@ -34,13 +34,13 @@ Las presentaciones creadas con la skill se guardan en `presentations/<slug>/` y 
 
 La presencia de un archivo en `examples/` o `presentations/` no autoriza utilizarlo como modelo de una nueva presentación. El agente solo consulta otros decks como referencia cuando el usuario lo indica expresamente para la tarea actual.
 
-Para validar y empaquetar una presentacion existente sin incluir `_working/`:
+Para validar y empaquetar una presentación existente:
 
 ```powershell
 npm run package:deck -- presentations/<slug> presentations/packages/<slug>.zip
 ```
 
-Los diagramas relacionales se escriben como fuentes Mermaid bajo `diagrams/` y se compilan a SVG estático con `npm run compile:diagrams -- presentations/<slug>`. Las fuentes `.mmd` se incluyen en el ZIP para continuar la edición en otro dispositivo; el runtime de Mermaid no se empaqueta ni se ejecuta en las diapositivas.
+El empaquetador exige `presentations/<slug>/_working/structure/slide-content.md`, incluye todos los archivos de esa carpeta bajo `structure/` y copia `slide-content.md` en la raíz del ZIP. `_working/sources/` queda fuera del paquete. Los diagramas relacionales se escriben como fuentes Mermaid bajo `diagrams/` y se compilan a SVG estático con `npm run compile:diagrams -- presentations/<slug>`. Las fuentes `.mmd` se incluyen en el ZIP para continuar la edición en otro dispositivo; el runtime de Mermaid no se empaqueta ni se ejecuta en las diapositivas.
 
 El catálogo `academic-sober` usa el mismo compilador. `npm run dev` y `npm run build` generan primero sus siete SVG desde `catalog/academic-sober/diagrams/`. Para regenerarlos sin iniciar Vite, usa `npm run compile:catalog-diagrams`.
 
@@ -59,7 +59,7 @@ El punto de entrada para agentes compatibles es `AGENTS.md`. Cuando la solicitud
 - Trabajar con una presentación: reproducir, importar, crear, revisar, validar o empaquetar
 - Crear o mantener una plantilla: crear, revisar o ajustar sus reglas visuales
 
-El cuestionario de creación agrupa solo preguntas independientes pendientes y tiene su fuente normativa en `.agents/skills/create-web-deck/references/creation-workflow.md`. Las preguntas de texto libre indican `Escriba en otro` cuando corresponde. Para aportar material, use `presentations/<slug>/_working/sources/` para fuentes y recursos, y `presentations/<slug>/_working/structure/` para estructuras, guiones, esquemas y `slide-content.md`; ninguna carpeta se incluye en el ZIP. Para mantener plantillas, consulta `docs/template-authoring-guide.md`; no se modifica una plantilla durante la creación de un deck.
+El cuestionario de creación agrupa solo preguntas independientes pendientes y tiene su fuente normativa en `.agents/skills/create-web-deck/references/creation-workflow.md`. Las preguntas de texto libre indican `Escriba en otro` cuando corresponde. Para aportar material, use `presentations/<slug>/_working/sources/` para fuentes, recursos y esquemas originales, y `presentations/<slug>/_working/structure/` para estructuras y materiales editoriales generados, incluido `slide-content.md`; `sources/` queda fuera del ZIP, mientras que los archivos de `structure/` se incluyen bajo `structure/` y el contenido editorial se copia también a la raíz. Para mantener plantillas, consulta `docs/template-authoring-guide.md`; no se modifica una plantilla durante la creación de un deck.
 
 Al iniciar una creación se solicita un nombre de trabajo obligatorio para preparar esas carpetas; puede ser provisional y distinto del título visible. El usuario puede pedir que el agente proponga subtítulos y temáticas desde las fuentes autorizadas o desde la conversación, o definirlos personalmente. Las restricciones visuales se aplican desde la primera composición, antes de la validación final.
 
