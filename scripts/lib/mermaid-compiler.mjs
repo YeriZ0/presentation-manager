@@ -217,9 +217,29 @@ export async function createMermaidRenderer(viewport = {}) {
 
 async function launchBrowser() {
     const attempts = [
+        ...(process.env.CHROME_BIN
+            ? [
+                  [
+                      'Chromium (CHROME_BIN)',
+                      {
+                          executablePath: process.env.CHROME_BIN,
+                          headless: true,
+                          args: ['--no-sandbox', '--disable-setuid-sandbox'],
+                      },
+                  ],
+              ]
+            : []),
         [
             'Chromium de Playwright',
             {
+                headless: true,
+                args: ['--no-sandbox', '--disable-setuid-sandbox'],
+            },
+        ],
+        [
+            'Chromium del sistema (/usr/bin/chromium)',
+            {
+                executablePath: '/usr/bin/chromium',
                 headless: true,
                 args: ['--no-sandbox', '--disable-setuid-sandbox'],
             },
