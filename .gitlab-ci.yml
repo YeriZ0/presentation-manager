@@ -87,7 +87,8 @@ deploy_production:
               docker run -d \
                 --name presentation-manager \
                 --restart always \
-                -p 3000:80 \
+                -p 3000:3000 \
+                -e TRUST_PROXY=1 \
                 $CI_REGISTRY_IMAGE:latest &&
               docker image prune -f
             "
