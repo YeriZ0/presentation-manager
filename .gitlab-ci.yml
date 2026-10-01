@@ -3,6 +3,10 @@ stages:
     - build
     - deploy
 
+default:
+    tags:
+        - self-hosted
+
 variables:
     DOCKER_IMAGE: $CI_REGISTRY_IMAGE
 
