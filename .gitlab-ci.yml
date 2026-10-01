@@ -27,7 +27,7 @@ test:
         - npm run lint
     <<: *node_cache
 
-# 2. Construccion de imagen Docker y subida al registro de GitLab
+# 2. Construccion de imagen Docker multi-arquitectura (linux/amd64 y linux/arm64)
 build_image:
     stage: build
     image: docker:24.0.5
@@ -37,10 +37,10 @@ build_image:
         - if: '$CI_COMMIT_BRANCH == "main"'
     before_script:
         - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
+        - docker run --privileged --rm tonistiigi/binfmt --install all
+        - docker buildx create --use --name multiarch-builder
     script:
-        - docker build -t "$CI_REGISTRY_IMAGE:latest" -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA" .
-        - docker push "$CI_REGISTRY_IMAGE:latest"
-        - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA"
+        - docker buildx build --platform linux/amd64,linux/arm64 -t "$CI_REGISTRY_IMAGE:latest" -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA" --push .
 
 # 3. Despliegue en VPS mediante SSH
 deploy_production:
