@@ -1,0 +1,67 @@
+.screen {
+    height: 100dvh;
+    min-height: 100dvh;
+    overflow-y: auto;
+    padding: max(1rem, env(safe-area-inset-top))
+        max(1rem, env(safe-area-inset-right))
+        max(1rem, env(safe-area-inset-bottom))
+        max(1rem, env(safe-area-inset-left));
+    color: var(--ink-primary);
+    background: var(--surface-page);
+}
+
+.shell,
+.pairing {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 34rem;
+    margin: 0 auto;
+    gap: 1rem;
+}
+
+.shell {
+    height: calc(
+        100dvh - max(1rem, env(safe-area-inset-top)) -
+            max(1rem, env(safe-area-inset-bottom))
+    );
+    min-height: 28rem;
+}
+
+.pairing {
+    min-height: calc(100dvh - 2rem);
+    justify-content: center;
+    gap: 2rem;
+}
+
+.notes {
+    display: flex;
+    flex: 1;
+    min-height: 6rem;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.notesScroll {
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md, 0.5rem);
+}
+
+.navigation {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+    padding-bottom: 0.25rem;
+}
+
+@media (min-width: 768px) {
+    .screen {
+        padding: 2rem;
+    }
+    .shell {
+        height: calc(100dvh - 4rem);
+    }
+}

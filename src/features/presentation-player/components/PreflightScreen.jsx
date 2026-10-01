@@ -1,11 +1,12 @@
-import { usePlayerStore } from '../state/PlayerStoreProvider.jsx';
+import { usePlayerStore } from '../hooks/usePlayerStore.js';
 import styles from '../../../player/PresentationPlayer.module.css';
 import { ExportAction } from '../../pptx-export/components/ExportAction.jsx';
 import { ExportStatus } from '../../pptx-export/components/ExportStatus.jsx';
+import { ConnectControllerAction } from '../../remote-control/components/ConnectControllerAction.jsx';
+import { Button } from '@/components/ui/button';
 
-export function PreflightScreen({ onClose }) {
+export function PreflightScreen({ onClose, onStart }) {
     const metadata = usePlayerStore((state) => state.metadata);
-    const start = usePlayerStore((state) => state.start);
     const slideCount = metadata.slides.length;
 
     return (
@@ -24,7 +25,7 @@ export function PreflightScreen({ onClose }) {
                 </button>
             </header>
             <section className={styles.deckOverview}>
-                <p className={styles.overviewLabel}>Presentacion lista</p>
+                <p className={styles.overviewLabel}>Presentación lista</p>
                 <h1>{metadata.title}</h1>
                 <p className={styles.overviewMeta}>
                     {slideCount}{' '}
@@ -33,15 +34,12 @@ export function PreflightScreen({ onClose }) {
                     {metadata.viewport.width} x {metadata.viewport.height}
                 </p>
                 <div className={styles.preflightActions}>
-                    <button
-                        className={styles.startButton}
-                        type="button"
-                        onClick={start}
-                    >
+                    <Button size="touch" type="button" onClick={onStart}>
                         Empezar a presentar
                         <span aria-hidden="true">&#8594;</span>
-                    </button>
+                    </Button>
                     <ExportAction />
+                    <ConnectControllerAction />
                 </div>
                 <ExportStatus />
             </section>
@@ -63,10 +61,7 @@ export function PreflightScreen({ onClose }) {
                 </ol>
             </section>
             <footer className={styles.preflightFooter}>
-                <span>Sesion local</span>
-                <span className={styles.mobileFuture}>
-                    Controlador movil <b>Proximamente</b>
-                </span>
+                <span>Presentación local · Control móvil disponible</span>
             </footer>
         </main>
     );

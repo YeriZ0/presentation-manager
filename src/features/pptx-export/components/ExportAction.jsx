@@ -1,7 +1,8 @@
 import { usePptxExport } from '../hooks/usePptxExport.js';
 import { useShallow } from 'zustand/react/shallow';
 import { MenuIcon } from '../../presentation-player/components/MenuIcon.jsx';
-import styles from './PptxExport.module.css';
+import { Button } from '@/components/ui/button';
+import { DownloadIcon } from 'lucide-react';
 import playerStyles from '../../../player/PresentationPlayer.module.css';
 
 export function ExportAction({ variant = 'preflight' }) {
@@ -26,17 +27,16 @@ export function ExportAction({ variant = 'preflight' }) {
     }
 
     return (
-        <button
-            className={styles.preflightAction}
+        <Button
+            variant="outline"
+            size="touch"
             type="button"
             disabled={state.active}
             aria-busy={state.active}
             onClick={start}
         >
-            <MenuIcon name="download" />
-            <span>
-                {state.active ? 'Exportando…' : 'Exportar a PowerPoint'}
-            </span>
-        </button>
+            <DownloadIcon data-icon="inline-start" />
+            <span>{state.active ? 'Exportando…' : 'Exportar PPTX'}</span>
+        </Button>
     );
 }
