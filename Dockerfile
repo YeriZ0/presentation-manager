@@ -34,9 +34,9 @@ COPY package*.json ./
 RUN npm ci --omit=dev
 
 COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/server ./server
-COPY --from=builder /app/shared ./shared
-COPY --from=builder /app/src/format ./src/format
+COPY server ./server
+COPY shared ./shared
+COPY src/format ./src/format
 
 EXPOSE 3000
 
