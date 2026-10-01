@@ -1,90 +1,90 @@
 stages:
-  - test
-  - build
-  - deploy
+    - test
+    - build
+    - deploy
 
 variables:
-  DOCKER_IMAGE: $CI_REGISTRY_IMAGE
+    DOCKER_IMAGE: $CI_REGISTRY_IMAGE
 
 .node_cache: &node_cache
-  cache:
-    key:
-      files:
-        - package-lock.json
-    paths:
-      - .npm/
+    cache:
+        key:
+            files:
+                - package-lock.json
+        paths:
+            - .npm/
 
 # 1. Pruebas y verificacion estatica
 test:
-  stage: test
-  image: node:22-bookworm-slim
-  before_script:
-    - apt-get update && apt-get install -y --no-install-recommends chromium ca-certificates && rm -rf /var/lib/apt/lists/*
-    - npm ci --cache .npm --prefer-offline
-  script:
-    - npm run format:check
-    - npm test
-    - npm run lint
-  <<: *node_cache
+    stage: test
+    image: node:22-bookworm-slim
+    before_script:
+        - apt-get update && apt-get install -y --no-install-recommends chromium ca-certificates && rm -rf /var/lib/apt/lists/*
+        - npm ci --cache .npm --prefer-offline
+    script:
+        - npm run format:check
+        - npm test
+        - npm run lint
+    <<: *node_cache
 
 # 2. Construccion de imagen Docker y subida al registro de GitLab
 build_image:
-  stage: build
-  image: docker:24.0.5
-  services:
-    - docker:24.0.5-dind
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'
-  before_script:
-    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
-  script:
-    - docker build -t "$CI_REGISTRY_IMAGE:latest" -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA" .
-    - docker push "$CI_REGISTRY_IMAGE:latest"
-    - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA"
+    stage: build
+    image: docker:24.0.5
+    services:
+        - docker:24.0.5-dind
+    rules:
+        - if: '$CI_COMMIT_BRANCH == "main"'
+    before_script:
+        - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
+    script:
+        - docker build -t "$CI_REGISTRY_IMAGE:latest" -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA" .
+        - docker push "$CI_REGISTRY_IMAGE:latest"
+        - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA"
 
 # 3. Despliegue en VPS mediante SSH
 deploy_production:
-  stage: deploy
-  image: alpine:latest
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'
-  before_script:
-    - apk add --no-cache openssh-client
-    - eval $(ssh-agent -s)
-    # Seleccionar variables de produccion con fallback a las variables generales
-    - TARGET_HOST="${DEPLOY_HOST_PROD:-$DEPLOY_HOST}"
-    - TARGET_USER="${DEPLOY_USER_PROD:-$DEPLOY_USER}"
-    - TARGET_KEY="${SSH_PRIVATE_KEY_PROD:-$SSH_PRIVATE_KEY}"
-    - TARGET_HOST_KEY="${SSH_HOST_KEY_PROD:-$SSH_HOST_KEY}"
-    # Cargar la clave privada SSH
-    - echo "$TARGET_KEY" | tr -d '\r' | ssh-add -
-    # Configurar known_hosts (utiliza SSH_HOST_KEY si existe, o ssh-keyscan como respaldo)
-    - mkdir -p ~/.ssh
-    - chmod 700 ~/.ssh
-    - |
-      if [ -n "$TARGET_HOST_KEY" ]; then
-        echo "$TARGET_HOST_KEY" >> ~/.ssh/known_hosts
-      else
-        ssh-keyscan -H "$TARGET_HOST" >> ~/.ssh/known_hosts
-      fi
-    - chmod 644 ~/.ssh/known_hosts
-  script:
-    - |
-      TARGET_HOST="${DEPLOY_HOST_PROD:-$DEPLOY_HOST}"
-      TARGET_USER="${DEPLOY_USER_PROD:-$DEPLOY_USER}"
-      ssh $TARGET_USER@$TARGET_HOST "
-        echo '$CI_REGISTRY_PASSWORD' | docker login -u '$CI_REGISTRY_USER' --password-stdin $CI_REGISTRY &&
-        docker pull $CI_REGISTRY_IMAGE:latest &&
-        docker stop presentation-manager || true &&
-        docker rm presentation-manager || true &&
-        docker run -d \
-          --name presentation-manager \
-          --restart always \
-          -p 3000:3000 \
-          -e NODE_ENV=production \
-          -e HOST=0.0.0.0 \
-          -e PORT=3000 \
-          -e TRUST_PROXY=1 \
-          $CI_REGISTRY_IMAGE:latest &&
-        docker image prune -f
-      "
+    stage: deploy
+    image: alpine:latest
+    rules:
+        - if: '$CI_COMMIT_BRANCH == "main"'
+    before_script:
+        - apk add --no-cache openssh-client
+        - eval $(ssh-agent -s)
+        # Seleccionar variables de produccion con fallback a las variables generales
+        - TARGET_HOST="${DEPLOY_HOST_PROD:-$DEPLOY_HOST}"
+        - TARGET_USER="${DEPLOY_USER_PROD:-$DEPLOY_USER}"
+        - TARGET_KEY="${SSH_PRIVATE_KEY_PROD:-$SSH_PRIVATE_KEY}"
+        - TARGET_HOST_KEY="${SSH_HOST_KEY_PROD:-$SSH_HOST_KEY}"
+        # Cargar la clave privada SSH
+        - echo "$TARGET_KEY" | tr -d '\r' | ssh-add -
+        # Configurar known_hosts (utiliza SSH_HOST_KEY si existe, o ssh-keyscan como respaldo)
+        - mkdir -p ~/.ssh
+        - chmod 700 ~/.ssh
+        - |
+            if [ -n "$TARGET_HOST_KEY" ]; then
+              echo "$TARGET_HOST_KEY" >> ~/.ssh/known_hosts
+            else
+              ssh-keyscan -H "$TARGET_HOST" >> ~/.ssh/known_hosts
+            fi
+        - chmod 644 ~/.ssh/known_hosts
+    script:
+        - |
+            TARGET_HOST="${DEPLOY_HOST_PROD:-$DEPLOY_HOST}"
+            TARGET_USER="${DEPLOY_USER_PROD:-$DEPLOY_USER}"
+            ssh $TARGET_USER@$TARGET_HOST "
+              echo '$CI_REGISTRY_PASSWORD' | docker login -u '$CI_REGISTRY_USER' --password-stdin $CI_REGISTRY &&
+              docker pull $CI_REGISTRY_IMAGE:latest &&
+              docker stop presentation-manager || true &&
+              docker rm presentation-manager || true &&
+              docker run -d \
+                --name presentation-manager \
+                --restart always \
+                -p 3000:3000 \
+                -e NODE_ENV=production \
+                -e HOST=0.0.0.0 \
+                -e PORT=3000 \
+                -e TRUST_PROXY=1 \
+                $CI_REGISTRY_IMAGE:latest &&
+              docker image prune -f
+            "

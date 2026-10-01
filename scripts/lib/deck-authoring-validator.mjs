@@ -89,14 +89,17 @@ function assertDeckEditorialPolicy(files) {
         sourceText: new TextDecoder().decode(files.get(slide.source) || []),
     }));
     const structureOf = (slide) =>
-        slide.sourceText.match(/<body\b[^>]*\bdata-slide-structure\s*=\s*["']([^"']+)["']/i)?.[1];
+        slide.sourceText.match(
+            /<body\b[^>]*\bdata-slide-structure\s*=\s*["']([^"']+)["']/i,
+        )?.[1];
     const internal = slides.filter((slide) => {
         const structure = structureOf(slide);
         return structure && structure !== 'cover' && structure !== 'closing';
     });
     if (internal.length > 3) {
         for (const slide of internal) {
-            const title = slide.sourceText.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/i)?.[1]
+            const title = slide.sourceText
+                .match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/i)?.[1]
                 .replace(/<[^>]+>/g, ' ')
                 .replace(/\s+/g, ' ')
                 .trim();
@@ -138,18 +141,30 @@ function assertDeckEditorialPolicy(files) {
     for (const [path, bytes] of files) {
         if (!path.endsWith('.html')) continue;
         const source = new TextDecoder().decode(bytes);
-        for (const tag of source.match(/<img\b[^>]*\bdata-brand-logo(?:\s|=|>)[^>]*>/gi) || []) {
+        for (const tag of source.match(
+            /<img\b[^>]*\bdata-brand-logo(?:\s|=|>)[^>]*>/gi,
+        ) || []) {
             const src = attribute(tag, 'src');
             const width = Number(attribute(tag, 'width'));
             const height = Number(attribute(tag, 'height'));
             if (!src || !Number.isFinite(width) || !Number.isFinite(height)) {
-                throw new Error(`El logo requiere src, width y height: ${path}`);
+                throw new Error(
+                    `El logo requiere src, width y height: ${path}`,
+                );
             }
-            const resolved = posix.normalize(posix.join(posix.dirname(path), src));
+            const resolved = posix.normalize(
+                posix.join(posix.dirname(path), src),
+            );
             const dimensions = pngDimensions(files.get(resolved));
             if (!dimensions) continue;
-            if (Math.abs(width / height - dimensions.width / dimensions.height) > 0.005) {
-                throw new Error(`El logo altera su relación de aspecto: ${path}`);
+            if (
+                Math.abs(
+                    width / height - dimensions.width / dimensions.height,
+                ) > 0.005
+            ) {
+                throw new Error(
+                    `El logo altera su relación de aspecto: ${path}`,
+                );
             }
         }
     }

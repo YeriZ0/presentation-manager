@@ -217,9 +217,29 @@ export async function createMermaidRenderer(viewport = {}) {
 
 async function launchBrowser() {
     const attempts = [
-        ['Chromium de Playwright', { headless: true }],
-        ['Google Chrome', { channel: 'chrome', headless: true }],
-        ['Microsoft Edge', { channel: 'msedge', headless: true }],
+        [
+            'Chromium de Playwright',
+            {
+                headless: true,
+                args: ['--no-sandbox', '--disable-setuid-sandbox'],
+            },
+        ],
+        [
+            'Google Chrome',
+            {
+                channel: 'chrome',
+                headless: true,
+                args: ['--no-sandbox', '--disable-setuid-sandbox'],
+            },
+        ],
+        [
+            'Microsoft Edge',
+            {
+                channel: 'msedge',
+                headless: true,
+                args: ['--no-sandbox', '--disable-setuid-sandbox'],
+            },
+        ],
     ];
     const errors = [];
     for (const [name, options] of attempts) {

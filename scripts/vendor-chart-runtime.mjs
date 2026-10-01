@@ -28,14 +28,22 @@ const runtimes = {
 
 const runtime = runtimes[library];
 if (!runtime) {
-    throw new Error('Uso: node scripts/vendor-chart-runtime.mjs chartjs|echarts [destino]');
+    throw new Error(
+        'Uso: node scripts/vendor-chart-runtime.mjs chartjs|echarts [destino]',
+    );
 }
 
 const sourceRoot = resolve('node_modules', runtime.packagePath);
 const targetRoot = resolve(destination, library);
 mkdirSync(targetRoot, { recursive: true });
-cpSync(resolve(sourceRoot, runtime.source), resolve(targetRoot, runtime.output));
-cpSync(resolve(sourceRoot, runtime.license), resolve(targetRoot, 'LICENSE.txt'));
+cpSync(
+    resolve(sourceRoot, runtime.source),
+    resolve(targetRoot, runtime.output),
+);
+cpSync(
+    resolve(sourceRoot, runtime.license),
+    resolve(targetRoot, 'LICENSE.txt'),
+);
 
 const packageJson = JSON.parse(
     readFileSync(resolve(sourceRoot, 'package.json'), 'utf8'),

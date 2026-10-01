@@ -145,11 +145,12 @@ Seguir este flujo cuando el usuario solicite crear, agregar o insertar una diapo
 
     `Preparé el contenido editorial de la nueva diapositiva en presentations/<slug>/_working/structure/slide-content.md. Revíselo y edítelo directamente si lo desea. ¿Cómo desea continuar?`
 
-   Opciones:
-   - `El contenido está listo; generar la diapositiva`
-   - `Quiero hacer cambios o necesito ayuda`
+    Opciones:
+    - `El contenido está listo; generar la diapositiva`
+    - `Quiero hacer cambios o necesito ayuda`
 
-   No generar HTML/CSS/JS ni el ZIP antes de que el usuario indique que está listo. No exigir una aprobación adicional por diapositiva en el chat si el usuario ya dio esa indicación inequívoca.
+    No generar HTML/CSS/JS ni el ZIP antes de que el usuario indique que está listo. No exigir una aprobación adicional por diapositiva en el chat si el usuario ya dio esa indicación inequívoca.
+
 7. Si pide cambios, actualizar solo el bloque afectado, conservar el resto del archivo y comunicar de nuevo la ruta. Si lo editó directamente, releer el archivo completo. Repetir la pausa de revisión hasta que indique que está listo.
 8. Tras esa indicación, releer y validar `slide-content.md`: verificar el orden, la estructura permitida, todos los campos requeridos, recursos, iconos y coherencia con el deck. Resolver con el usuario únicamente los conflictos o campos incompletos; cualquier cambio resultante vuelve a la revisión editorial.
 9. Generar la diapositiva y actualizar `deck.json` desde el archivo editorial validado. Antes de reemplazar un artefacto existente o alterar diapositivas ya creadas, pedir confirmación. Mantener intacto el resto del deck salvo cambios de manifiesto estrictamente necesarios para el orden.
@@ -178,20 +179,20 @@ Registrar solo estado operativo no editorial en `_working/creation-state.json`. 
 
 ```json
 {
-  "stage": "identity",
-  "projectName": null,
-  "slug": null,
-  "presentationTitle": null,
-  "editorialMode": null,
-  "authorizedReferences": [],
-  "provided": {},
-  "omitted": [],
-  "sources": [],
-  "template": null,
-  "preferences": {},
-  "slideContentPath": "_working/structure/slide-content.md",
-  "slideContentHash": null,
-  "pending": []
+    "stage": "identity",
+    "projectName": null,
+    "slug": null,
+    "presentationTitle": null,
+    "editorialMode": null,
+    "authorizedReferences": [],
+    "provided": {},
+    "omitted": [],
+    "sources": [],
+    "template": null,
+    "preferences": {},
+    "slideContentPath": "_working/structure/slide-content.md",
+    "slideContentHash": null,
+    "pending": []
 }
 ```
 

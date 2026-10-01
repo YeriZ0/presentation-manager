@@ -1,5 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
-import { usePlayerStore, usePlayerStoreApi } from '../state/PlayerStoreProvider.jsx';
+import {
+    usePlayerStore,
+    usePlayerStoreApi,
+} from '../state/PlayerStoreProvider.jsx';
 
 export function usePresentationTimer() {
     const store = usePlayerStoreApi();

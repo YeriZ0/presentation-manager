@@ -19,7 +19,7 @@ El original de trabajo permanece en `_working/structure/`. El ZIP incluye todos 
 
 ## Plantilla base
 
-~~~~md
+```md
 # Contenido editorial
 
 ## Presentacion
@@ -56,23 +56,23 @@ El original de trabajo permanece en `_working/structure/`. El ZIP incluye todos 
 ### Iconos
 
 - Concepto: <concepto concreto>
-  - Biblioteca: Phosphor
-  - Rol: <rol ASCII>
-  - Nombre Phosphor: <nombre ASCII>
-  - Peso: regular | bold | duotone
-  - Razon semantica: <texto>
+    - Biblioteca: Phosphor
+    - Rol: <rol ASCII>
+    - Nombre Phosphor: <nombre ASCII>
+    - Peso: regular | bold | duotone
+    - Razon semantica: <texto>
 
 ### Recursos
 
 - Tipo: imagen | logo | captura | ilustracion
-  - Estado: disponible | pendiente
-  - Ruta final: assets/<tipo>/<archivo>
-  - Fuente de trabajo: _working/sources/<archivo o No aplica>
-  - Texto alternativo: <texto>
-  - Pie visible: <texto>
+    - Estado: disponible | pendiente
+    - Ruta final: assets/<tipo>/<archivo>
+    - Fuente de trabajo: _working/sources/<archivo o No aplica>
+    - Texto alternativo: <texto>
+    - Pie visible: <texto>
 
 ---
-~~~~
+```
 
 ## Bloques condicionales
 
@@ -82,19 +82,19 @@ Agregar solo los bloques que exige la estructura elegida.
 
 Usar en pilares, comparaciones, narrativas y procesos. Cada unidad declara tema, descripcion e icono. Para una omision valida, reemplazar el bloque de icono por `- Iconos: ninguno` y `- Motivo de omision: user-request | no-semantic-match`.
 
-~~~~md
+```md
 ### Unidad 1
 
 - Tema: <texto>
 - Descripcion: <texto>
 - Icono:
-  - Concepto: <concepto>
-  - Biblioteca: Phosphor
-  - Rol: <rol ASCII>
-  - Nombre Phosphor: <nombre ASCII>
-  - Peso: regular
-  - Razon semantica: <texto>
-~~~~
+    - Concepto: <concepto>
+    - Biblioteca: Phosphor
+    - Rol: <rol ASCII>
+    - Nombre Phosphor: <nombre ASCII>
+    - Peso: regular
+    - Razon semantica: <texto>
+```
 
 Para una biblioteca alternativa o un archivo del usuario, sustituir `Biblioteca: Phosphor` y `Nombre Phosphor` por la biblioteca o `usuario`, y declarar el nombre o archivo exacto, su ruta final local y procedencia. Esa seleccion requiere la decision explicita que exige la skill.
 
@@ -117,8 +117,8 @@ Usar solo en `narrative-elements` cuando una frase breve explique la relación e
 - Fuente visible: <texto>
 
 | Encabezado 1 | Encabezado 2 | Encabezado 3 |
-|---|---|---|
-| Dato | Dato | Dato |
+| ------------ | ------------ | ------------ |
+| Dato         | Dato         | Dato         |
 ```
 
 ### Grafica
@@ -134,16 +134,16 @@ Usar solo en `narrative-elements` cuando una frase breve explique la relación e
 - Conclusion visible: <texto>
 - Alternativa textual: <texto>
 
-| Etiqueta | Valor |
-|---|---:|
-| Categoria A | 48 |
-| Categoria B | 32 |
-| Categoria C | 20 |
+| Etiqueta    | Valor |
+| ----------- | ----: |
+| Categoria A |    48 |
+| Categoria B |    32 |
+| Categoria C |    20 |
 ```
 
 ### Diagrama relacional
 
-~~~~md
+````md
 ### Diagrama Mermaid
 
 - Tipo: architecture | workflow | sequence | data-flow | lifecycle | hierarchy | relationship-map
@@ -157,11 +157,11 @@ flowchart LR
     accDescr: <descripcion accesible>
     source[Origen] --> result[Resultado]
 ```
-~~~~
+````
 
 ### Codigo
 
-~~~~md
+````md
 ### Codigo
 
 - Lenguaje: <texto>
@@ -175,4 +175,4 @@ if (value) {
     submit(value);
 }
 ```
-~~~~
+````

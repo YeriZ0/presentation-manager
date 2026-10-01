@@ -392,7 +392,8 @@ export function auditAcademicSoberIdentity(slideId) {
             !rect.width ||
             !rect.height ||
             Math.abs(
-                rect.width / rect.height - logo.naturalWidth / logo.naturalHeight,
+                rect.width / rect.height -
+                    logo.naturalWidth / logo.naturalHeight,
             ) > 0.01
         ) {
             fail(
@@ -414,7 +415,8 @@ export function auditAcademicSoberIdentity(slideId) {
                 teacherRect.top < courseRect.bottom ||
                 teacherRect.top - courseRect.bottom > 24 ||
                 Math.abs(
-                    courseRect.left + courseRect.width / 2 -
+                    courseRect.left +
+                        courseRect.width / 2 -
                         (teacherRect.left + teacherRect.width / 2),
                 ) > 8
             ) {
@@ -445,7 +447,8 @@ export function auditAcademicSoberIdentity(slideId) {
                         Number.parseFloat(getComputedStyle(course).fontSize),
                         Number.parseFloat(getComputedStyle(teacher).fontSize),
                     ) ||
-                Number(style.fontWeight) > Number(getComputedStyle(teacher).fontWeight)
+                Number(style.fontWeight) >
+                    Number(getComputedStyle(teacher).fontWeight)
             ) {
                 fail(
                     '[data-cover-secondary]',
@@ -461,7 +464,8 @@ export function auditAcademicSoberIdentity(slideId) {
         const style = getComputedStyle(bridge);
         const rect = bridge.getBoundingClientRect();
         const elementsRect = elements?.getBoundingClientRect();
-        const lineHeight = Number.parseFloat(style.lineHeight) ||
+        const lineHeight =
+            Number.parseFloat(style.lineHeight) ||
             Number.parseFloat(style.fontSize) * 1.2;
         if (
             !narrative ||

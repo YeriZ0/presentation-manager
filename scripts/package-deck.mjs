@@ -61,10 +61,7 @@ const slideContentPath = resolve(
     'structure',
     'slide-content.md',
 );
-if (
-    !existsSync(slideContentPath) ||
-    !lstatSync(slideContentPath).isFile()
-) {
+if (!existsSync(slideContentPath) || !lstatSync(slideContentPath).isFile()) {
     throw new Error(
         'Falta _working/structure/slide-content.md en la carpeta origen',
     );

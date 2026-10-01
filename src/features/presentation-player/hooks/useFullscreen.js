@@ -12,7 +12,8 @@ export function useFullscreen(playerRef, onChange) {
             onFullscreenChange(fullscreen);
         }
         document.addEventListener('fullscreenchange', handleChange);
-        return () => document.removeEventListener('fullscreenchange', handleChange);
+        return () =>
+            document.removeEventListener('fullscreenchange', handleChange);
     }, [store]);
 
     async function toggle() {

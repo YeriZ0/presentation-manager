@@ -9,7 +9,10 @@ export default defineConfig({
             input: {
                 app: fileURLToPath(new URL('./index.html', import.meta.url)),
                 academicSoberCatalog: fileURLToPath(
-                    new URL('./catalog/academic-sober/index.html', import.meta.url),
+                    new URL(
+                        './catalog/academic-sober/index.html',
+                        import.meta.url,
+                    ),
                 ),
             },
         },
