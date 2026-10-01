@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
-# Etapa 1: Construccion nativa en la plataforma del runner
-FROM --platform=$BUILDPLATFORM node:22-bookworm-slim AS builder
+# Etapa 1: Construccion de la aplicacion
+FROM node:22-bookworm-slim AS builder
 
 WORKDIR /app
 
@@ -21,7 +21,7 @@ RUN npm ci
 COPY . .
 RUN npm run build
 
-# Etapa 2: Servidor web estatico con Nginx en la plataforma destino (ARM64 y AMD64)
+# Etapa 2: Servidor web estatico con Nginx
 FROM nginx:alpine AS runner
 
 # Configuracion para Single Page Application y catalogos

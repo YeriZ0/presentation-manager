@@ -9,6 +9,9 @@ default:
 
 variables:
     DOCKER_IMAGE: $CI_REGISTRY_IMAGE
+    DOCKER_TLS_CERTDIR: ''
+    DOCKER_HOST: 'tcp://docker:2375'
+    DOCKER_DRIVER: overlay2
 
 .node_cache: &node_cache
     cache:
@@ -31,7 +34,7 @@ test:
         - npm run lint
     <<: *node_cache
 
-# 2. Construccion de imagen Docker multi-arquitectura (linux/amd64 y linux/arm64)
+# 2. Construccion nativa de imagen Docker en tu servidor
 build_image:
     stage: build
     image: docker:24.0.5
@@ -41,10 +44,10 @@ build_image:
         - if: '$CI_COMMIT_BRANCH == "main"'
     before_script:
         - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
-        - docker run --privileged --rm tonistiigi/binfmt --install all
-        - docker buildx create --use --name multiarch-builder
     script:
-        - docker buildx build --platform linux/amd64,linux/arm64 -t "$CI_REGISTRY_IMAGE:latest" -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA" --push .
+        - docker build -t "$CI_REGISTRY_IMAGE:latest" -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA" .
+        - docker push "$CI_REGISTRY_IMAGE:latest"
+        - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA"
 
 # 3. Despliegue en VPS mediante SSH
 deploy_production:
