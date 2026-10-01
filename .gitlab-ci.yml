@@ -80,11 +80,7 @@ deploy_production:
               docker run -d \
                 --name presentation-manager \
                 --restart always \
-                -p 3000:3000 \
-                -e NODE_ENV=production \
-                -e HOST=0.0.0.0 \
-                -e PORT=3000 \
-                -e TRUST_PROXY=1 \
+                -p 3000:80 \
                 $CI_REGISTRY_IMAGE:latest &&
               docker image prune -f
             "

@@ -5,7 +5,7 @@ FROM node:22-bookworm-slim AS builder
 
 WORKDIR /app
 
-# Instalar dependencias necesarias para Chromium (compilacion de diagramas Mermaid en prebuild)
+# Instalar dependencias para Chromium (usado por Mermaid compiler en prebuild)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     chromium \
     fonts-liberation \
@@ -21,23 +21,27 @@ RUN npm ci
 COPY . .
 RUN npm run build
 
-# Etapa 2: Entorno ligero de produccion
-FROM node:22-alpine AS runner
+# Etapa 2: Servidor web estatico de alto rendimiento con Nginx
+FROM nginx:alpine AS runner
 
-WORKDIR /app
+# Configuracion para Single Page Application y catalogos
+RUN printf 'server {\n\
+    listen 80;\n\
+    server_name _;\n\
+    root /usr/share/nginx/html;\n\
+    index index.html;\n\
+\n\
+    location / {\n\
+        try_files $uri $uri/ /index.html;\n\
+    }\n\
+\n\
+    location /catalog/academic-sober/ {\n\
+        try_files $uri $uri/ /catalog/academic-sober/index.html;\n\
+    }\n\
+}\n' > /etc/nginx/conf.d/default.conf
 
-ENV NODE_ENV=production
-ENV HOST=0.0.0.0
-ENV PORT=3000
+COPY --from=builder /app/dist /usr/share/nginx/html
 
-COPY package*.json ./
-RUN npm ci --omit=dev
+EXPOSE 80
 
-COPY --from=builder /app/dist ./dist
-COPY server ./server
-COPY shared ./shared
-COPY src/format ./src/format
-
-EXPOSE 3000
-
-CMD ["node", "server/main-prod.js"]
+CMD ["nginx", "-g", "daemon off;"]
