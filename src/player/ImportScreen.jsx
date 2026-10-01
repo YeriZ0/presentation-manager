@@ -106,7 +106,7 @@ export function ImportScreen({ onOpenPicker, onSelectFile, error, isLoading }) {
                 </div>
             </section>
             <footer className={styles.footer}>
-                <span>Solo local</span>
+                <span>local + en linea</span>
                 <a
                     className={styles.docsLink}
                     href={formatGuideUrl}
