@@ -15,4 +15,7 @@
     --font-body: 'Montserrat', sans-serif;
     --font-mono: 'Montserrat', sans-serif;
     --ease-spring: cubic-bezier(0.32, 0.72, 0, 1);
+    --ui-destructive: #b91c1c;
+    --ui-player-menu-foreground: #e4e4e7;
+    --ui-player-menu-hover: rgba(255, 255, 255, 0.08);
 }
