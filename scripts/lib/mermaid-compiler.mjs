@@ -2,6 +2,7 @@
 
 import { createHash } from 'node:crypto';
 import { createRequire } from 'node:module';
+import process from 'node:process';
 import { chromium } from '@playwright/test';
 import mermaidPackage from 'mermaid/package.json' with { type: 'json' };
 
