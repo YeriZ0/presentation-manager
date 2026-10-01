@@ -72,3 +72,4 @@ temp/
 *.tmp
 *.temp
 /plans
+/public/generated/pptx/

@@ -38,7 +38,7 @@ const INLINE_IMAGE_EXTENSIONS = new Set([
 
 const INLINE_FONT_EXTENSIONS = new Set(['.otf', '.ttf', '.woff', '.woff2']);
 
-export function createVirtualFilesystem(deck, files) {
+export function createVirtualFilesystem(deck, files, options = {}) {
     const urls = new Map();
     const privatePaths = new Set([
         'deck.json',
@@ -71,6 +71,7 @@ export function createVirtualFilesystem(deck, files) {
             urls,
             files,
             buildContentSecurityPolicy(deck),
+            options.bridgeFactory || createSlideBridge,
         );
         const url = URL.createObjectURL(
             new Blob([html], { type: 'text/html' }),
@@ -123,9 +124,9 @@ function createCssUrl(path, files, urls, stack) {
     return url;
 }
 
-function rewriteDocument(source, slide, urls, files, csp) {
+function rewriteDocument(source, slide, urls, files, csp, bridgeFactory) {
     const basePath = getBasePath(slide.source);
-    const bridge = createSlideBridge(slide.id);
+    const bridge = bridgeFactory(slide.id);
     const injected = `<meta http-equiv="Content-Security-Policy" content="${escapeAttribute(csp)}">${bridge}`;
     let html = source.replace(/<head([^>]*)>/i, `<head$1>${injected}`);
     if (html === source) html = `${injected}${source}`;

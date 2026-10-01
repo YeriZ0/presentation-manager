@@ -11,6 +11,7 @@ import {
 } from '../state/PlayerStoreProvider.jsx';
 import { PlayerControls } from './PlayerControls.jsx';
 import styles from '../../../player/PresentationPlayer.module.css';
+import { ExportStatus } from '../../pptx-export/components/ExportStatus.jsx';
 
 export function PlayerStage({ leaving, onClose, presentation }) {
     const store = usePlayerStoreApi();
@@ -215,6 +216,7 @@ export function PlayerStage({ leaving, onClose, presentation }) {
                 onToggleFullscreen={toggleFullscreen}
                 timer={timer}
             />
+            <ExportStatus placement="stage" />
             {timerEnabled && (
                 <time
                     className={`${styles.timer} ${styles[timerPosition]}`}

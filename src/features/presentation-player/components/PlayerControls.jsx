@@ -1,7 +1,14 @@
-import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import {
+    forwardRef,
+    useEffect,
+    useImperativeHandle,
+    useRef,
+    useState,
+} from 'react';
 import { MenuIcon } from './MenuIcon.jsx';
 import { usePlayerStore } from '../state/PlayerStoreProvider.jsx';
 import styles from '../../../player/PresentationPlayer.module.css';
+import { ExportAction } from '../../pptx-export/components/ExportAction.jsx';
 
 const TIMER_POSITIONS = [
     { id: 'top-left', label: 'Arriba izquierda' },
@@ -10,13 +17,10 @@ const TIMER_POSITIONS = [
     { id: 'bottom-right', label: 'Abajo derecha' },
 ];
 
-export const PlayerControls = forwardRef(function PlayerControls({
-    closeSignal,
-    onClose,
-    onFocusFrame,
-    onToggleFullscreen,
-    timer,
-}, ref) {
+export const PlayerControls = forwardRef(function PlayerControls(
+    { closeSignal, onClose, onFocusFrame, onToggleFullscreen, timer },
+    ref,
+) {
     const fullscreen = usePlayerStore((state) => state.fullscreen);
     const timerEnabled = usePlayerStore((state) => state.timerEnabled);
     const timerPosition = usePlayerStore((state) => state.timerPosition);
@@ -52,7 +56,8 @@ export const PlayerControls = forwardRef(function PlayerControls({
             }
         }
         document.addEventListener('pointerdown', handlePointerDown);
-        return () => document.removeEventListener('pointerdown', handlePointerDown);
+        return () =>
+            document.removeEventListener('pointerdown', handlePointerDown);
     }, [isMenuOpen]);
 
     useEffect(() => {
@@ -60,7 +65,8 @@ export const PlayerControls = forwardRef(function PlayerControls({
     }, [isMenuOpen]);
 
     useEffect(() => {
-        if (isTimerMenuOpen) timerMenuRef.current?.querySelector('button')?.focus();
+        if (isTimerMenuOpen)
+            timerMenuRef.current?.querySelector('button')?.focus();
     }, [isTimerMenuOpen]);
 
     async function handleFullscreen() {
@@ -101,22 +107,48 @@ export const PlayerControls = forwardRef(function PlayerControls({
                     className={styles.menu}
                     aria-label="Controles de presentación"
                 >
-                    <button className={styles.menuItem} type="button" onClick={handleFullscreen}>
+                    <button
+                        className={styles.menuItem}
+                        type="button"
+                        onClick={handleFullscreen}
+                    >
                         <MenuIcon name="corners-out" />
-                        <span>{fullscreen ? 'Salir de pantalla completa' : 'Pantalla completa'}</span>
+                        <span>
+                            {fullscreen
+                                ? 'Salir de pantalla completa'
+                                : 'Pantalla completa'}
+                        </span>
                     </button>
-                    <button className={styles.menuItem} type="button" onClick={() => timer.toggleTimer(fullscreen)}>
+                    <button
+                        className={styles.menuItem}
+                        type="button"
+                        onClick={() => timer.toggleTimer(fullscreen)}
+                    >
                         <MenuIcon name="timer" />
-                        <span>{timerEnabled ? 'Ocultar timer' : 'Mostrar timer'}</span>
+                        <span>
+                            {timerEnabled ? 'Ocultar timer' : 'Mostrar timer'}
+                        </span>
                     </button>
                     {timerEnabled && (
-                        <button className={styles.menuItem} type="button" onClick={timer.toggleTimerRunning}>
+                        <button
+                            className={styles.menuItem}
+                            type="button"
+                            onClick={timer.toggleTimerRunning}
+                        >
                             <MenuIcon name={timerRunning ? 'pause' : 'play'} />
-                            <span>{timerRunning ? 'Pausar timer' : 'Continuar timer'}</span>
+                            <span>
+                                {timerRunning
+                                    ? 'Pausar timer'
+                                    : 'Continuar timer'}
+                            </span>
                         </button>
                     )}
                     {timerEnabled && (
-                        <button className={styles.menuItem} type="button" onClick={() => timer.resetTimer(fullscreen)}>
+                        <button
+                            className={styles.menuItem}
+                            type="button"
+                            onClick={() => timer.resetTimer(fullscreen)}
+                        >
                             <MenuIcon name="arrow-counter-clockwise" />
                             <span>Reiniciar timer</span>
                         </button>
@@ -132,26 +164,45 @@ export const PlayerControls = forwardRef(function PlayerControls({
                         >
                             <MenuIcon name="crosshair" />
                             <span>Posición del timer</span>
-                            <MenuIcon name="caret-left" className={styles.menuCaret} />
+                            <MenuIcon
+                                name="caret-left"
+                                className={styles.menuCaret}
+                            />
                         </button>
                     )}
-                    <button className={`${styles.menuItem} ${styles.destructiveAction}`} type="button" onClick={onClose}>
+                    <ExportAction variant="menu" />
+                    <button
+                        className={`${styles.menuItem} ${styles.destructiveAction}`}
+                        type="button"
+                        onClick={onClose}
+                    >
                         <MenuIcon name="x" />
                         <span>Cerrar presentación</span>
                     </button>
                     {timerEnabled && isTimerMenuOpen && (
-                        <div ref={timerMenuRef} className={styles.timerMenu} aria-label="Posición del timer">
+                        <div
+                            ref={timerMenuRef}
+                            className={styles.timerMenu}
+                            aria-label="Posición del timer"
+                        >
                             {TIMER_POSITIONS.map((position) => (
                                 <button
                                     key={position.id}
                                     className={`${styles.menuItem} ${timerPosition === position.id ? styles.timerPositionActive : ''}`}
                                     type="button"
                                     aria-pressed={timerPosition === position.id}
-                                    onClick={() => selectTimerPosition(position.id)}
+                                    onClick={() =>
+                                        selectTimerPosition(position.id)
+                                    }
                                 >
                                     <MenuIcon name="crosshair" />
                                     <span>{position.label}</span>
-                                    {timerPosition === position.id && <MenuIcon name="check" className={styles.menuIndicator} />}
+                                    {timerPosition === position.id && (
+                                        <MenuIcon
+                                            name="check"
+                                            className={styles.menuIndicator}
+                                        />
+                                    )}
                                 </button>
                             ))}
                         </div>
@@ -164,7 +215,9 @@ export const PlayerControls = forwardRef(function PlayerControls({
                 type="button"
                 aria-label={isMenuOpen ? 'Cerrar controles' : 'Abrir controles'}
                 aria-expanded={isMenuOpen}
-                onClick={() => (isMenuOpen ? handleCloseMenu() : setIsMenuOpen(true))}
+                onClick={() =>
+                    isMenuOpen ? handleCloseMenu() : setIsMenuOpen(true)
+                }
             >
                 <span />
                 <span />

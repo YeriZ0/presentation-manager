@@ -1,0 +1,78 @@
+.preflightAction {
+    display: inline-flex;
+    min-height: 2.75rem;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0 0.8rem;
+    border: 1px solid #d4d4d8;
+    border-radius: 0.4rem;
+    color: #18181b;
+    background: #fff;
+    cursor: pointer;
+    font: 0.8rem var(--font-body);
+}
+
+.preflightAction:hover:not(:disabled) {
+    background: #f4f4f5;
+}
+
+.preflightAction:disabled {
+    cursor: wait;
+    opacity: 0.65;
+}
+
+.preflightAction svg {
+    width: 1rem;
+    height: 1rem;
+}
+
+.status {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.65rem 0.75rem;
+    border: 1px solid #d4d4d8;
+    border-radius: 0.4rem;
+    color: #18181b;
+    background: #fff;
+    box-shadow: 0 0.5rem 1.5rem rgb(0 0 0 / 12%);
+    font: 0.75rem var(--font-body);
+}
+
+.status button {
+    flex: 0 0 auto;
+    padding: 0.35rem 0.5rem;
+    border: 1px solid currentColor;
+    border-radius: 0.25rem;
+    color: inherit;
+    background: transparent;
+    cursor: pointer;
+    font: inherit;
+}
+
+.preflight {
+    width: fit-content;
+    max-width: min(100%, 38rem);
+    margin-top: 0.75rem;
+}
+
+.stage {
+    position: absolute;
+    z-index: 12;
+    top: 1rem;
+    left: 1rem;
+    max-width: min(38rem, calc(100vw - 2rem));
+    color: #18181b;
+}
+
+@media (max-width: 700px) {
+    .preflight {
+        width: 100%;
+        flex-wrap: wrap;
+    }
+
+    .stage {
+        right: 1rem;
+        max-width: none;
+    }
+}

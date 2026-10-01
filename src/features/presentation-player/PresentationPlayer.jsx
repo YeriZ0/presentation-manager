@@ -1,8 +1,12 @@
 import { createPresentationMetadata } from './state/player-store.js';
-import { PlayerStoreProvider, usePlayerStore } from './state/PlayerStoreProvider.jsx';
+import {
+    PlayerStoreProvider,
+    usePlayerStore,
+} from './state/PlayerStoreProvider.jsx';
 import { PreflightScreen } from './components/PreflightScreen.jsx';
 import { PlayerStage } from './components/PlayerStage.jsx';
 import styles from '../../player/PresentationPlayer.module.css';
+import { PptxExportProvider } from '../pptx-export/state/PptxExportProvider.jsx';
 
 export function PresentationPlayer({ presentation, onClose, leaving }) {
     const metadata = createPresentationMetadata(
@@ -12,11 +16,13 @@ export function PresentationPlayer({ presentation, onClose, leaving }) {
 
     return (
         <PlayerStoreProvider metadata={metadata}>
-            <PlayerSession
-                presentation={presentation}
-                onClose={onClose}
-                leaving={leaving}
-            />
+            <PptxExportProvider presentation={presentation}>
+                <PlayerSession
+                    presentation={presentation}
+                    onClose={onClose}
+                    leaving={leaving}
+                />
+            </PptxExportProvider>
         </PlayerStoreProvider>
     );
 }

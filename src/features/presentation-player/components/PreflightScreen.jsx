@@ -1,5 +1,7 @@
 import { usePlayerStore } from '../state/PlayerStoreProvider.jsx';
 import styles from '../../../player/PresentationPlayer.module.css';
+import { ExportAction } from '../../pptx-export/components/ExportAction.jsx';
+import { ExportStatus } from '../../pptx-export/components/ExportStatus.jsx';
 
 export function PreflightScreen({ onClose }) {
     const metadata = usePlayerStore((state) => state.metadata);
@@ -30,14 +32,18 @@ export function PreflightScreen({ onClose }) {
                     <span />
                     {metadata.viewport.width} x {metadata.viewport.height}
                 </p>
-                <button
-                    className={styles.startButton}
-                    type="button"
-                    onClick={start}
-                >
-                    Empezar a presentar
-                    <span aria-hidden="true">&#8594;</span>
-                </button>
+                <div className={styles.preflightActions}>
+                    <button
+                        className={styles.startButton}
+                        type="button"
+                        onClick={start}
+                    >
+                        Empezar a presentar
+                        <span aria-hidden="true">&#8594;</span>
+                    </button>
+                    <ExportAction />
+                </div>
+                <ExportStatus />
             </section>
             <section className={styles.slideSummary} aria-label="Slides">
                 <div className={styles.summaryHeader}>
@@ -47,7 +53,9 @@ export function PreflightScreen({ onClose }) {
                 <ol>
                     {metadata.slides.map((slide, index) => (
                         <li key={slide.id}>
-                            <span>{(index + 1).toString().padStart(2, '0')}</span>
+                            <span>
+                                {(index + 1).toString().padStart(2, '0')}
+                            </span>
                             <strong>{slide.title}</strong>
                             {slide.hasNotes && <small>Anotaciones</small>}
                         </li>

@@ -26,6 +26,8 @@ npm run lint
 npm run build
 ```
 
+Las presentaciones se pueden exportar a `.pptx` desde la pantalla previa o desde el menú del reproductor. El conversor local de `dom-to-pptx` se prepara automáticamente en `npm run dev` y `npm run build`. La exportación necesita que el navegador tenga disponibles los recursos externos declarados; los ZIP autocontenidos pueden exportarse sin conexión. Consulta [Exportación PPTX](docs/pptx-export.md) para el alcance y las limitaciones.
+
 ## Presentaciones
 
 Importa un ZIP que contenga `deck.json` en la raiz. Consulta `docs/presentation-format.md` y `examples/valid-basic` para conocer únicamente la estructura técnica del formato.

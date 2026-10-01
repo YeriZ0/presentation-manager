@@ -181,6 +181,13 @@
     transform: scale(0.98);
 }
 
+.preflightActions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.65rem;
+}
+
 .slideSummary {
     align-self: center;
     max-height: min(65vh, 35rem);

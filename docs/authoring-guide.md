@@ -171,6 +171,20 @@ if (window.parent === window) {
 
 Dentro del reproductor, `web-deck:activate` es la unica fuente de activacion. El respaldo con `DOMContentLoaded` se utiliza solamente al abrir el HTML de forma independiente. Esta regla es global y no depende de la plantilla visual.
 
+### Preparacion opcional para exportar a PowerPoint
+
+La exportacion espera fuentes e imagenes y deja terminar las animaciones finitas. El deck puede exponer contenido que aparece después de `web-deck:activate` mediante el evento optativo `web-deck:export-prepare`. Registra su promesa con `waitUntil`; el reproductor limita el tiempo de espera:
+
+```js
+window.addEventListener('web-deck:export-prepare', (event) => {
+    event.detail.waitUntil(
+        Promise.all([renderChart(), loadPresentationData()]),
+    );
+});
+```
+
+El evento solo se emite en el frame temporal de exportacion y no reemplaza `web-deck:activate`. La exportacion captura la presentacion visual final: textos y formas HTML compatibles conservan objetos editables; SVG se inserta como vector y canvas como imagen. El JavaScript de la diapositiva no se convierte en funcionalidad PowerPoint.
+
 ## Runtimes locales de graficas
 
 Las diapositivas pueden usar Chart.js o Apache ECharts sin depender de React. El runtime debe copiarse dentro del paquete solo cuando el deck incluya graficas:

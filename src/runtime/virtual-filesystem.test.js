@@ -120,4 +120,24 @@ describe('createVirtualFilesystem', () => {
         expect(html).not.toContain('PRIVATE_MERMAID_SOURCE');
         runtime.revoke();
     });
+
+    it('uses an optional bridge factory without changing the default bridge', async () => {
+        const files = new Map([
+            [
+                'slides/intro/index.html',
+                strToU8('<html><head></head><body></body></html>'),
+            ],
+            ['deck.json', strToU8('{}')],
+        ]);
+        const bridgeFactory = vi.fn(
+            () => '<script>window.captureReady=true;</script>',
+        );
+        const runtime = createVirtualFilesystem(deck, files, { bridgeFactory });
+        const html = await (await fetch(runtime.getSlideUrl('intro'))).text();
+
+        expect(bridgeFactory).toHaveBeenCalledWith('intro');
+        expect(html).toContain('window.captureReady=true');
+        expect(html).not.toContain('web-deck:ready');
+        runtime.revoke();
+    });
 });

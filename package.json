@@ -4,13 +4,14 @@
     "version": "0.1.0",
     "type": "module",
     "scripts": {
-        "predev": "npm run compile:catalog-diagrams",
+        "predev": "npm run compile:catalog-diagrams && npm run vendor:pptx",
         "dev": "vite",
-        "prebuild": "npm run compile:catalog-diagrams",
+        "prebuild": "npm run compile:catalog-diagrams && npm run vendor:pptx",
         "build": "vite build",
         "lint": "eslint .",
         "vendor:chart": "node scripts/vendor-chart-runtime.mjs",
         "vendor:icons": "node scripts/vendor-icons.mjs",
+        "vendor:pptx": "node scripts/vendor-pptx-runtime.mjs",
         "compile:catalog-diagrams": "node scripts/compile-catalog-diagrams.mjs",
         "compile:diagrams": "node scripts/compile-diagrams.mjs",
         "package:deck": "node scripts/package-deck.mjs",
@@ -21,6 +22,7 @@
     "dependencies": {
         "ajv": "^8.17.1",
         "chart.js": "^4.5.0",
+        "dom-to-pptx": "2.1.2",
         "echarts": "^6.0.0",
         "fflate": "^0.8.2",
         "react": "^19.1.1",
@@ -42,5 +44,10 @@
         "vite": "^7.1.5",
         "vitest": "^5.0.1"
     },
-    "packageManager": "pnpm@12.4.2+sha512.08adc6613180275c7c9edada39dcf08c9c61ad4e7eaf330a4f3461f102b0f907423454d117f98e72d47fef0616070644d7bffc973a6a57f5090a6d7c368b07c9"
+    "packageManager": "pnpm@12.4.2+sha512.08adc6613180275c7c9edada39dcf08c9c61ad4e7eaf330a4f3461f102b0f907423454d117f98e72d47fef0616070644d7bffc973a6a57f5090a6d7c368b07c9",
+    "overrides": {
+        "pptxgenjs": {
+            "image-size": "2.0.4"
+        }
+    }
 }
