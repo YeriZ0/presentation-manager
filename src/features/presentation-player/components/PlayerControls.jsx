@@ -6,16 +6,11 @@ import {
     useState,
 } from 'react';
 import { MenuIcon } from './MenuIcon.jsx';
-import { usePlayerStore } from '../state/PlayerStoreProvider.jsx';
+import { usePlayerStore } from '../hooks/usePlayerStore.js';
 import styles from '../../../player/PresentationPlayer.module.css';
 import { ExportAction } from '../../pptx-export/components/ExportAction.jsx';
-
-const TIMER_POSITIONS = [
-    { id: 'top-left', label: 'Arriba izquierda' },
-    { id: 'top-right', label: 'Arriba derecha' },
-    { id: 'bottom-left', label: 'Abajo izquierda' },
-    { id: 'bottom-right', label: 'Abajo derecha' },
-];
+import { TIMER_POSITIONS } from '../../../../shared/remote-control/protocol.js';
+import { ConnectControllerAction } from '../../remote-control/components/ConnectControllerAction.jsx';
 
 export const PlayerControls = forwardRef(function PlayerControls(
     { closeSignal, onClose, onFocusFrame, onToggleFullscreen, timer },
@@ -25,7 +20,6 @@ export const PlayerControls = forwardRef(function PlayerControls(
     const timerEnabled = usePlayerStore((state) => state.timerEnabled);
     const timerPosition = usePlayerStore((state) => state.timerPosition);
     const timerRunning = usePlayerStore((state) => state.timerRunning);
-    const setTimerPosition = usePlayerStore((state) => state.setTimerPosition);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isTimerMenuOpen, setIsTimerMenuOpen] = useState(false);
     const menuRef = useRef(null);
@@ -77,7 +71,7 @@ export const PlayerControls = forwardRef(function PlayerControls(
     }
 
     function selectTimerPosition(position) {
-        setTimerPosition(position);
+        timer.setPosition(position);
         closeTimerMenu();
     }
 
@@ -171,6 +165,7 @@ export const PlayerControls = forwardRef(function PlayerControls(
                         </button>
                     )}
                     <ExportAction variant="menu" />
+                    <ConnectControllerAction variant="menu" />
                     <button
                         className={`${styles.menuItem} ${styles.destructiveAction}`}
                         type="button"
@@ -211,6 +206,7 @@ export const PlayerControls = forwardRef(function PlayerControls(
             )}
             <button
                 ref={controlRef}
+                data-player-controls
                 className={styles.controlButton}
                 type="button"
                 aria-label={isMenuOpen ? 'Cerrar controles' : 'Abrir controles'}

@@ -53,3 +53,22 @@ El controlador debe poder solicitar:
 - Mantener el estado del controlador sincronizado con el reproductor como fuente de verdad
 - Tratar la pantalla completa como una solicitud: el navegador del equipo presentador puede requerir una interacción local para aceptarla
 - Al cerrar una presentación, eliminar los datos de esa sesión del controlador
+
+## Contrato Ejecutable
+
+La versión y los eventos se definen en `shared/remote-control/protocol.js`; los payloads permitidos se validan en `shared/remote-control/validators.js`. El servidor y ambos clientes reutilizan esas definiciones.
+
+- `/presenter` prepara la presentación; `/presenter/live` la reproduce; `/controller` empareja y controla
+- El protocolo utiliza `protocolVersion: 1`, `sessionId` y `requestId` para las órdenes
+- La navegación envía `next` o `previous` y `expectedSlideId`
+- Los ajustes envían valores explícitos mediante `timer-enabled`, `timer-running` y `timer-position`; `timer-reset` reinicia
+- El estado incluye fase, índice, identificador activo, preparación, pantalla completa y propiedades del temporizador
+- Los metadatos incluyen título y lista ordenada de identificadores, títulos y notas como texto
+- Cada publicación lleva una revisión creciente y la generación autorizada del controlador
+- El servidor devuelve resultados `ok` o errores estables; el éxito se confirma tras la ejecución en el escritorio
+- Los cortes involuntarios reservan el puesto durante 60 segundos y requieren resincronización antes de habilitar acciones
+- La desconexión voluntaria revoca la credencial y no permite recuperación automática
+- Los códigos tienen seis dígitos, cinco minutos de validez y un único uso
+- Los recursos del paquete y las credenciales no aparecen en las URLs
+
+El inicio, el salto directo, el cierre remoto y la solicitud de pantalla completa quedan fuera de las órdenes móviles de esta primera versión. El cierre local termina toda la sesión.

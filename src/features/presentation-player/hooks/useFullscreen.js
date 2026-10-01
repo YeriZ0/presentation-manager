@@ -1,5 +1,5 @@
 import { useEffect, useEffectEvent } from 'react';
-import { usePlayerStoreApi } from '../state/PlayerStoreProvider.jsx';
+import { usePlayerStoreApi } from './usePlayerStore.js';
 
 export function useFullscreen(playerRef, onChange) {
     const store = usePlayerStoreApi();
@@ -25,7 +25,7 @@ export function useFullscreen(playerRef, onChange) {
             return true;
         } catch {
             state.setPlayerError(
-                'El navegador rechazo el permiso de pantalla completa.',
+                'El navegador rechazó el permiso de pantalla completa.',
             );
             return false;
         }

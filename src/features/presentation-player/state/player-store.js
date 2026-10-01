@@ -31,6 +31,20 @@ export function createPlayerStore(metadata) {
         timerPosition: INITIAL_TIMER_POSITION,
         elapsed: 0,
         start: () => set({ phase: 'stage' }),
+        setPhase: (phase) => {
+            if (get().phase === phase) return;
+            set(
+                phase === 'preflight'
+                    ? {
+                          phase,
+                          timerRunning: false,
+                          readySlideId: null,
+                          previousIndex: null,
+                          fullscreen: false,
+                      }
+                    : { phase, readySlideId: null },
+            );
+        },
         navigateTo: (nextIndex) => {
             const state = get();
             const activeSlide = state.metadata.slides[state.activeIndex];

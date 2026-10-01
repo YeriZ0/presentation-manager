@@ -17,6 +17,10 @@ npm run dev
 
 La galeria visual de la plantilla Academica sobria se consulta manualmente en `http://localhost:5173/catalog/academic-sober/`.
 
+El servidor de desarrollo integra Vite y Socket.IO. `/presenter` importa y prepara una presentación, `/presenter/live` la reproduce y `/controller` permite emparejar un controlador mediante un código temporal. La raíz elige el acceso inicial según las dimensiones de la ventana.
+
+Para probar el control, abra dos navegadores con distintos tamaños, genere el código desde «Conectar control móvil» en el escritorio e introdúzcalo en el controlador. Consulte [Control móvil](docs/remote-control.md) para las pruebas, reconexión, red local y despliegue en VPS. El móvil recibe notas y estado; el ZIP permanece en el escritorio.
+
 ## Verificacion
 
 ```powershell

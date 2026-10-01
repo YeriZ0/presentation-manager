@@ -1,9 +1,13 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import formatGuideUrl from '../../docs/presentation-format.md?url';
 import styles from './ImportScreen.module.css';
+import { Button } from '@/components/ui/button';
+import { useMobileViewport } from '../hooks/useMobileViewport.js';
 
 export function ImportScreen({ onOpenPicker, onSelectFile, error, isLoading }) {
     const [isDragging, setIsDragging] = useState(false);
+    const isMobile = useMobileViewport();
 
     function handleDrop(event) {
         event.preventDefault();
@@ -47,12 +51,12 @@ export function ImportScreen({ onOpenPicker, onSelectFile, error, isLoading }) {
                 <div className={styles.content}>
                     <div className={styles.headingBlock}>
                         <span className={styles.eyebrow}>
-                            Espacio de presentacion
+                            Espacio de presentación
                         </span>
                         <h1 id="welcome-title">Abre una diapositiva Web</h1>
                         <p className={styles.lede}>
                             Importa un paquete ZIP para comenzar. Tus archivos
-                            permanecen en esta sesion del navegador.
+                            permanecen en esta sesión del navegador.
                         </p>
                     </div>
 
@@ -71,16 +75,16 @@ export function ImportScreen({ onOpenPicker, onSelectFile, error, isLoading }) {
                         <div className={styles.cardCopy}>
                             <strong>
                                 {isDragging
-                                    ? 'Suelta tu paquete aqui'
-                                    : 'Elige un archivo de presentacion'}
+                                    ? 'Suelta tu paquete aquí'
+                                    : 'Elige un archivo de presentación'}
                             </strong>
                             <span>
                                 Solo archivos ZIP, con <code>deck.json</code> en
-                                la raiz
+                                la raíz
                             </span>
                         </div>
-                        <button
-                            className={styles.importButton}
+                        <Button
+                            size="touch"
                             type="button"
                             onClick={onOpenPicker}
                             disabled={isLoading}
@@ -88,7 +92,7 @@ export function ImportScreen({ onOpenPicker, onSelectFile, error, isLoading }) {
                             {isLoading
                                 ? 'Validando paquete...'
                                 : 'Buscar archivo'}
-                        </button>
+                        </Button>
                     </div>
 
                     <div className={styles.requirements}>
@@ -98,6 +102,18 @@ export function ImportScreen({ onOpenPicker, onSelectFile, error, isLoading }) {
                         <span className={styles.pill}>CSS</span>
                         <span className={styles.pill}>JS</span>
                     </div>
+                    {isMobile ? (
+                        <Button
+                            variant="link"
+                            size="touch"
+                            className="justify-self-start"
+                            asChild
+                        >
+                            <Link to="/controller">
+                                Volver al controlador móvil
+                            </Link>
+                        </Button>
+                    ) : null}
                     {error && (
                         <p className={styles.error} role="alert">
                             {error}
@@ -113,7 +129,7 @@ export function ImportScreen({ onOpenPicker, onSelectFile, error, isLoading }) {
                     target="_blank"
                     rel="noreferrer"
                 >
-                    Leer la guia de formato <span aria-hidden="true">↗</span>
+                    Leer la guía de formato <span aria-hidden="true">↗</span>
                 </a>
             </footer>
         </main>

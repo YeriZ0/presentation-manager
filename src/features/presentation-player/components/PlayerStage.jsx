@@ -5,16 +5,15 @@ import { usePresentationTimer } from '../hooks/usePresentationTimer.js';
 import { useSlideRuntime } from '../hooks/useSlideRuntime.js';
 import { formatTime } from '../lib/format-time.js';
 import { isInteractiveTarget } from '../lib/isInteractiveTarget.js';
-import {
-    usePlayerStore,
-    usePlayerStoreApi,
-} from '../state/PlayerStoreProvider.jsx';
+import { usePlayerStore, usePlayerStoreApi } from '../hooks/usePlayerStore.js';
 import { PlayerControls } from './PlayerControls.jsx';
 import styles from '../../../player/PresentationPlayer.module.css';
 import { ExportStatus } from '../../pptx-export/components/ExportStatus.jsx';
+import { usePlayerActions } from '../hooks/usePlayerActions.js';
 
 export function PlayerStage({ leaving, onClose, presentation }) {
     const store = usePlayerStoreApi();
+    const { actions } = usePlayerActions();
     const metadata = usePlayerStore((state) => state.metadata);
     const activeIndex = usePlayerStore((state) => state.activeIndex);
     const previousIndex = usePlayerStore((state) => state.previousIndex);
@@ -47,13 +46,20 @@ export function PlayerStage({ leaving, onClose, presentation }) {
     }
 
     function navigateTo(nextIndex, { focusFrame = false } = {}) {
-        frameFocusRequestedRef.current =
-            focusFrame || document.activeElement === frameRef.current;
-        if (!store.getState().navigateTo(nextIndex)) return;
-        window.cancelAnimationFrame(activationFrameRef.current);
-        controlsRef.current?.closeMenus();
-        setCloseSignal((value) => value + 1);
+        actions.navigateTo(nextIndex, { focusFrame });
     }
+
+    useEffect(
+        () =>
+            actions.subscribeNavigation(({ focusFrame = false }) => {
+                frameFocusRequestedRef.current =
+                    focusFrame || document.activeElement === frameRef.current;
+                window.cancelAnimationFrame(activationFrameRef.current);
+                controlsRef.current?.closeMenus();
+                setCloseSignal((value) => value + 1);
+            }),
+        [actions],
+    );
 
     const onWindowMessage = useEffectEvent((event) => {
         if (event.source !== frameRef.current?.contentWindow) return;
@@ -90,6 +96,11 @@ export function PlayerStage({ leaving, onClose, presentation }) {
     });
 
     const onWindowKeyDown = useEffectEvent((event) => {
+        if (
+            event.defaultPrevented ||
+            event.target?.closest?.('[role="dialog"], [role="alertdialog"]')
+        )
+            return;
         if (event.key === 'Escape') {
             controlsRef.current?.closeForEscape();
             return;
