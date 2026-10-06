@@ -70,7 +70,8 @@ function loadRuntime(frame, signal, resources = {}) {
         const fontHosts = (resources.fontHosts || [])
             .map((host) => `https://${host}`)
             .join(' ');
-        const runtimeOrigin = new URL(RUNTIME_BASE, window.location.href).origin;
+        const runtimeOrigin = new URL(RUNTIME_BASE, window.location.href)
+            .origin;
         csp.content = `default-src 'none'; script-src 'self' ${runtimeOrigin}; style-src 'unsafe-inline'; img-src data: blob: ${imageHosts}; font-src data: blob: ${fontHosts}; connect-src blob: ${imageHosts} ${fontHosts}; object-src 'none'; base-uri 'none'`;
         doc.head.append(csp);
 
