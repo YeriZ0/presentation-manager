@@ -50,28 +50,30 @@ build_image:
         - docker push "$CI_REGISTRY_IMAGE:latest"
         - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA"
 
-# 3. Sincronizacion con GitHub 
+# 3. Sincronizacion con GitHub
 sync_to_github:
-  stage: sync
-  image: alpine/git:latest
-  variables:
-    GIT_STRATEGY: clone
-    GIT_DEPTH: 0
-  rules:
-    - if: $CI_COMMIT_BRANCH
-    - if: $CI_COMMIT_TAG
-  before_script:
-    # Trae todas las ramas y tags del origen en GitLab al espacio local del runner
-    - git fetch --prune origin "+refs/heads/*:refs/heads/*"
-    - git fetch --tags origin
-  script:
-    - git config --global user.email "ci@gitlab.com"
-    - git config --global user.name "GitLab CI"
-    # Configura o actualiza la url remota con credenciales
-    - git remote remove github 2>/dev/null || true
-    - git remote add github https://${GH_TOKEN}@github.com/YeriZ0/presentation-manager.git
-    - git push --prune --all github
-    - git push --tags github
+    stage: sync
+    image:
+        name: alpine/git:latest
+        entrypoint: ['']
+    variables:
+        GIT_STRATEGY: clone
+        GIT_DEPTH: 0
+    rules:
+        - if: $CI_COMMIT_BRANCH
+        - if: $CI_COMMIT_TAG
+    before_script:
+        # Trae todas las ramas y tags del origen en GitLab al espacio local del runner
+        - git fetch --prune origin "+refs/heads/*:refs/heads/*"
+        - git fetch --tags origin
+    script:
+        - git config --global user.email "ci@gitlab.com"
+        - git config --global user.name "GitLab CI"
+        # Configura o actualiza la url remota con credenciales
+        - git remote remove github 2>/dev/null || true
+        - git remote add github https://${GH_TOKEN}@github.com/YeriZ0/presentation-manager.git
+        - git push --prune --all github
+        - git push --tags github
 
 # 4. Despliegue en VPS mediante SSH
 deploy_production:
