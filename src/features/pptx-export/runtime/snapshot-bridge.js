@@ -1,6 +1,7 @@
 import { createSlideBridge } from '../../../runtime/slide-bridge.js';
+import { isSingleLineTextRects } from './snapshot-layout.js';
 
-function installSnapshotBridge(slideId) {
+function installSnapshotBridge(slideId, isSingleLineTextRects) {
     let jobId = null;
     const send = (type, payload = {}) =>
         window.parent.postMessage(
@@ -173,6 +174,33 @@ function installSnapshotBridge(slideId) {
                     rect.height,
                 ]),
             );
+            if (
+                source.closest('svg, table') ||
+                computed.writingMode !== 'horizontal-tb' ||
+                !source.textContent.trim() ||
+                Array.from(source.children).some(
+                    (child) =>
+                        !['inline', 'contents', 'none'].includes(
+                            getComputedStyle(child).display,
+                        ),
+                )
+            ) {
+                return;
+            }
+            const textRects = [];
+            const walker = document.createTreeWalker(
+                source,
+                NodeFilter.SHOW_TEXT,
+            );
+            const range = document.createRange();
+            for (let text = walker.nextNode(); text; text = walker.nextNode()) {
+                if (!text.textContent.trim()) continue;
+                range.selectNodeContents(text);
+                textRects.push(...range.getClientRects());
+            }
+            if (isSingleLineTextRects(textRects)) {
+                target.setAttribute('data-export-single-line', '');
+            }
         }
 
         async function convertMaskedIcon(source, target, computed) {
@@ -458,6 +486,6 @@ function installSnapshotBridge(slideId) {
 }
 
 export function createSnapshotBridge(slideId) {
-    const script = `<script>(${installSnapshotBridge.toString()})(${JSON.stringify(slideId)})</script>`;
+    const script = `<script>(${installSnapshotBridge.toString()})(${JSON.stringify(slideId)},${isSingleLineTextRects.toString()})</script>`;
     return `${createSlideBridge(slideId)}${script}`;
 }

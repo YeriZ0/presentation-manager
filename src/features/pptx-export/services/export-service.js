@@ -45,7 +45,7 @@ export function createExportService({ renderer, encoder, downloader, store }) {
             store
                 .getState()
                 .setError(
-                    error instanceof Error
+                    typeof error?.message === 'string' && error.message.trim()
                         ? error.message
                         : 'No se pudo exportar la presentación',
                 );

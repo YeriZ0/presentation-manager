@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+import { runInNewContext } from 'node:vm';
 import { createExportService } from './export-service.js';
 import { createExportStore } from '../state/export-store.js';
 
@@ -87,6 +88,36 @@ describe('createExportService', () => {
             status: 'error',
             error: 'Fallo PPTX',
         });
+    });
+
+    it('preserves errors created inside the conversion iframe', async () => {
+        const error = runInNewContext('new Error("Fallo de fuente local")');
+        expect(error).not.toBeInstanceOf(Error);
+        const { service, store } = makeService({
+            encoder: {
+                encode: vi.fn(async () => {
+                    throw error;
+                }),
+            },
+        });
+
+        await service.start(presentation);
+        expect(store.getState().error).toBe('Fallo de fuente local');
+    });
+
+    it('keeps the fallback message when the failure has no useful message', async () => {
+        const { service, store } = makeService({
+            encoder: {
+                encode: vi.fn(async () => {
+                    throw { message: ' ' };
+                }),
+            },
+        });
+
+        await service.start(presentation);
+        expect(store.getState().error).toBe(
+            'No se pudo exportar la presentación',
+        );
     });
 
     it('resumes after a StrictMode effect cleanup cycle', async () => {

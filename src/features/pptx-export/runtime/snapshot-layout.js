@@ -1,3 +1,12 @@
+export function isSingleLineTextRects(rects) {
+    const visible = rects.filter((rect) => rect.width > 0 && rect.height > 0);
+    if (visible.length === 0) return false;
+    return (
+        Math.min(...visible.map((rect) => rect.bottom)) >
+        Math.max(...visible.map((rect) => rect.top))
+    );
+}
+
 /** Freeze measured border boxes without rerunning flex/grid layout */
 export function restoreSnapshotLayout(fragment) {
     for (const node of fragment.querySelectorAll('[data-export-box]')) {
@@ -64,5 +73,8 @@ export function restoreSnapshotLayout(fragment) {
             scale: 'none',
             rotate: 'none',
         });
+        if (node.hasAttribute('data-export-single-line')) {
+            node.style.whiteSpace = 'nowrap';
+        }
     }
 }

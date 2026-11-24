@@ -1,4 +1,5 @@
 import { restoreSnapshotLayout } from '../runtime/snapshot-layout.js';
+import { getFontFormat } from '../runtime/font-format.js';
 
 const RUNTIME_BASE = `${import.meta.env.BASE_URL}generated/pptx/`;
 
@@ -283,7 +284,7 @@ async function prepareLocalFonts(frame, snapshots) {
                     ? face.style
                     : 'normal';
                 css.push(
-                    `@font-face{font-family:"${name}";font-weight:${weight};font-style:${style};src:url("${face.source}") format("${extension}")}`,
+                    `@font-face{font-family:"${name}";font-weight:${weight};font-style:${style};src:url("${face.source}") format("${getFontFormat(extension)}")}`,
                 );
                 externalFonts.push({ name, url: face.source, weight, style });
                 continue;
@@ -308,7 +309,7 @@ async function prepareLocalFonts(frame, snapshots) {
                 ? face.style
                 : 'normal';
             css.push(
-                `@font-face{font-family:"${name}";font-weight:${weight};font-style:${style};src:url("${url}") format("${extension}")}`,
+                `@font-face{font-family:"${name}";font-weight:${weight};font-style:${style};src:url("${url}") format("${getFontFormat(extension)}")}`,
             );
             fonts.push({ name, url, weight, style });
         }
